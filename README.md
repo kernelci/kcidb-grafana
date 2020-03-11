@@ -42,7 +42,7 @@ To create and start a Grafana container run:
                -e GF_SERVER_DOMAIN=staging.kernelci.org \
                -e GF_SERVER_HTTP_PORT=3000 \
                -e GF_AUTH_ANONYMOUS_ORG_NAME="Kernel CI" \
-               -e GF_AUTH_ANONYMOUS_ENABLED=true
+               -e GF_AUTH_ANONYMOUS_ENABLED=true \
                grafana/grafana:6.6.0
 
 For development setup, remember to adjust or drop the GF_SERVER_DOMAIN
