@@ -1,0 +1,490 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "iteration": 1583926641153,
+  "links": [],
+  "panels": [
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "maxDataPoints": "250",
+      "options": {},
+      "pageSize": 25,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(242, 73, 92, 0)",
+            "#C4162A",
+            "#37872D"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "revisions_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "✔️",
+              "value": "1"
+            },
+            {
+              "text": "✗",
+              "value": "0"
+            },
+            {
+              "text": "",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "origin_id",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Repository",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "git_repository_url",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Branch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "git_repository_branch",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "revisions_git_repository_commit_name_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "revisions_git_repository_commit_hash_short",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Discovery time",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "discovery_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Builds​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0)",
+            "#C4162A",
+            "#37872D"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "builds_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "",
+              "value": "-1"
+            },
+            {
+              "text": "✗",
+              "value": "0"
+            },
+            {
+              "text": "✔️",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origin",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "origin",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT revisions.origin,\n       revisions.origin_id,\n       revisions.git_repository_url,\n       revisions.git_repository_branch,\n       IF(revisions.git_repository_commit_name IS NULL, \"\", revisions.git_repository_commit_name) as revisions_git_repository_commit_name_str,\n       SUBSTR(revisions.git_repository_commit_hash, 0, 12) as revisions_git_repository_commit_hash_short,\n       IF(revisions.discovery_time IS NULL, \"\", CAST(revisions.discovery_time AS STRING)) as discovery_time_str,\n       CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS revisions_valid_num,\n       MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) as builds_valid_num,\n       MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n           (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM kernelci02.revisions AS revisions\nLEFT OUTER JOIN kernelci02.builds AS builds ON builds.revision_origin = revisions.origin AND builds.revision_origin_id = revisions.origin_id\nLEFT OUTER JOIN kernelci02.tests AS tests ON tests.build_origin = builds.origin AND tests.build_origin_id = builds.origin_id\nWHERE revisions.origin LIKE ${origin} AND\n      revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n      (\n        revisions.discovery_time >= TIMESTAMP_MILLIS(${__from}) AND revisions.discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n        revisions.discovery_time IS NULL\n      )\nGROUP BY\n  revisions.origin,\n  revisions.origin_id,\n  revisions.git_repository_url,\n  revisions.git_repository_branch,\n  revisions.git_repository_commit_name,\n  revisions.git_repository_commit_hash,\n  revisions.discovery_time,\n  revisions.valid\nORDER BY revisions.discovery_time DESC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Revisions",
+      "transform": "table",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 22,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT origin FROM kernelci02.revisions",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Origin",
+        "multi": false,
+        "name": "origin",
+        "options": [],
+        "query": "SELECT DISTINCT origin FROM kernelci02.revisions",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT git_repository_url FROM kernelci02.revisions WHERE git_repository_url IS NOT NULL AND git_repository_url != \"%\" ORDER BY git_repository_url ASC",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Repo",
+        "multi": false,
+        "name": "git_repository_url",
+        "options": [],
+        "query": "SELECT DISTINCT git_repository_url FROM kernelci02.revisions WHERE git_repository_url IS NOT NULL AND git_repository_url != \"%\" ORDER BY git_repository_url ASC",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Home",
+  "uid": "home",
+  "version": 13
+}

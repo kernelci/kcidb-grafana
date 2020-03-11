@@ -47,3 +47,20 @@ To create and start a Grafana container run:
 
 For development setup, remember to adjust or drop the GF_SERVER_DOMAIN
 and GF_SERVER_HTTP_PORT settings.
+
+Import each of the dashboards from this repository, following the steps below.
+
+![Click "+"->"Import"](import_dashboard_start.png)
+
+![Click "Upload .json file", select dashboard file](import_dashboard_upload_json.png)
+
+![Do not change properties, unless necessary](import_dashboard_set_properties.png)
+
+Development
+-----------
+To update dashboard files in this repository, export and overwrite each of
+them, following the steps below.
+
+![Click "Share dashboard"](export_dashboard_start.png)
+
+![Click "Export", and then "Save to file"](export_dashboard_save_to_file.png)
