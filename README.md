@@ -50,6 +50,43 @@ and GF_SERVER_HTTP_PORT settings.
 
 Login as an administrator (default credentials are `admin`/`admin`).
 
+Add BigQuery datasource, following the steps below.
+
+1. Click "⚙️"->"Data Source".
+
+   ![](add_data_source_start.png)
+
+2. Click the "Add data source" button.
+
+   ![](add_data_source_click_button.png)
+
+3. Search for and select the "BigQuery" data source type.
+
+   ![](add_data_source_select_bigquery.png)
+
+4. Set the name of the data source to "Google BigQuery" (the default), and
+   optionally make it the default datasource.
+
+   ![](add_data_source_set_name_and_make_default.png)
+
+5. Upload Google Cloud Service Account key file. Grafana account will need
+   "BigQuery Data Viewer" and "BigQuery Job User" roles only.
+
+   ![](add_data_source_upload_key_file.png)
+
+6. Select processing location appropriate for your dataset (US for Kernel CI
+   data currently).
+
+   ![](add_data_source_set_processing_location.png)
+
+7. Click the "Save & Test" button.
+
+   ![](add_data_source_save_and_test.png)
+
+8. Verify the test was a success.
+
+   ![](add_data_source_check_success.png)
+
 Import each of the dashboards from this repository, following the steps below.
 
 1. Click "+"->"Import".
