@@ -50,17 +50,27 @@ and GF_SERVER_HTTP_PORT settings.
 
 Import each of the dashboards from this repository, following the steps below.
 
-![Click "+"->"Import"](import_dashboard_start.png)
+1. Click "+"->"Import".
 
-![Click "Upload .json file", select dashboard file](import_dashboard_upload_json.png)
+   ![](import_dashboard_start.png)
 
-![Do not change properties, unless necessary](import_dashboard_set_properties.png)
+2. Click "Upload .json file", select dashboard file.
+
+   ![](import_dashboard_upload_json.png)
+
+3. Do not change properties, unless you know what you're doing.
+
+   ![](import_dashboard_set_properties.png)
 
 Development
 -----------
 To update dashboard files in this repository, export and overwrite each of
 them, following the steps below.
 
-![Click "Share dashboard"](export_dashboard_start.png)
+1. Click "Share dashboard".
 
-![Click "Export", and then "Save to file"](export_dashboard_save_to_file.png)
+   ![](export_dashboard_start.png)
+
+2. Click "Export", and then "Save to file".
+
+   ![](export_dashboard_save_to_file.png)
