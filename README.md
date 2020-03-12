@@ -50,6 +50,8 @@ and GF_SERVER_HTTP_PORT settings.
 
 Login as an administrator (default credentials are `admin`/`admin`).
 
+### Data Source
+
 Add BigQuery datasource, following the steps below.
 
 1. Click "⚙️"->"Data Source".
@@ -86,6 +88,8 @@ Add BigQuery datasource, following the steps below.
 8. Verify the test was a success.
 
    ![](add_data_source_check_success.png)
+
+### Dashboards
 
 Import each of the dashboards from this repository, following the steps below.
 
