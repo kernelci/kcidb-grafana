@@ -48,6 +48,8 @@ To create and start a Grafana container run:
 For development setup, remember to adjust or drop the GF_SERVER_DOMAIN
 and GF_SERVER_HTTP_PORT settings.
 
+Login as an administrator (default credentials are `admin`/`admin`).
+
 Import each of the dashboards from this repository, following the steps below.
 
 1. Click "+"->"Import".
