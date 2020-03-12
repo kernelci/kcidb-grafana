@@ -1,0 +1,19 @@
+version: '2.2'
+services:
+  grafana:
+    image: grafana/grafana:6.6.0
+    ports:
+      - 3000:3000
+    restart: on-failure
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=doitintl-bigquery-datasource
+      - GF_SERVER_DOMAIN=staging.kernelci.org
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_AUTH_ANONYMOUS_ORG_NAME="Kernel CI"
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+
+volumes:
+  grafana-storage:
+  

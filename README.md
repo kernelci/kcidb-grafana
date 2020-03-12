@@ -24,29 +24,12 @@ Grafana is configured with the following.
 
 Setup
 -----
-Pull Grafana container image from Docker registry:
-
-    docker pull grafana/grafana:6.6.0
-
-Create a persistent volume to store Grafana configuration and data:
-
-    docker volume create grafana-storage
-
 To create and start a Grafana container run:
 
-    docker run -d -p 127.0.0.1:3000:3000 \
-               --name grafana \
-               --restart=unless-stopped \
-               -v grafana-storage:/var/lib/grafana \
-               -e GF_INSTALL_PLUGINS=doitintl-bigquery-datasource \
-               -e GF_SERVER_DOMAIN=staging.kernelci.org \
-               -e GF_SERVER_HTTP_PORT=3000 \
-               -e GF_AUTH_ANONYMOUS_ORG_NAME="Kernel CI" \
-               -e GF_AUTH_ANONYMOUS_ENABLED=true \
-               grafana/grafana:6.6.0
+    docker-compose up -d
 
 For development setup, remember to adjust or drop the GF_SERVER_DOMAIN
-and GF_SERVER_HTTP_PORT settings.
+and GF_SERVER_HTTP_PORT environment variables in `docker-compose.yml`.
 
 Login as an administrator (default credentials are `admin`/`admin`).
 
