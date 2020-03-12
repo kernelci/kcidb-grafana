@@ -54,7 +54,7 @@ Login as an administrator (default credentials are `admin`/`admin`).
 
 Add BigQuery datasource, following the steps below.
 
-1. Click "⚙️"->"Data Source".
+1. Click "⚙️"->"Data Sources".
 
    ![](add_data_source_start.png)
 
