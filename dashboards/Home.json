@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1584012258140,
+  "iteration": 1584607172900,
   "links": [],
   "panels": [
     {
@@ -24,7 +24,7 @@
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
-        "h": 14,
+        "h": 22,
         "w": 24,
         "x": 0,
         "y": 0
@@ -32,7 +32,7 @@
       "id": 2,
       "maxDataPoints": "250",
       "options": {},
-      "pageSize": 25,
+      "pageSize": 20,
       "showHeader": true,
       "sort": {
         "col": null,
@@ -506,5 +506,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 15
+  "version": 16
 }

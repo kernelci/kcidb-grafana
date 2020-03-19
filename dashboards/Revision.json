@@ -16,9 +16,47 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1584012616625,
+  "iteration": 1584607223276,
   "links": [],
   "panels": [
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 0
+      },
+      "id": 33,
+      "options": {},
+      "textTemplate": "⮌ Home",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/home/home?orgId=1",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 18,
+        "x": 6,
+        "y": 0
+      },
+      "id": 32,
+      "options": {},
+      "textTemplate": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
     {
       "cacheTimeout": null,
       "colorBackground": false,
@@ -39,9 +77,9 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
+        "w": 3,
         "x": 0,
-        "y": 0
+        "y": 2
       },
       "id": 20,
       "interval": null,
@@ -104,66 +142,16 @@
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": null,
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
       "gridPos": {
         "h": 2,
-        "w": 14,
-        "x": 4,
-        "y": 0
+        "w": 13,
+        "x": 3,
+        "y": 2
       },
       "id": 6,
-      "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
       "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "git_repository_url",
       "targets": [
         {
           "format": "table",
@@ -172,7 +160,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  origin,\n  origin_id,\n  git_repository_url,\n  git_repository_branch,\n  git_repository_commit_name,\n  git_repository_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE origin=\"${origin}\" AND origin_id=\"${origin_id}\" ORDER BY discovery_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  origin,\n  origin_id,\n  git_repository_url,\n  git_repository_branch,\n  git_repository_commit_name,\n  git_repository_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE origin=\"${origin}\" AND origin_id=\"${origin_id}\" ORDER BY discovery_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -195,20 +183,37 @@
           ]
         }
       ],
-      "thresholds": "",
+      "textTemplate": "${__cell_2}",
       "timeFrom": null,
       "timeShift": null,
       "title": "Repo",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "${__cell_2}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 16,
+        "y": 2
+      },
+      "id": 30,
+      "options": {},
+      "targets": [
         {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
+          "panelId": 6,
+          "refId": "A"
         }
       ],
-      "valueName": "first"
+      "textTemplate": "${__cell_9}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Log",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "${__cell_10}",
+      "valueFontSize": "50%"
     },
     {
       "cacheTimeout": null,
@@ -232,7 +237,7 @@
         "h": 2,
         "w": 2,
         "x": 18,
-        "y": 0
+        "y": 2
       },
       "id": 22,
       "interval": null,
@@ -325,7 +330,7 @@
         "h": 2,
         "w": 2,
         "x": 20,
-        "y": 0
+        "y": 2
       },
       "id": 24,
       "interval": null,
@@ -418,7 +423,7 @@
         "h": 2,
         "w": 2,
         "x": 22,
-        "y": 0
+        "y": 2
       },
       "id": 23,
       "interval": null,
@@ -586,7 +591,7 @@
         "h": 2,
         "w": 6,
         "x": 0,
-        "y": 2
+        "y": 4
       },
       "id": 8,
       "interval": null,
@@ -669,7 +674,7 @@
         "h": 2,
         "w": 8,
         "x": 6,
-        "y": 2
+        "y": 4
       },
       "id": 10,
       "interval": null,
@@ -752,7 +757,7 @@
         "h": 2,
         "w": 10,
         "x": 14,
-        "y": 2
+        "y": 4
       },
       "id": 12,
       "interval": null,
@@ -835,7 +840,7 @@
         "h": 2,
         "w": 18,
         "x": 0,
-        "y": 4
+        "y": 6
       },
       "id": 16,
       "interval": null,
@@ -918,7 +923,7 @@
         "h": 2,
         "w": 6,
         "x": 18,
-        "y": 4
+        "y": 6
       },
       "id": 14,
       "interval": null,
@@ -980,94 +985,11 @@
       "valueName": "first"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 24,
-        "x": 0,
-        "y": 6
-      },
-      "id": 28,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "log_url",
-      "targets": [
-        {
-          "panelId": 6,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Log",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
-    },
-    {
       "columns": [],
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
-        "h": 7,
+        "h": 11,
         "w": 24,
         "x": 0,
         "y": 8
@@ -1075,7 +997,7 @@
       "id": 2,
       "maxDataPoints": "100",
       "options": {},
-      "pageSize": null,
+      "pageSize": 8,
       "showHeader": true,
       "sort": {
         "col": null,
@@ -1399,7 +1321,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 18,
       "links": [],
@@ -1507,7 +1429,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 26,
       "interval": null,
@@ -1578,6 +1500,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": true,
           "text": "redhat",
           "value": "redhat"
         },
@@ -1602,8 +1525,8 @@
       },
       {
         "current": {
-          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@767d3ded5fb88e95f137893a8d90d1738b897029",
-          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@767d3ded5fb88e95f137893a8d90d1738b897029"
+          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@2c4b58dc75dd291c9ce6100bcb892322cd004614",
+          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@2c4b58dc75dd291c9ce6100bcb892322cd004614"
         },
         "hide": 0,
         "label": "Origin ID",
@@ -1615,7 +1538,7 @@
             "value": "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git@d980f67059dbb627cbc778bdc80058fae526e312+2b94189bcdb42bc6af6537345b6b67eadf2cc00311bf364ae35f98601cc2c885"
           }
         ],
-        "query": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@767d3ded5fb88e95f137893a8d90d1738b897029",
+        "query": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@2c4b58dc75dd291c9ce6100bcb892322cd004614",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1662,5 +1585,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 8
+  "version": 14
 }

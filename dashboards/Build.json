@@ -16,9 +16,72 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1584012938309,
+  "iteration": 1584607248152,
   "links": [],
   "panels": [
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 0
+      },
+      "id": 26,
+      "options": {},
+      "textTemplate": "⮌ Home",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/home/home?orgId=1",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 0
+      },
+      "id": 29,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "⮌ Revision",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 18,
+        "x": 6,
+        "y": 0
+      },
+      "id": 28,
+      "options": {},
+      "textTemplate": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
     {
       "cacheTimeout": null,
       "colorBackground": false,
@@ -41,7 +104,7 @@
         "h": 2,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 2
       },
       "id": 2,
       "interval": null,
@@ -89,7 +152,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  log_url,\n  misc\nFROM ${dataset}.builds WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\" ORDER BY start_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  revision_origin,\n  revision_origin_id,\n  origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  compiler,\n  misc\nFROM ${dataset}.builds WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\" ORDER BY start_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -149,7 +212,7 @@
         "h": 2,
         "w": 7,
         "x": 4,
-        "y": 0
+        "y": 2
       },
       "id": 4,
       "interval": null,
@@ -212,97 +275,14 @@
       "valueName": "first"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 3,
-        "x": 11,
-        "y": 0
-      },
-      "id": 6,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "architecture",
-      "targets": [
-        {
-          "panelId": 2,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Architecture",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
-    },
-    {
       "columns": [],
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 14,
-        "y": 0
+        "w": 7,
+        "x": 11,
+        "y": 2
       },
       "id": 17,
       "options": {},
@@ -390,6 +370,33 @@
     },
     {
       "cacheTimeout": null,
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 18,
+        "y": 2
+      },
+      "id": 22,
+      "links": [],
+      "options": {},
+      "pluginVersion": "6.6.0",
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_10}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Log",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "${__cell_11}",
+      "valueFontSize": "50%"
+    },
+    {
+      "cacheTimeout": null,
       "colorBackground": true,
       "colorValue": false,
       "colors": [
@@ -410,7 +417,7 @@
         "h": 2,
         "w": 2,
         "x": 20,
-        "y": 0
+        "y": 2
       },
       "id": 14,
       "interval": null,
@@ -503,7 +510,7 @@
         "h": 2,
         "w": 2,
         "x": 22,
-        "y": 0
+        "y": 2
       },
       "id": 12,
       "interval": null,
@@ -671,7 +678,7 @@
         "h": 2,
         "w": 5,
         "x": 0,
-        "y": 2
+        "y": 4
       },
       "id": 8,
       "interval": null,
@@ -748,7 +755,7 @@
         "h": 2,
         "w": 3,
         "x": 5,
-        "y": 2
+        "y": 4
       },
       "id": 15,
       "interval": null,
@@ -829,11 +836,11 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 6,
+        "w": 3,
         "x": 8,
-        "y": 2
+        "y": 4
       },
-      "id": 21,
+      "id": 6,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -870,7 +877,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "config_name",
+      "tableColumn": "architecture",
       "targets": [
         {
           "panelId": 2,
@@ -880,7 +887,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Configuration name",
+      "title": "Architecture",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -893,88 +900,28 @@
       "valueName": "first"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
       "gridPos": {
         "h": 2,
-        "w": 24,
-        "x": 0,
+        "w": 6,
+        "x": 18,
         "y": 4
       },
-      "id": 20,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
+      "id": 24,
       "options": {},
-      "pluginVersion": "6.6.0",
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "config_url",
       "targets": [
         {
           "panelId": 2,
           "refId": "A"
         }
       ],
-      "thresholds": "",
+      "textTemplate": "${__cell_5}",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Configuration URL",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
+      "title": "Configuration",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "${__cell_6}",
+      "valueFontSize": "50%"
     },
     {
       "cacheTimeout": null,
@@ -1000,7 +947,7 @@
         "x": 0,
         "y": 6
       },
-      "id": 22,
+      "id": 19,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -1018,7 +965,6 @@
       "nullPointMode": "connected",
       "nullText": null,
       "options": {},
-      "pluginVersion": "6.6.0",
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1038,7 +984,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "log_url",
+      "tableColumn": "compiler",
       "targets": [
         {
           "panelId": 2,
@@ -1048,13 +994,13 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Log URL",
+      "title": "Compiler",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
         {
           "op": "=",
-          "text": "",
+          "text": "N/A",
           "value": "null"
         }
       ],
@@ -1065,14 +1011,14 @@
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
-        "h": 12,
+        "h": 17,
         "w": 24,
         "x": 0,
         "y": 8
       },
       "id": 10,
       "options": {},
-      "pageSize": null,
+      "pageSize": 15,
       "showHeader": true,
       "sort": {
         "col": null,
@@ -1351,9 +1297,9 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 25
       },
-      "id": 19,
+      "id": 30,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -1421,6 +1367,7 @@
       {
         "allValue": "\"%\"",
         "current": {
+          "selected": false,
           "text": "redhat",
           "value": "redhat"
         },
@@ -1445,8 +1392,8 @@
       },
       {
         "current": {
-          "text": "700852",
-          "value": "700852"
+          "text": "718589",
+          "value": "718589"
         },
         "hide": 0,
         "label": "Origin ID",
@@ -1458,7 +1405,7 @@
             "value": "581242"
           }
         ],
-        "query": "700852",
+        "query": "718589",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1505,5 +1452,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 9
+  "version": 14
 }
