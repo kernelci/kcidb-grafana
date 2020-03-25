@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1585126676172,
+  "iteration": 1585127354458,
   "links": [],
   "panels": [
     {
@@ -1378,7 +1378,7 @@
           "orderByCol": "2",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT patch_mboxes\n  FROM kernelci02.revisions\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY discovery_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT patch_mboxes\n  FROM ${dataset}.revisions\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY discovery_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -1585,5 +1585,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 15
+  "version": 16
 }
