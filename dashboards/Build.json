@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1584607248152,
+  "iteration": 1585127283337,
   "links": [],
   "panels": [
     {
@@ -339,7 +339,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT output_files\n  FROM kernelci02.builds\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY start_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT output_files\n  FROM ${dataset}.builds\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY start_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -1392,8 +1392,8 @@
       },
       {
         "current": {
-          "text": "718589",
-          "value": "718589"
+          "text": "729622",
+          "value": "729622"
         },
         "hide": 0,
         "label": "Origin ID",
@@ -1405,7 +1405,7 @@
             "value": "581242"
           }
         ],
-        "query": "718589",
+        "query": "729622",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1452,5 +1452,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 14
+  "version": 15
 }
