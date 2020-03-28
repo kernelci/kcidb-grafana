@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1585127283337,
+  "iteration": 1585380376187,
   "links": [],
   "panels": [
     {
@@ -60,7 +60,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
       "valueFontSize": "50%"
     },
     {
@@ -152,7 +152,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  revision_origin,\n  revision_origin_id,\n  origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  compiler,\n  misc\nFROM ${dataset}.builds WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\" ORDER BY start_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  revision_id,\n  id,\n  SUBSTR(id, 1, STRPOS(id, \":\") - 1) as origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  compiler,\n  misc\nFROM ${dataset}.builds WHERE id = \"${id}\" ORDER BY start_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -339,7 +339,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT output_files\n  FROM ${dataset}.builds\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY start_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT output_files\n  FROM ${dataset}.builds\n  WHERE id = \"${id}\"\n  ORDER BY start_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -1037,7 +1037,7 @@
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
           "mappingType": 1,
-          "pattern": "origin_id",
+          "pattern": "id",
           "thresholds": [],
           "type": "hidden",
           "unit": "short"
@@ -1054,7 +1054,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "pattern": "start_time_str",
           "thresholds": [],
           "type": "string",
@@ -1073,7 +1073,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -1170,7 +1170,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -1190,7 +1190,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "path",
           "thresholds": [],
@@ -1210,7 +1210,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "description",
           "thresholds": [],
@@ -1230,7 +1230,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/test/test?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
@@ -1246,7 +1246,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    origin, origin_id, path, description,\n    IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    (CASE status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) - (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 as status_num\nFROM ${dataset}.tests\nWHERE\n  build_origin = \"${origin}\" AND build_origin_id = \"${origin_id}\" AND\n  (\n    tests.start_time >= TIMESTAMP_MILLIS(${__from}) AND tests.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    tests.start_time IS NULL\n  )\nORDER BY start_time ASC",
+          "rawSql": "SELECT\n    id,\n    SUBSTR(id, 1, STRPOS(id, \":\") - 1) as origin,\n    path,\n    description,\n    IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    (CASE status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) - (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 as status_num\nFROM ${dataset}.tests\nWHERE\n  build_id = \"${id}\" AND\n  (\n    tests.start_time >= TIMESTAMP_MILLIS(${__from}) AND tests.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    tests.start_time IS NULL\n  )\nORDER BY start_time ASC",
           "refId": "A",
           "select": [
             [
@@ -1365,55 +1365,29 @@
   "templating": {
     "list": [
       {
-        "allValue": "\"%\"",
         "current": {
-          "selected": false,
-          "text": "redhat",
-          "value": "redhat"
+          "text": "redhat:738737",
+          "value": "redhat:738737"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.builds",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Origin",
-        "multi": false,
-        "name": "origin",
-        "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.builds",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "current": {
-          "text": "729622",
-          "value": "729622"
-        },
-        "hide": 0,
-        "label": "Origin ID",
-        "name": "origin_id",
+        "hide": 2,
+        "label": "ID",
+        "name": "id",
         "options": [
           {
             "selected": false,
-            "text": "581242",
-            "value": "581242"
+            "text": "",
+            "value": ""
           }
         ],
-        "query": "729622",
+        "query": "redhat:738737",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "selected": false,
-          "text": "kernelci02",
-          "value": "kernelci02"
+          "selected": true,
+          "text": "kernelci03",
+          "value": "kernelci03"
         },
         "hide": 2,
         "label": null,
@@ -1421,11 +1395,11 @@
         "options": [
           {
             "selected": true,
-            "text": "kernelci02",
-            "value": "kernelci02"
+            "text": "kernelci03",
+            "value": "kernelci03"
           }
         ],
-        "query": "kernelci02",
+        "query": "kernelci03",
         "skipUrlSync": false,
         "type": "constant"
       }
@@ -1452,5 +1426,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 15
+  "version": 6
 }

@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1584607172900,
+  "iteration": 1585380313871,
   "links": [],
   "panels": [
     {
@@ -52,7 +52,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "revisions_valid_num",
           "thresholds": [
@@ -88,7 +88,7 @@
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
           "mappingType": 1,
-          "pattern": "origin_id",
+          "pattern": "id",
           "thresholds": [],
           "type": "hidden",
           "unit": "short"
@@ -106,7 +106,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "git_repository_url",
           "thresholds": [],
@@ -126,7 +126,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "git_repository_branch",
           "thresholds": [],
@@ -146,7 +146,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "revisions_git_repository_commit_name_str",
           "thresholds": [],
@@ -166,7 +166,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "revisions_git_repository_commit_hash_short",
           "thresholds": [],
@@ -186,7 +186,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "discovery_time_str",
           "thresholds": [],
@@ -206,7 +206,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "builds_valid_num",
           "thresholds": [
@@ -243,7 +243,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "tests_status_num",
           "thresholds": [
@@ -340,7 +340,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -360,7 +360,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "/.*/",
           "thresholds": [],
@@ -376,7 +376,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT revisions.origin,\n       revisions.origin_id,\n       revisions.git_repository_url,\n       revisions.git_repository_branch,\n       IF(revisions.git_repository_commit_name IS NULL, \"\", revisions.git_repository_commit_name) as revisions_git_repository_commit_name_str,\n       SUBSTR(revisions.git_repository_commit_hash, 0, 12) as revisions_git_repository_commit_hash_short,\n       IF(revisions.discovery_time IS NULL, \"\", CAST(revisions.discovery_time AS STRING)) as discovery_time_str,\n       CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS revisions_valid_num,\n       MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) as builds_valid_num,\n       MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n           (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.revisions AS revisions\nLEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_origin = revisions.origin AND builds.revision_origin_id = revisions.origin_id\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_origin = builds.origin AND tests.build_origin_id = builds.origin_id\nWHERE revisions.origin LIKE ${origin} AND\n      revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n      (\n        revisions.discovery_time >= TIMESTAMP_MILLIS(${__from}) AND revisions.discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n        revisions.discovery_time IS NULL\n      )\nGROUP BY\n  revisions.origin,\n  revisions.origin_id,\n  revisions.git_repository_url,\n  revisions.git_repository_branch,\n  revisions.git_repository_commit_name,\n  revisions.git_repository_commit_hash,\n  revisions.discovery_time,\n  revisions.valid\nORDER BY revisions.discovery_time DESC",
+          "rawSql": "SELECT revisions.id,\n       SUBSTR(revisions.id, 1, STRPOS(revisions.id, \":\") - 1) as origin,\n       revisions.git_repository_url,\n       revisions.git_repository_branch,\n       IF(revisions.git_repository_commit_name IS NULL, \"\", revisions.git_repository_commit_name) as revisions_git_repository_commit_name_str,\n       SUBSTR(revisions.git_repository_commit_hash, 0, 12) as revisions_git_repository_commit_hash_short,\n       IF(revisions.discovery_time IS NULL, \"\", CAST(revisions.discovery_time AS STRING)) as discovery_time_str,\n       CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS revisions_valid_num,\n       MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) as builds_valid_num,\n       MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n           (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.revisions AS revisions\nLEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_id = revisions.id\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE revisions.id LIKE CONCAT(${origin}, \":%\") AND\n      revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n      (\n        revisions.discovery_time >= TIMESTAMP_MILLIS(${__from}) AND revisions.discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n        revisions.discovery_time IS NULL\n      )\nGROUP BY\n  revisions.id,\n  revisions.git_repository_url,\n  revisions.git_repository_branch,\n  revisions.git_repository_commit_name,\n  revisions.git_repository_commit_hash,\n  revisions.discovery_time,\n  revisions.valid\nORDER BY revisions.discovery_time DESC",
           "refId": "A",
           "select": [
             [
@@ -419,14 +419,14 @@
           "value": "$__all"
         },
         "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "definition": "SELECT DISTINCT SUBSTR(id, 1, STRPOS(id, \":\") - 1) FROM ${dataset}.revisions",
         "hide": 0,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "query": "SELECT DISTINCT SUBSTR(id, 1, STRPOS(id, \":\") - 1) FROM ${dataset}.revisions",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -465,9 +465,9 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "kernelci02",
-          "value": "kernelci02"
+          "selected": true,
+          "text": "kernelci03",
+          "value": "kernelci03"
         },
         "hide": 2,
         "label": null,
@@ -475,11 +475,11 @@
         "options": [
           {
             "selected": true,
-            "text": "kernelci02",
-            "value": "kernelci02"
+            "text": "kernelci03",
+            "value": "kernelci03"
           }
         ],
-        "query": "kernelci02",
+        "query": "kernelci03",
         "skipUrlSync": false,
         "type": "constant"
       }
@@ -506,5 +506,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 16
+  "version": 5
 }

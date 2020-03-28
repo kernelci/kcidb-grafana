@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1585127354458,
+  "iteration": 1585380329015,
   "links": [],
   "panels": [
     {
@@ -160,7 +160,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  origin,\n  origin_id,\n  git_repository_url,\n  git_repository_branch,\n  git_repository_commit_name,\n  git_repository_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE origin=\"${origin}\" AND origin_id=\"${origin_id}\" ORDER BY discovery_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  id,\n  SUBSTR(id, 1, STRPOS(id, \":\") - 1) as origin,\n  git_repository_url,\n  git_repository_branch,\n  git_repository_commit_name,\n  git_repository_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE id=\"${id}\" ORDER BY discovery_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -1016,7 +1016,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "builds_valid_num",
           "thresholds": [
@@ -1052,7 +1052,7 @@
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
           "mappingType": 1,
-          "pattern": "origin_id",
+          "pattern": "id",
           "thresholds": [],
           "type": "hidden",
           "unit": "short"
@@ -1070,7 +1070,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "tests_status_num",
           "thresholds": [
@@ -1167,7 +1167,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -1187,7 +1187,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "description",
           "thresholds": [],
@@ -1207,7 +1207,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "architecture",
           "thresholds": [],
@@ -1227,7 +1227,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "builds_start_time_str",
           "thresholds": [],
@@ -1247,7 +1247,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
@@ -1267,7 +1267,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-origin=${__cell_0}&var-origin_id=${__cell_1}",
+          "linkUrl": "/d/build/build?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
           "pattern": "config_name",
           "thresholds": [],
@@ -1283,7 +1283,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  builds.origin,\n  builds.origin_id,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  IF(builds.start_time is NULL, \"\", CAST(builds.start_time AS STRING)) as builds_start_time_str,\n  IF(builds.duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS builds_valid_num,\n  MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n      (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_origin = builds.origin AND tests.build_origin_id = builds.origin_id\nWHERE\n  revision_origin = \"$origin\" AND\n  revision_origin_id = \"$origin_id\" AND\n  (\n    builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    builds.start_time IS NULL\n  )\nGROUP BY\n  builds.origin,\n  builds.origin_id,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  builds.start_time,\n  builds.duration,\n  builds.valid\nORDER BY builds.start_time ASC",
+          "rawSql": "SELECT\n  builds.id,\n  SUBSTR(builds.id, 1, STRPOS(builds.id, \":\") - 1) as origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  IF(builds.start_time is NULL, \"\", CAST(builds.start_time AS STRING)) as builds_start_time_str,\n  IF(builds.duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS builds_valid_num,\n  MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n      (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE\n  revision_id = \"$id\" AND\n  (\n    builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    builds.start_time IS NULL\n  )\nGROUP BY\n  builds.id,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  builds.start_time,\n  builds.duration,\n  builds.valid\nORDER BY builds.start_time ASC",
           "refId": "A",
           "select": [
             [
@@ -1378,7 +1378,7 @@
           "orderByCol": "2",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT patch_mboxes\n  FROM ${dataset}.revisions\n  WHERE origin = \"${origin}\" AND origin_id = \"${origin_id}\"\n  ORDER BY discovery_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT patch_mboxes\n  FROM ${dataset}.revisions\n  WHERE id = \"${id}\"\n  ORDER BY discovery_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -1498,55 +1498,29 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {
-          "selected": true,
-          "text": "redhat",
-          "value": "redhat"
+          "text": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f",
+          "value": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT revision_origin FROM ${dataset}.builds",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Origin",
-        "multi": false,
-        "name": "origin",
-        "options": [],
-        "query": "SELECT DISTINCT revision_origin FROM ${dataset}.builds",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "current": {
-          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@723d5e5b81c9740ca98401105a084e55789792f7",
-          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@723d5e5b81c9740ca98401105a084e55789792f7"
-        },
-        "hide": 0,
-        "label": "Origin ID",
-        "name": "origin_id",
+        "hide": 2,
+        "label": "ID",
+        "name": "id",
         "options": [
           {
             "selected": false,
-            "text": "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git@d980f67059dbb627cbc778bdc80058fae526e312+2b94189bcdb42bc6af6537345b6b67eadf2cc00311bf364ae35f98601cc2c885",
-            "value": "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git@d980f67059dbb627cbc778bdc80058fae526e312+2b94189bcdb42bc6af6537345b6b67eadf2cc00311bf364ae35f98601cc2c885"
+            "text": "",
+            "value": ""
           }
         ],
-        "query": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@723d5e5b81c9740ca98401105a084e55789792f7",
+        "query": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "selected": false,
-          "text": "kernelci02",
-          "value": "kernelci02"
+          "selected": true,
+          "text": "kernelci03",
+          "value": "kernelci03"
         },
         "hide": 2,
         "label": null,
@@ -1554,11 +1528,11 @@
         "options": [
           {
             "selected": true,
-            "text": "kernelci02",
-            "value": "kernelci02"
+            "text": "kernelci03",
+            "value": "kernelci03"
           }
         ],
-        "query": "kernelci02",
+        "query": "kernelci03",
         "skipUrlSync": false,
         "type": "constant"
       }
@@ -1585,5 +1559,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 16
+  "version": 5
 }
