@@ -23,7 +23,7 @@
       "content": "Welcome to Linux Kernel CI report database (**KCIDB**) dashboard.\nHere you can find testing reports aggregated from multiple CI systems (\"**origins**\").\nThis is a work in progress, and we welcome contributions and participation.\nSee the source code for [the collection system][kcidb], and for [this dashboard][kcidb-grafana].\nWrite to [kernelci@groups.io][maillist] if you want to start submitting results from your CI system.\n\n[kcidb]: https://github.com/kernelci/kcidb/\n[kcidb-grafana]: https://github.com/kernelci/kcidb-grafana/\n[maillist]: mailto:kernelci@groups.io",
       "datasource": null,
       "gridPos": {
-        "h": 2,
+        "h": 3,
         "w": 24,
         "x": 0,
         "y": 0
@@ -33,7 +33,7 @@
       "options": {},
       "timeFrom": null,
       "timeShift": null,
-      "title": "",
+      "title": "Welcome",
       "transparent": true,
       "type": "text"
     },
@@ -45,7 +45,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 3
       },
       "id": 2,
       "maxDataPoints": "250",
@@ -435,7 +435,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 4,
@@ -715,7 +715,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 5,
@@ -950,5 +950,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 23
+  "version": 24
 }
