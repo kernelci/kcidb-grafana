@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1587121354486,
+  "iteration": 1587141431826,
   "links": [],
   "panels": [
     {
@@ -811,7 +811,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Build architectures",
+      "title": "Builds per architecture",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -884,7 +884,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -950,5 +950,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 25
+  "version": 26
 }
