@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1585380313871,
+  "iteration": 1587122340228,
   "links": [],
   "panels": [
     {
@@ -24,7 +24,7 @@
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
-        "h": 22,
+        "h": 12,
         "w": 24,
         "x": 0,
         "y": 0
@@ -32,7 +32,7 @@
       "id": 2,
       "maxDataPoints": "250",
       "options": {},
-      "pageSize": 20,
+      "pageSize": 9,
       "showHeader": true,
       "sort": {
         "col": null,
@@ -404,8 +404,434 @@
       "title": "Revisions",
       "transform": "table",
       "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "convertToUTC": false,
+          "dataset": "kernelci03",
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "1d",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "partitioned": false,
+          "partitionedField": "",
+          "project": "kernelci",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(revisions.discovery_time)) AS time,\n  count(revisions.id) AS Revisions\nFROM\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  revisions.discovery_time IS NOT NULL AND\n  revisions.discovery_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "revisions"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "sharded": false,
+          "table": "revisions",
+          "timeColumn": "discovery_time",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": [
+                "(discovery_time IS NULL)",
+                "=",
+                "FALSE"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "convertToUTC": false,
+          "dataset": "kernelci03",
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "1d",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "partitioned": false,
+          "partitionedField": "",
+          "project": "kernelci",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  count(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "revisions"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "sharded": false,
+          "table": "revisions",
+          "timeColumn": "discovery_time",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": [
+                "(discovery_time IS NULL)",
+                "=",
+                "FALSE"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "convertToUTC": false,
+          "dataset": "kernelci03",
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "1d",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "partitioned": false,
+          "partitionedField": "",
+          "project": "kernelci",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(tests.start_time)) AS time,\n  count(tests.id) AS Tests\nFROM\n  ${dataset}.tests AS tests,\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id = tests.build_id AND\n  tests.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  tests.start_time IS NOT NULL AND\n  tests.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "revisions"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "sharded": false,
+          "table": "revisions",
+          "timeColumn": "discovery_time",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": [
+                "(discovery_time IS NULL)",
+                "=",
+                "FALSE"
+              ],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Reports",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 8,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "convertToUTC": false,
+          "dataset": "kernelci03",
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "architecture"
+              ],
+              "type": "column"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "architecture",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "partitioned": false,
+          "partitionedField": "",
+          "project": "kernelci",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  builds.architecture AS metric,\n  COUNT(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.architecture IS NOT NULL AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "sharded": false,
+          "table": "builds",
+          "timeColumn": "start_time",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Build architectures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
+  "refresh": "30m",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -506,5 +932,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 5
+  "version": 22
 }
