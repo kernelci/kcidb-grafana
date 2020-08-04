@@ -166,7 +166,7 @@
           "linkTooltip": "View revision",
           "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
-          "pattern": "revisions_git_repository_commit_name_str",
+          "pattern": "revisions_git_commit_name_str",
           "thresholds": [],
           "type": "string",
           "unit": "short"
@@ -186,7 +186,7 @@
           "linkTooltip": "View revision",
           "linkUrl": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
           "mappingType": 1,
-          "pattern": "revisions_git_repository_commit_hash_short",
+          "pattern": "revisions_git_commit_hash_short",
           "thresholds": [],
           "type": "string",
           "unit": "short"
@@ -394,7 +394,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT revisions.id,\n       SUBSTR(revisions.id, 1, STRPOS(revisions.id, \":\") - 1) as origin,\n       revisions.git_repository_url,\n       revisions.git_repository_branch,\n       IF(revisions.git_repository_commit_name IS NULL, \"\", revisions.git_repository_commit_name) as revisions_git_repository_commit_name_str,\n       SUBSTR(revisions.git_repository_commit_hash, 0, 12) as revisions_git_repository_commit_hash_short,\n       IF(revisions.discovery_time IS NULL, \"\", CAST(revisions.discovery_time AS STRING)) as discovery_time_str,\n       CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS revisions_valid_num,\n       MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) as builds_valid_num,\n       MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n           (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.revisions AS revisions\nLEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_id = revisions.id\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE revisions.id LIKE CONCAT(${origin}, \":%\") AND\n      revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n      (\n        revisions.discovery_time >= TIMESTAMP_MILLIS(${__from}) AND revisions.discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n        revisions.discovery_time IS NULL\n      )\nGROUP BY\n  revisions.id,\n  revisions.git_repository_url,\n  revisions.git_repository_branch,\n  revisions.git_repository_commit_name,\n  revisions.git_repository_commit_hash,\n  revisions.discovery_time,\n  revisions.valid\nORDER BY revisions.discovery_time DESC",
+          "rawSql": "SELECT revisions.id,\n       revisions.origin,\n       revisions.git_repository_url,\n       revisions.git_repository_branch,\n       IF(revisions.git_commit_name IS NULL, \"\", revisions.git_commit_name) as revisions_git_commit_name_str,\n       SUBSTR(revisions.git_commit_hash, 0, 12) as revisions_git_commit_hash_short,\n       IF(revisions.discovery_time IS NULL, \"\", CAST(revisions.discovery_time AS STRING)) as discovery_time_str,\n       CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS revisions_valid_num,\n       MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) as builds_valid_num,\n       MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n           (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.revisions AS revisions\nLEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_id = revisions.id\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE revisions.origin LIKE ${origin} AND\n      revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n      (\n        revisions.discovery_time >= TIMESTAMP_MILLIS(${__from}) AND revisions.discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n        revisions.discovery_time IS NULL\n      )\nGROUP BY\n  revisions.id,\n  revisions.origin,\n  revisions.git_repository_url,\n  revisions.git_repository_branch,\n  revisions.git_commit_name,\n  revisions.git_commit_hash,\n  revisions.discovery_time,\n  revisions.valid\nORDER BY revisions.discovery_time DESC",
           "refId": "A",
           "select": [
             [
@@ -484,7 +484,7 @@
           "partitionedField": "",
           "project": "kernelci",
           "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(revisions.discovery_time)) AS time,\n  count(revisions.id) AS Revisions\nFROM\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  revisions.discovery_time IS NOT NULL AND\n  revisions.discovery_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(revisions.discovery_time)) AS time,\n  count(revisions.id) AS Revisions\nFROM\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  revisions.discovery_time IS NOT NULL AND\n  revisions.discovery_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
           "refId": "A",
           "select": [
             [
@@ -550,7 +550,7 @@
           "partitionedField": "",
           "project": "kernelci",
           "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  count(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  count(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
           "refId": "B",
           "select": [
             [
@@ -616,7 +616,7 @@
           "partitionedField": "",
           "project": "kernelci",
           "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(tests.start_time)) AS time,\n  count(tests.id) AS Tests\nFROM\n  ${dataset}.tests AS tests,\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id = tests.build_id AND\n  tests.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  tests.start_time IS NOT NULL AND\n  tests.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(tests.start_time)) AS time,\n  count(tests.id) AS Tests\nFROM\n  ${dataset}.tests AS tests,\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id = tests.build_id AND\n  tests.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  tests.start_time IS NOT NULL AND\n  tests.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
           "refId": "C",
           "select": [
             [
@@ -770,7 +770,7 @@
           "partitionedField": "",
           "project": "kernelci",
           "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  builds.architecture AS metric,\n  COUNT(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id LIKE CONCAT(${origin}, \":%\") AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.architecture IS NOT NULL AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
+          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  builds.architecture AS metric,\n  COUNT(builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.architecture IS NOT NULL AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
           "refId": "B",
           "select": [
             [
@@ -863,14 +863,14 @@
           "value": "$__all"
         },
         "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT SUBSTR(id, 1, STRPOS(id, \":\") - 1) FROM ${dataset}.revisions",
+        "definition": "SELECT DISTINCT origin FROM ${dataset}.revisions",
         "hide": 0,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT SUBSTR(id, 1, STRPOS(id, \":\") - 1) FROM ${dataset}.revisions",
+        "query": "SELECT DISTINCT origin FROM ${dataset}.revisions",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
