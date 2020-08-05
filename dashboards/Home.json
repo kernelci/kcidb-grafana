@@ -465,7 +465,7 @@
       "targets": [
         {
           "convertToUTC": false,
-          "dataset": "kernelci03",
+          "dataset": "kernelci04",
           "format": "time_series",
           "group": [
             {
@@ -531,7 +531,7 @@
         },
         {
           "convertToUTC": false,
-          "dataset": "kernelci03",
+          "dataset": "kernelci04",
           "format": "time_series",
           "group": [
             {
@@ -597,7 +597,7 @@
         },
         {
           "convertToUTC": false,
-          "dataset": "kernelci03",
+          "dataset": "kernelci04",
           "format": "time_series",
           "group": [
             {
@@ -745,7 +745,7 @@
       "targets": [
         {
           "convertToUTC": false,
-          "dataset": "kernelci03",
+          "dataset": "kernelci04",
           "format": "time_series",
           "group": [
             {
@@ -910,8 +910,8 @@
       {
         "current": {
           "selected": true,
-          "text": "kernelci03",
-          "value": "kernelci03"
+          "text": "kernelci04",
+          "value": "kernelci04"
         },
         "hide": 2,
         "label": null,
@@ -919,11 +919,11 @@
         "options": [
           {
             "selected": true,
-            "text": "kernelci03",
-            "value": "kernelci03"
+            "text": "kernelci04",
+            "value": "kernelci04"
           }
         ],
-        "query": "kernelci03",
+        "query": "kernelci04",
         "skipUrlSync": false,
         "type": "constant"
       }
