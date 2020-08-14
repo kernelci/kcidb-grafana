@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1585380329015,
+  "iteration": 1597411395102,
   "links": [],
   "panels": [
     {
@@ -160,7 +160,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  id,\n  origin,\n  git_repository_url,\n  git_repository_branch,\n  git_commit_name,\n  git_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE id=\"${id}\" ORDER BY discovery_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  id,\n  origin,\n  git_repository_url,\n  git_repository_branch,\n  git_commit_name,\n  git_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE id=\"${id}\" AND origin LIKE ${origin} ORDER BY discovery_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -1283,7 +1283,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  IF(builds.start_time is NULL, \"\", CAST(builds.start_time AS STRING)) as builds_start_time_str,\n  IF(builds.duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS builds_valid_num,\n  MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n      (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE\n  revision_id = \"$id\" AND\n  (\n    builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    builds.start_time IS NULL\n  )\nGROUP BY\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  builds.start_time,\n  builds.duration,\n  builds.valid\nORDER BY builds.start_time ASC",
+          "rawSql": "SELECT\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  IF(builds.start_time is NULL, \"\", CAST(builds.start_time AS STRING)) as builds_start_time_str,\n  IF(builds.duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS builds_valid_num,\n  MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n      (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE\n  revision_id = \"$id\" AND\n  builds.origin LIKE ${origin} AND\n  tests.origin LIKE ${origin} AND\n  (\n    builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    builds.start_time IS NULL\n  )\nGROUP BY\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  builds.start_time,\n  builds.duration,\n  builds.valid\nORDER BY builds.start_time ASC",
           "refId": "A",
           "select": [
             [
@@ -1499,8 +1499,8 @@
     "list": [
       {
         "current": {
-          "text": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f",
-          "value": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f"
+          "text": "d15be546031cf65a0fc34879beca02fd90fe7ac7",
+          "value": "d15be546031cf65a0fc34879beca02fd90fe7ac7"
         },
         "hide": 2,
         "label": "ID",
@@ -1512,7 +1512,7 @@
             "value": ""
           }
         ],
-        "query": "redhat:https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git@a1c7a536e01893ba2e8422f97b88cc165f25258f",
+        "query": "d15be546031cf65a0fc34879beca02fd90fe7ac7",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1535,6 +1535,32 @@
         "query": "kernelci04",
         "skipUrlSync": false,
         "type": "constant"
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Origin",
+        "multi": false,
+        "name": "origin",
+        "options": [],
+        "query": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -1559,5 +1585,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 5
+  "version": 20
 }
