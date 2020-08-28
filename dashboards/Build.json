@@ -392,7 +392,7 @@
       "timeShift": null,
       "title": "Log",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_11}",
+      "urlTemplate": "${__cell_11:raw}",
       "valueFontSize": "50%"
     },
     {

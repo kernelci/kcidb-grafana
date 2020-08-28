@@ -188,7 +188,7 @@
       "timeShift": null,
       "title": "Repo",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_2}",
+      "urlTemplate": "${__cell_2:raw}",
       "valueFontSize": "50%"
     },
     {
@@ -212,7 +212,7 @@
       "timeShift": null,
       "title": "Log",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_10}",
+      "urlTemplate": "${__cell_10:raw}",
       "valueFontSize": "50%"
     },
     {

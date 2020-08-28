@@ -8,7 +8,7 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
     environment:
-      - GF_INSTALL_PLUGINS=doitintl-bigquery-datasource,https://gitlab.com/cki-project/grafana-singlevalue-panel/uploads/377b4e740363cf33f3812c68392e2a78/grafana-singlevalue-panel-1.0.0.zip;grafana-singlevalue-panel
+      - GF_INSTALL_PLUGINS=doitintl-bigquery-datasource,https://gitlab.com/cki-project/grafana-singlevalue-panel/uploads/24110f8cc42974c9be6d0f487be1e59b/grafana-singlevalue-panel-2.0.0.zip;grafana-singlevalue-panel
       - GF_SERVER_DOMAIN=staging.kernelci.org
       - GF_SERVER_HTTP_PORT=3000
       - GF_AUTH_ANONYMOUS_ORG_NAME="Kernel CI"
