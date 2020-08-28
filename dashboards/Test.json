@@ -85,7 +85,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-id=${__cell_0}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
       "valueFontSize": "50%"
     },
     {
@@ -110,7 +110,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/build/build?orgId=1&var-id=${__cell_0}",
+      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
       "valueFontSize": "50%"
     },
     {
