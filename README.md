@@ -21,10 +21,9 @@ Grafana is configured with the following.
 
 * BigQuery data source using a Google JWT file for authenticating to the KCIDB
   dataset with US as the processing location.
-* A single organization called "Kernel CI".
 * A number of dashboards displaying various objects in the database, with one
   of them ("Home") set as the home dashboard.
-* Anonymous access enabled, and the "Kernel CI" organization appointed for it.
+* Anonymous access enabled.
 
 Setup
 -----
