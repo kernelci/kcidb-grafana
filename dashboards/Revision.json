@@ -35,7 +35,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1",
+      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}",
       "valueFontSize": "50%"
     },
     {
