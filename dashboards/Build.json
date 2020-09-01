@@ -152,7 +152,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  revision_id,\n  id,\n  origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  compiler,\n  misc\nFROM ${dataset}.builds WHERE id = \"${id}\" ORDER BY start_time DESC LIMIT 1",
+          "rawSql": "SELECT\n  revision_id,\n  id,\n  origin,\n  description,\n  architecture,\n  config_name,\n  config_url,\n  IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n  IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  compiler,\n  command,\n  misc\nFROM ${dataset}.builds WHERE id = \"${id}\" ORDER BY start_time DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -943,11 +943,94 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 24,
+        "w": 15,
         "x": 0,
         "y": 6
       },
       "id": 19,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "command",
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Command",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": "NULL"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 9,
+        "x": 15,
+        "y": 6
+      },
+      "id": 31,
       "interval": null,
       "links": [],
       "mappingType": 1,
