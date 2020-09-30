@@ -920,7 +920,7 @@
       "timeShift": null,
       "title": "Configuration",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_6}",
+      "urlTemplate": "${__cell_6:raw}",
       "valueFontSize": "50%"
     },
     {
