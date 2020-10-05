@@ -42,8 +42,8 @@
       "datasource": "-- Grafana --",
       "gridPos": {
         "h": 2,
-        "w": 18,
-        "x": 6,
+        "w": 22,
+        "x": 2,
         "y": 0
       },
       "id": 32,
@@ -66,7 +66,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "-- Dashboard --",
+      "datasource": "Google BigQuery",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -76,8 +76,8 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 2,
-        "w": 3,
+        "h": 4,
+        "w": 2,
         "x": 0,
         "y": 2
       },
@@ -118,40 +118,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "origin",
-      "targets": [
-        {
-          "panelId": 6,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Origin",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": null,
-      "gridPos": {
-        "h": 2,
-        "w": 13,
-        "x": 3,
-        "y": 2
-      },
-      "id": 6,
-      "links": [],
-      "options": {},
+      "tableColumn": "",
       "targets": [
         {
           "format": "table",
@@ -160,7 +127,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  id,\n  origin,\n  git_repository_url,\n  git_repository_branch,\n  git_commit_name,\n  git_commit_hash,\n  CASE revisions.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n  description,\n  IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n  IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n  log_url,\n  misc\nFROM ${dataset}.revisions WHERE id=\"${id}\" AND origin LIKE ${origin} ORDER BY discovery_time DESC LIMIT 1",
+          "rawSql": "SELECT\n    STRING_AGG(DISTINCT origin, \", \" ORDER BY origin ASC) AS origins\nFROM ${dataset}.revisions\nWHERE id=\"${id}\" AND origin LIKE ${origin}",
           "refId": "A",
           "select": [
             [
@@ -183,36 +150,182 @@
           ]
         }
       ],
-      "textTemplate": "${__cell_2}",
+      "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Repo",
-      "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_2:raw}",
-      "valueFontSize": "50%"
+      "title": "Origins",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
     },
     {
-      "datasource": "-- Dashboard --",
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 4,
+        "w": 14,
+        "x": 2,
+        "y": 2
+      },
+      "id": 35,
+      "options": {},
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Repo",
+          "align": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "link": true,
+          "linkUrl": "${__cell_0:raw}",
+          "pattern": "git_repository_url",
+          "sanitize": true,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Branch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "git_repository_branch",
+          "sanitize": true,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Commit name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "git_commit_name",
+          "sanitize": true,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": []
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT DISTINCT git_repository_url, git_repository_branch, ANY_VALUE(git_commit_name) AS git_commit_name\nFROM ${dataset}.revisions\nWHERE id=\"${id}\" AND origin LIKE ${origin}\nGROUP BY git_repository_url, git_repository_branch",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Sources",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
       "gridPos": {
         "h": 2,
         "w": 2,
         "x": 16,
         "y": 2
       },
-      "id": 30,
+      "id": 6,
+      "links": [],
       "options": {},
       "targets": [
         {
-          "panelId": 6,
-          "refId": "A"
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Massage */\nSELECT\n    id,\n    git_commit_hash,\n    CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n    description,\n    IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n    IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n    log_url,\n    misc\nFROM (\n    /* Aggregate */\n    SELECT\n        id,\n        ANY_VALUE(git_commit_hash) AS git_commit_hash,\n        ANY_VALUE(valid) AS valid,\n        ANY_VALUE(description) AS description,\n        ANY_VALUE(discovery_time) AS discovery_time,\n        ANY_VALUE(log_url) AS log_url,\n        STRING_AGG(DISTINCT misc, \"\\n\") AS misc\n    FROM ${dataset}.revisions\n    WHERE id=\"${id}\" AND origin LIKE ${origin}\n    GROUP BY id\n)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
         }
       ],
-      "textTemplate": "${__cell_9}",
+      "textTemplate": "${__cell_5}",
       "timeFrom": null,
       "timeShift": null,
       "title": "Log",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_10:raw}",
+      "urlTemplate": "${__cell_6:raw}",
       "valueFontSize": "50%"
     },
     {
@@ -369,7 +482,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "builds_valid_num",
+      "tableColumn": "id",
       "targets": [
         {
           "panelId": 2,
@@ -589,174 +702,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 6,
-        "x": 0,
-        "y": 4
-      },
-      "id": 8,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "git_repository_branch",
-      "targets": [
-        {
-          "panelId": 6,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Branch",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 2,
         "w": 8,
-        "x": 6,
-        "y": 4
-      },
-      "id": 10,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "git_commit_name",
-      "targets": [
-        {
-          "panelId": 6,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Name",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 10,
-        "x": 14,
+        "x": 16,
         "y": 4
       },
       "id": 12,
@@ -1018,7 +965,7 @@
           "linkTooltip": "View build",
           "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
           "mappingType": 1,
-          "pattern": "builds_valid_num",
+          "pattern": "valid_num",
           "thresholds": [
             "0",
             "1"
@@ -1229,7 +1176,7 @@
           "linkTooltip": "View build",
           "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
           "mappingType": 1,
-          "pattern": "builds_start_time_str",
+          "pattern": "start_time_str",
           "thresholds": [],
           "type": "string",
           "unit": "short"
@@ -1283,7 +1230,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  IF(builds.start_time is NULL, \"\", CAST(builds.start_time AS STRING)) as builds_start_time_str,\n  IF(builds.duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n  CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS builds_valid_num,\n  MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n      (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\nWHERE\n  revision_id = \"$id\" AND\n  builds.origin LIKE ${origin} AND\n  (\n    builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    builds.start_time IS NULL\n  )\nGROUP BY\n  builds.id,\n  builds.origin,\n  builds.description,\n  builds.architecture,\n  builds.config_name,\n  builds.start_time,\n  builds.duration,\n  builds.valid\nORDER BY builds.start_time ASC",
+          "rawSql": "/* Massage */\nSELECT\n    id,\n    origin,\n    description,\n    architecture,\n    config_name,\n    IF(start_time is NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    valid_num,\n    tests_status_num\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.origin) AS origin,\n        ANY_VALUE(builds.description) AS description,\n        ANY_VALUE(builds.architecture) AS architecture,\n        ANY_VALUE(builds.config_name) AS config_name,\n        MIN(builds.start_time) AS start_time,\n        MIN(builds.duration) AS duration,\n        MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        revision_id = \"$id\" AND\n        builds.origin LIKE ${origin} AND\n        (\n            builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n            builds.start_time IS NULL\n        )\n    GROUP BY id\n    ORDER BY start_time ASC\n)",
           "refId": "A",
           "select": [
             [
@@ -1378,7 +1325,7 @@
           "orderByCol": "2",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT patch_mboxes\n  FROM ${dataset}.revisions\n  WHERE id = \"${id}\"\n  ORDER BY discovery_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT ANY_VALUE(patch_mboxes)\n  FROM ${dataset}.revisions\n  WHERE id = \"${id}\" AND origin LIKE ${origin}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -1491,7 +1438,7 @@
       "valueName": "first"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
