@@ -482,7 +482,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "id",
+      "tableColumn": "valid_num",
       "targets": [
         {
           "panelId": 2,
