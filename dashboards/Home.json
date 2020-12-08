@@ -63,8 +63,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(242, 73, 92, 0)",
-            "#C4162A",
-            "#37872D"
+            "#37872D",
+            "#C4162A"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -81,11 +81,11 @@
           "unit": "short",
           "valueMaps": [
             {
-              "text": "✔️",
+              "text": "✗",
               "value": "1"
             },
             {
-              "text": "✗",
+              "text": "✔️",
               "value": "0"
             },
             {
@@ -394,7 +394,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    id,\n    IF(ARRAY_LENGTH(origins) > 1, \". . . . .\", origins[SAFE_OFFSET(0)]) AS origin_str,\n    git.repository_url AS git_repository_url,\n    git.repository_branch AS git_repository_branch,\n    IF(git.commit_name IS NULL, \"\", git.commit_name) AS git_commit_name_str,\n    IF(git_commit_hash IS NULL, \"\", SUBSTR(git_commit_hash, 0, 12)) AS git_commit_hash_short_str,\n    IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n    valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    SELECT revisions.id AS id,\n           ARRAY_AGG(DISTINCT revisions.origin) AS origins,\n           ANY_VALUE(revisions.git) AS git,\n           ANY_VALUE(revisions.git_commit_hash) AS git_commit_hash,\n           MIN(revisions.discovery_time) AS discovery_time,\n           MIN(revisions.valid_num) valid_num,\n           MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS builds_valid_num,\n           MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n               (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM (\n        SELECT id,\n               origin,\n               LAST_VALUE(STRUCT(git_repository_url AS repository_url,\n                                 git_repository_branch AS repository_branch,\n                                 git_commit_name AS commit_name)) OVER(\n                    PARTITION BY id\n                    ORDER BY IF(git_repository_url is NULL, 0, 100) +\n                             IF(git_repository_branch is NULL, 0, 10) +\n                             IF(git_commit_name is NULL, 0, 1)\n                          ASC\n                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING\n               ) AS git,\n               git_commit_hash,\n               discovery_time,\n               CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END AS valid_num,\n        FROM ${dataset}.revisions\n        WHERE origin LIKE ${origin} AND\n              (${git_repository_url} = \"%\" OR git_repository_url LIKE REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n              (\n                discovery_time >= TIMESTAMP_MILLIS(${__from}) AND discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n                discovery_time IS NULL\n              )\n    ) AS revisions\n    LEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_id = revisions.id\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    GROUP BY revisions.id\n    ORDER BY discovery_time DESC\n)",
+          "rawSql": "SELECT\n    id,\n    IF(ARRAY_LENGTH(origins) > 1, \". . . . .\", origins[SAFE_OFFSET(0)]) AS origin_str,\n    git.repository_url AS git_repository_url,\n    git.repository_branch AS git_repository_branch,\n    IF(git.commit_name IS NULL, \"\", git.commit_name) AS git_commit_name_str,\n    IF(git_commit_hash IS NULL, \"\", SUBSTR(git_commit_hash, 0, 12)) AS git_commit_hash_short_str,\n    IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n    valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    SELECT revisions.id AS id,\n           ARRAY_AGG(DISTINCT revisions.origin) AS origins,\n           ANY_VALUE(revisions.git) AS git,\n           ANY_VALUE(revisions.git_commit_hash) AS git_commit_hash,\n           MIN(revisions.discovery_time) AS discovery_time,\n           ANY_VALUE(revisions.valid_num) valid_num,\n           MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS builds_valid_num,\n           MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n               (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM (\n        SELECT id,\n               origin,\n               LAST_VALUE(STRUCT(git_repository_url AS repository_url,\n                                 git_repository_branch AS repository_branch,\n                                 git_commit_name AS commit_name)) OVER(\n                    PARTITION BY id\n                    ORDER BY IF(git_repository_url is NULL, 0, 100) +\n                             IF(git_repository_branch is NULL, 0, 10) +\n                             IF(git_commit_name is NULL, 0, 1)\n                          ASC\n                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING\n               ) AS git,\n               git_commit_hash,\n               discovery_time,\n               CASE valid WHEN true THEN 0 WHEN false THEN 1 ELSE -1 END AS valid_num,\n        FROM ${dataset}.revisions\n        WHERE origin LIKE ${origin} AND\n              (${git_repository_url} = \"%\" OR git_repository_url LIKE REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n              (\n                discovery_time >= TIMESTAMP_MILLIS(${__from}) AND discovery_time <= TIMESTAMP_MILLIS(${__to}) OR\n                discovery_time IS NULL\n              )\n    ) AS revisions\n    LEFT OUTER JOIN ${dataset}.builds AS builds ON builds.revision_id = revisions.id\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    GROUP BY revisions.id\n    ORDER BY discovery_time DESC\n)",
           "refId": "A",
           "select": [
             [
