@@ -942,7 +942,7 @@
         "y": 8
       },
       "id": 2,
-      "maxDataPoints": "100",
+      "maxDataPoints": "1000",
       "options": {},
       "pageSize": 8,
       "showHeader": true,
