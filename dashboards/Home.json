@@ -428,7 +428,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": null,
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -438,7 +438,7 @@
         "y": 15
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 9,
       "legend": {
         "avg": false,
         "current": false,
@@ -464,200 +464,31 @@
       "steppedLine": false,
       "targets": [
         {
-          "convertToUTC": false,
-          "dataset": "kernelci04",
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "1d",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": false,
+          "group": [],
           "metricColumn": "none",
           "orderByCol": "1",
           "orderBySort": "1",
-          "partitioned": false,
-          "partitionedField": "",
-          "project": "kernelci",
           "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(revisions.discovery_time)) AS time,\n  count(DISTINCT revisions.id) AS Revisions\nFROM\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  revisions.discovery_time IS NOT NULL AND\n  revisions.discovery_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
+          "rawSql": "WITH filtered_revisions AS (\n    SELECT\n        revisions.id,\n        ANY_VALUE(revisions.origin) AS origin,\n        DATE(ANY_VALUE(revisions.discovery_time)) AS date\n    FROM\n        ${dataset}.revisions AS revisions\n    WHERE\n        revisions.discovery_time IS NOT NULL AND\n        revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\"))\n    GROUP BY revisions.id\n), filtered_builds AS (\n    SELECT\n        builds.id,\n        ANY_VALUE(builds.origin) AS origin,\n        DATE(ANY_VALUE(builds.start_time)) AS date\n    FROM\n        ${dataset}.builds AS builds,\n        filtered_revisions\n    WHERE\n        builds.start_time IS NOT NULL AND\n        filtered_revisions.id = builds.revision_id\n    GROUP BY id\n), filtered_tests AS (\n    SELECT\n        tests.id,\n        ANY_VALUE(tests.origin) AS origin,\n        DATE(ANY_VALUE(tests.start_time)) AS date\n    FROM\n        ${dataset}.tests AS tests,\n        filtered_builds\n    WHERE\n        tests.start_time IS NOT NULL AND\n        filtered_builds.id = tests.build_id\n    GROUP BY id\n)\nSELECT\n  TIMESTAMP(date) AS time,\n  counted_revisions.count AS Revisions,\n  counted_builds.count AS Builds,\n  counted_tests.count AS Tests\nFROM UNNEST(GENERATE_DATE_ARRAY(DATE(TIMESTAMP_MILLIS(${__from})),DATE(TIMESTAMP_MILLIS(${__to})))) AS date\nLEFT OUTER JOIN (\n    SELECT\n        date,\n        COUNT(id) AS count\n    FROM filtered_revisions\n    WHERE\n        filtered_revisions.origin LIKE ${origin}\n    GROUP BY date\n) AS counted_revisions USING(date)\nLEFT OUTER JOIN (\n    SELECT\n        date,\n        COUNT(id) AS count\n    FROM filtered_builds\n    WHERE\n        filtered_builds.origin LIKE ${origin}\n    GROUP BY date\n) AS counted_builds USING(date)\nLEFT OUTER JOIN (\n    SELECT\n        date,\n        COUNT(id) AS count\n    FROM filtered_tests\n    WHERE\n        filtered_tests.origin LIKE ${origin}\n    GROUP BY date\n) AS counted_tests USING(date)",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "id"
+                  "-- value --"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "revisions"
-                ],
-                "type": "alias"
               }
             ]
           ],
-          "sharded": false,
-          "table": "revisions",
-          "timeColumn": "discovery_time",
+          "timeColumn": "-- time --",
           "timeColumnType": "TIMESTAMP",
           "where": [
             {
               "name": "$__timeFilter",
               "params": [],
               "type": "macro"
-            },
-            {
-              "name": "",
-              "params": [
-                "(discovery_time IS NULL)",
-                "=",
-                "FALSE"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "convertToUTC": false,
-          "dataset": "kernelci04",
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "1d",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": false,
-          "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
-          "partitioned": false,
-          "partitionedField": "",
-          "project": "kernelci",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(builds.start_time)) AS time,\n  count(DISTINCT builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
-          "refId": "B",
-          "select": [
-            [
-              {
-                "params": [
-                  "id"
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "revisions"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "sharded": false,
-          "table": "revisions",
-          "timeColumn": "discovery_time",
-          "timeColumnType": "TIMESTAMP",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "name": "",
-              "params": [
-                "(discovery_time IS NULL)",
-                "=",
-                "FALSE"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "convertToUTC": false,
-          "dataset": "kernelci04",
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "1d",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": false,
-          "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
-          "partitioned": false,
-          "partitionedField": "",
-          "project": "kernelci",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  TIMESTAMP(DATE(tests.start_time)) AS time,\n  count(DISTINCT tests.id) AS Tests\nFROM\n  ${dataset}.tests AS tests,\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nWHERE\n  revisions.id = builds.revision_id AND\n  builds.id = tests.build_id AND\n  tests.origin LIKE ${origin} AND\n  revisions.git_repository_url LIKE IF(${git_repository_url} = \"%\", \"%\", REGEXP_REPLACE(${git_repository_url}, r\"([%_\\\\])\", r\"\\\\\\1\")) AND\n  tests.start_time IS NOT NULL AND\n  tests.start_time BETWEEN TIMESTAMP_MILLIS(${__from}) AND TIMESTAMP_MILLIS(${__to})\nGROUP BY\n  time\nORDER BY\n  time ASC",
-          "refId": "C",
-          "select": [
-            [
-              {
-                "params": [
-                  "id"
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "revisions"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "sharded": false,
-          "table": "revisions",
-          "timeColumn": "discovery_time",
-          "timeColumnType": "TIMESTAMP",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "name": "",
-              "params": [
-                "(discovery_time IS NULL)",
-                "=",
-                "FALSE"
-              ],
-              "type": "expression"
             }
           ]
         }
