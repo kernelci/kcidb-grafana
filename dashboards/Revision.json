@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1597411395102,
+  "iteration": 1630571573803,
   "links": [],
   "panels": [
     {
@@ -195,7 +195,8 @@
           ],
           "decimals": 2,
           "link": true,
-          "linkUrl": "${__cell_0:raw}",
+          "linkTooltip": "View repository",
+          "linkUrl": "/d/repository/repository?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_0}",
           "pattern": "git_repository_url",
           "sanitize": true,
           "thresholds": [],
@@ -213,6 +214,9 @@
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_0}&var-git_repository_branch=${__cell_1}",
           "mappingType": 1,
           "pattern": "git_repository_branch",
           "sanitize": true,
@@ -932,6 +936,598 @@
       "valueName": "first"
     },
     {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 0,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 37,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Count */\nSELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(valid, \"PASS\", \"FAIL\") AS metric,\n    COUNT(id) AS value\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.valid) AS valid,\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        revision_id = ${id:json} AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n    GROUP BY id\n)\nGROUP BY valid\nORDER BY metric",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Build status",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 14,
+        "x": 5,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 40,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    architecture AS metric,\n    COUNT(id) AS value\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.architecture) AS architecture,\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        builds.revision_id = ${id:json} AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        builds.architecture LIKE ${build_architecture} AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        NOT builds.valid\n    GROUP BY id\n)\nGROUP BY metric\nORDER BY value DESC\nLIMIT 10",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Top 10 architecture build failures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "ERROR": "semi-dark-orange",
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green",
+        "SKIP": "semi-dark-blue"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 38,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Count */\nSELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    status AS metric,\n    COUNT(id) AS value\nFROM (\n    /* Aggregate and join */\n    SELECT\n        tests.id AS id,\n        ANY_VALUE(tests.status) AS status\n    FROM ${dataset}.builds AS builds, ${dataset}.tests AS tests\n    WHERE\n        revision_id = ${id:json} AND\n        tests.build_id = builds.id AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        tests.waived = FALSE\n    GROUP BY tests.id\n)\nGROUP BY metric\nORDER BY metric",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test status",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "hiddenSeries": false,
+      "id": 41,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    config_name AS metric,\n    COUNT(id) AS value\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.config_name) AS config_name,\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        builds.revision_id = ${id:json} AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        builds.config_name LIKE ${build_config_name} AND\n        NOT builds.valid\n    GROUP BY id\n)\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Top 5 configuration build failures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "hiddenSeries": false,
+      "id": 42,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(LENGTH(compiler) > 32, CONCAT(SUBSTR(compiler, 1, 31), \"…\"), compiler) AS metric,\n    COUNT(id) AS value\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.compiler) AS compiler,\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        builds.revision_id = ${id:json} AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        NOT builds.valid\n    GROUP BY id\n)\nWHERE compiler IS NOT NULL\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Top 5 compiler build failures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "columns": [],
       "datasource": null,
       "fontSize": "100%",
@@ -939,7 +1535,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 23
       },
       "id": 2,
       "maxDataPoints": "1000",
@@ -1251,7 +1847,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    id,\n    origin,\n    architecture,\n    REGEXP_REPLACE(compiler, \"^(.{48}).+$\", \"\\\\1…\") AS compiler,\n    config_name,\n    IF(start_time is NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    description,\n    valid_num,\n    tests_status_num\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.origin) AS origin,\n        ANY_VALUE(builds.architecture) AS architecture,\n        ANY_VALUE(builds.compiler) AS compiler,\n        ANY_VALUE(builds.config_name) AS config_name,\n        MIN(builds.start_time) AS start_time,\n        MIN(builds.duration) AS duration,\n        ANY_VALUE(builds.description) AS description,\n        MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        revision_id = \"$id\" AND\n        builds.origin LIKE ${origin} AND\n        (\n            builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n            builds.start_time IS NULL\n        ) AND\n        IF(${config_name:json} = \"\", TRUE, builds.config_name = ${config_name:json})\n    GROUP BY id\n    ORDER BY start_time ASC\n)",
+          "rawSql": "/* Massage */\nSELECT\n    id,\n    origin,\n    architecture,\n    REGEXP_REPLACE(compiler, \"^(.{48}).+$\", \"\\\\1…\") AS compiler,\n    config_name,\n    IF(start_time is NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    description,\n    valid_num,\n    tests_status_num\nFROM (\n    /* Aggregate and join */\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.origin) AS origin,\n        ANY_VALUE(builds.architecture) AS architecture,\n        ANY_VALUE(builds.compiler) AS compiler,\n        ANY_VALUE(builds.config_name) AS config_name,\n        MIN(builds.start_time) AS start_time,\n        MIN(builds.duration) AS duration,\n        ANY_VALUE(builds.description) AS description,\n        MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) as tests_status_num\n    FROM ${dataset}.builds AS builds\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    WHERE\n        revision_id = \"$id\" AND\n        builds.origin LIKE ${origin} AND\n        IFNULL(builds.start_time >= TIMESTAMP_MILLIS(${__from}) AND builds.start_time <= TIMESTAMP_MILLIS(${__to}), TRUE) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n    GROUP BY id\n    ORDER BY start_time ASC\n)",
           "refId": "A",
           "select": [
             [
@@ -1289,7 +1885,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 34
       },
       "id": 18,
       "links": [],
@@ -1397,7 +1993,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 44
       },
       "id": 26,
       "interval": null,
@@ -1467,8 +2063,8 @@
     "list": [
       {
         "current": {
-          "text": "d15be546031cf65a0fc34879beca02fd90fe7ac7",
-          "value": "d15be546031cf65a0fc34879beca02fd90fe7ac7"
+          "text": "34560ced20599a01660a693f464c7c7dc83db1d9",
+          "value": "34560ced20599a01660a693f464c7c7dc83db1d9"
         },
         "hide": 2,
         "label": "ID",
@@ -1480,7 +2076,7 @@
             "value": ""
           }
         ],
-        "query": "d15be546031cf65a0fc34879beca02fd90fe7ac7",
+        "query": "34560ced20599a01660a693f464c7c7dc83db1d9",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1531,24 +2127,56 @@
         "useTags": false
       },
       {
+        "allValue": "\"%\"",
         "current": {
-          "selected": true,
-          "text": "",
-          "value": ""
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
         "hide": 0,
-        "label": "Configuration",
-        "name": "config_name",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
+        "includeAll": true,
+        "label": "Build architecture",
+        "multi": false,
+        "name": "build_architecture",
+        "options": [],
+        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "textbox"
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Build configuration",
+        "multi": false,
+        "name": "build_config_name",
+        "options": [],
+        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -1573,5 +2201,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 20
+  "version": 21
 }

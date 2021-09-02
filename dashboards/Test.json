@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1585380406285,
+  "iteration": 1630571771420,
   "links": [],
   "panels": [
     {
@@ -1106,8 +1106,8 @@
     "list": [
       {
         "current": {
-          "text": "redhat:108232615",
-          "value": "redhat:108232615"
+          "text": "kernelci:kernelci.org:61308b21fe76cf6d69d596d4",
+          "value": "kernelci:kernelci.org:61308b21fe76cf6d69d596d4"
         },
         "hide": 2,
         "label": "ID",
@@ -1119,7 +1119,7 @@
             "value": "redhat:738658"
           }
         ],
-        "query": "redhat:108232615",
+        "query": "kernelci:kernelci.org:61308b21fe76cf6d69d596d4",
         "skipUrlSync": false,
         "type": "textbox"
       },

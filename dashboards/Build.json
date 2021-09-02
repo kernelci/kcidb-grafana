@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1585380376187,
+  "iteration": 1630571691549,
   "links": [],
   "panels": [
     {
@@ -1449,8 +1449,8 @@
     "list": [
       {
         "current": {
-          "text": "redhat:738737",
-          "value": "redhat:738737"
+          "text": "kernelci:kernelci.org:61308a8ac613ca698ed596a2",
+          "value": "kernelci:kernelci.org:61308a8ac613ca698ed596a2"
         },
         "hide": 2,
         "label": "ID",
@@ -1462,7 +1462,7 @@
             "value": ""
           }
         ],
-        "query": "redhat:738737",
+        "query": "kernelci:kernelci.org:61308a8ac613ca698ed596a2",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1509,5 +1509,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 6
+  "version": 8
 }

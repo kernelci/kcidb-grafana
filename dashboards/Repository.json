@@ -1,0 +1,1414 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 7,
+  "iteration": 1630571573951,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "options": {},
+      "textTemplate": "⮌ Home",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 22,
+        "x": 2,
+        "y": 0
+      },
+      "id": 16,
+      "options": {},
+      "textTemplate": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Google BigQuery",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 8,
+        "x": 0,
+        "y": 2
+      },
+      "id": 12,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    STRING_AGG(DISTINCT origin, \", \" ORDER BY origin ASC) AS origins\nFROM ${dataset}.revisions\nWHERE\n    IFNULL($__timeFilter(discovery_time), TRUE) AND\n    git_repository_url=${git_repository_url:json} AND\n    origin LIKE ${origin}",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Origins",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": null,
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 16,
+        "x": 8,
+        "y": 2
+      },
+      "id": 2,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT ${git_repository_url:json}\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "URL",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 4
+      },
+      "id": 4,
+      "options": {},
+      "pageSize": 4,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${git_repository_url}&var-git_repository_branch=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "name",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Revisions",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${git_repository_url}&var-git_repository_branch=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "revisions",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "2",
+          "orderBySort": "2",
+          "rawQuery": true,
+          "rawSql": "WITH filtered_revisions AS (\n  SELECT id, git_repository_branch, discovery_time\n  FROM ${dataset}.revisions\n  WHERE\n    origin LIKE ${origin} AND\n    git_repository_url = ${git_repository_url:json}\n)\nSELECT\n  git_repository_branch AS name,\n  IF(revisions IS NULL, 0, revisions) AS revisions\nFROM (SELECT DISTINCT git_repository_branch FROM filtered_revisions)\nLEFT OUTER JOIN (\n  SELECT git_repository_branch, COUNT(DISTINCT id) AS revisions\n  FROM filtered_revisions\n  WHERE\n    IFNULL($__timeFilter(discovery_time), TRUE)\n  GROUP BY\n    git_repository_branch\n) USING(git_repository_branch)\nORDER BY revisions DESC, name ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Branches",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 7,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 4
+      },
+      "hiddenSeries": false,
+      "id": 18,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n    interval_start AS time,\n    IF(builds.valid IS NULL, \"UNKNOWN\", IF(builds.valid, \"PASS\", \"FAIL\")) AS metric,\n    COUNT(DISTINCT builds.id) AS Builds\nFROM ${dataset}.revisions AS revisions, ${dataset}.builds AS builds\nINNER JOIN intervals ON builds.start_time >= interval_start AND builds.start_time < interval_end\nWHERE\n  builds.revision_id = revisions.id AND\n  revisions.git_repository_url = ${git_repository_url:json} AND\n  builds.origin LIKE ${origin} AND\n  IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n  IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY time, metric\nORDER BY time ASC, metric ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Build status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green",
+        "SKIP": "semi-dark-blue",
+        "UNKNOWN": "rgb(128, 128, 128)"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 7,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 4
+      },
+      "hiddenSeries": false,
+      "id": 20,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n  interval_start AS time,\n  IF(tests.status IS NULL, \"UNKNOWN\", tests.status) AS metric,\n  COUNT(DISTINCT tests.id) AS tests\nFROM\n  ${dataset}.revisions AS revisions, ${dataset}.builds AS builds, ${dataset}.tests AS tests\nINNER JOIN intervals ON tests.start_time >= interval_start AND tests.start_time < interval_end\nWHERE\n  revisions.id = builds.revision_id AND\n  revisions.git_repository_url = ${git_repository_url:json} AND\n  builds.id = tests.build_id AND\n  tests.origin LIKE ${origin} AND\n  IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n  IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 6,
+      "maxDataPoints": "250",
+      "options": {},
+      "pageSize": 9,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(242, 73, 92, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "✗",
+              "value": "1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "id",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Repository",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_repository_url",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Branch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_repository_branch",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_commit_name_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_commit_hash_short_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Discovery time",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "discovery_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Builds​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0)",
+            "#C4162A",
+            "#37872D"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "builds_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "",
+              "value": "-1"
+            },
+            {
+              "text": "✗",
+              "value": "0"
+            },
+            {
+              "text": "✔️",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origin",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "origin_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    id,\n    IF(ARRAY_LENGTH(origins) > 1, \". . . . .\", origins[SAFE_OFFSET(0)]) AS origin_str,\n    git.repository_branch AS git_repository_branch,\n    IF(git.commit_name IS NULL, \"\", git.commit_name) AS git_commit_name_str,\n    IF(git_commit_hash IS NULL, \"\", SUBSTR(git_commit_hash, 0, 12)) AS git_commit_hash_short_str,\n    IF(discovery_time IS NULL, \"\", CAST(discovery_time AS STRING)) AS discovery_time_str,\n    valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    SELECT revisions.id AS id,\n           ARRAY_AGG(DISTINCT revisions.origin) AS origins,\n           ANY_VALUE(revisions.git) AS git,\n           ANY_VALUE(revisions.git_commit_hash) AS git_commit_hash,\n           MIN(revisions.discovery_time) AS discovery_time,\n           ANY_VALUE(revisions.valid_num) valid_num,\n           MIN(CASE builds.valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END) AS builds_valid_num,\n           MAX((CASE tests.status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) -\n               (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM (\n        SELECT id,\n               origin,\n               LAST_VALUE(STRUCT(git_repository_branch AS repository_branch,\n                                 git_commit_name AS commit_name)) OVER(\n                    PARTITION BY id\n                    ORDER BY IF(git_repository_branch is NULL, 0, 10) +\n                             IF(git_commit_name is NULL, 0, 1)\n                          ASC\n                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING\n               ) AS git,\n               git_commit_hash,\n               discovery_time,\n               CASE valid WHEN true THEN 0 WHEN false THEN 1 ELSE -1 END AS valid_num,\n        FROM ${dataset}.revisions\n        WHERE origin LIKE ${origin} AND\n              ${git_repository_url:json} = git_repository_url AND\n              IFNULL(discovery_time >= TIMESTAMP_MILLIS(${__from}) AND discovery_time <= TIMESTAMP_MILLIS(${__to}), TRUE)\n    ) AS revisions\n    LEFT OUTER JOIN ${dataset}.builds AS builds ON\n      builds.revision_id = revisions.id AND\n      IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n      IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n    LEFT OUTER JOIN ${dataset}.tests AS tests ON tests.build_id = builds.id\n    GROUP BY revisions.id\n    ORDER BY discovery_time DESC\n)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Revisions",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n), filtered_revisions AS (\n    SELECT\n        revisions.id AS id,\n        ANY_VALUE(revisions.origin) AS origin,\n        ANY_VALUE(revisions.discovery_time) AS time\n    FROM\n        ${dataset}.revisions AS revisions\n    WHERE\n      \trevisions.discovery_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        revisions.git_repository_url = ${git_repository_url:json}\n    GROUP BY revisions.id\n), filtered_builds AS (\n    SELECT\n        builds.id AS id,\n        ANY_VALUE(builds.origin) AS origin,\n        ANY_VALUE(builds.start_time) AS time\n    FROM\n        ${dataset}.builds AS builds,\n        filtered_revisions\n    WHERE\n    \tbuilds.start_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        filtered_revisions.id = builds.revision_id\n    GROUP BY id\n), filtered_tests AS (\n    SELECT\n        tests.id AS id,\n        ANY_VALUE(tests.origin) AS origin,\n        ANY_VALUE(tests.start_time) AS time\n    FROM\n        ${dataset}.tests AS tests,\n        filtered_builds\n    WHERE\n    \ttests.start_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        filtered_builds.id = tests.build_id\n    GROUP BY id\n)\nSELECT\n    interval_start AS time,\n    counted_revisions.count AS Revisions,\n    counted_builds.count AS Builds,\n    counted_tests.count AS Tests\nFROM intervals\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_revisions\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_revisions USING(interval_start)\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_builds\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_builds USING(interval_start)\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_tests\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_tests USING(interval_start)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Reports",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 8,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "convertToUTC": false,
+          "dataset": "kernelci04",
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "architecture"
+              ],
+              "type": "column"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "architecture",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "partitioned": false,
+          "partitionedField": "",
+          "project": "kernelci",
+          "rawQuery": true,
+          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n  interval_start AS time,\n  builds.architecture AS metric,\n  COUNT(DISTINCT builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.revisions AS revisions\nJOIN intervals ON start_time >= interval_start AND start_time < interval_end\nWHERE\n  revisions.id = builds.revision_id AND\n  revisions.git_repository_url = ${git_repository_url:json} AND\n  builds.origin LIKE ${origin} AND\n  builds.architecture LIKE ${build_architecture} AND\n  IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to)\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "sharded": false,
+          "table": "builds",
+          "timeColumn": "start_time",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Builds per architecture",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "schemaVersion": 22,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "kernelci04",
+          "value": "kernelci04"
+        },
+        "hide": 2,
+        "label": null,
+        "name": "dataset",
+        "options": [
+          {
+            "selected": true,
+            "text": "kernelci04",
+            "value": "kernelci04"
+          }
+        ],
+        "query": "kernelci04",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git",
+          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT git_repository_url FROM ${dataset}.revisions",
+        "hide": 0,
+        "includeAll": false,
+        "label": "URL",
+        "multi": false,
+        "name": "git_repository_url",
+        "options": [],
+        "query": "SELECT DISTINCT git_repository_url FROM ${dataset}.revisions",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Origin",
+        "multi": false,
+        "name": "origin",
+        "options": [],
+        "query": "SELECT DISTINCT origin FROM ${dataset}.revisions",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Build architecture",
+        "multi": false,
+        "name": "build_architecture",
+        "options": [],
+        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Build configuration",
+        "multi": false,
+        "name": "build_config_name",
+        "options": [],
+        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Repository",
+  "uid": "repository",
+  "version": 25
+}
