@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1637066516589,
+  "id": 7,
+  "iteration": 1637066559896,
   "links": [],
   "panels": [
     {
@@ -45,11 +45,36 @@
       "valueFontSize": "50%"
     },
     {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 0
+      },
+      "id": 47,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "⮌ Revision",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_10}&var-patchset_hash=${__cell_11}",
+      "valueFontSize": "50%"
+    },
+    {
       "datasource": "-- Grafana --",
       "gridPos": {
         "h": 2,
-        "w": 22,
-        "x": 2,
+        "w": 20,
+        "x": 4,
         "y": 0
       },
       "id": 32,
@@ -124,7 +149,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "origins",
+      "tableColumn": "origin",
       "targets": [
         {
           "format": "table",
@@ -133,7 +158,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.git_commit_hash AS git_commit_hash,\n    checkouts.patchset_hash AS patchset_hash,\n    STRING_AGG(DISTINCT checkouts.origin, \", \" ORDER BY checkouts.origin ASC) AS origins,\n    IFNULL(CAST(MIN(checkouts.start_time) AS STRING), \"\") AS checkouts_start_time_str,\n    MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n    MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN\n    ${dataset}.builds AS builds\n    ON\n        builds.checkout_id = checkouts.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\nLEFT OUTER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin}\nWHERE\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.origin LIKE ${origin}\nGROUP BY\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    id,\n    IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n    log_url,\n    origin,\n    git_repository_url,\n    git_repository_branch,\n    git_commit_name,\n    git_commit_hash,\n    patchset_hash,\n    CASE valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    comment,\n    IFNULL(CAST(start_time AS STRING), \"\") AS start_time_str,\n    misc\nFROM ${dataset}.checkouts\nWHERE id=${id:json}",
           "refId": "A",
           "select": [
             [
@@ -159,7 +184,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Origins",
+      "title": "Origin",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -173,170 +198,55 @@
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
       "gridPos": {
         "h": 2,
-        "w": 8,
+        "w": 14,
         "x": 2,
         "y": 2
       },
-      "id": 12,
-      "interval": null,
+      "id": 43,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
       "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "git_commit_hash",
       "targets": [
         {
           "panelId": 20,
           "refId": "A"
         }
       ],
-      "thresholds": "",
+      "textTemplate": "${__cell_7}",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Commit hash",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
+      "title": "Repository",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/repository/repository?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_url=${__cell_7}",
+      "valueFontSize": "50%"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": "-- Dashboard --",
-      "decimals": null,
-      "format": "dateTimeAsIso",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
       "gridPos": {
         "h": 2,
-        "w": 8,
-        "x": 10,
+        "w": 2,
+        "x": 16,
         "y": 2
       },
-      "id": 14,
-      "interval": null,
+      "id": 6,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
       "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "checkouts_start_time_str",
       "targets": [
         {
           "panelId": 20,
           "refId": "A"
         }
       ],
-      "thresholds": "",
+      "textTemplate": "${__cell_4}",
       "timeFrom": null,
       "timeShift": null,
-      "title": "First checkout",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
+      "title": "Log",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "${__cell_5:raw}",
+      "valueFontSize": "50%"
     },
     {
       "cacheTimeout": null,
@@ -399,7 +309,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "checkouts_valid_num",
+      "tableColumn": "valid_num",
       "targets": [
         {
           "panelId": 20,
@@ -409,7 +319,7 @@
       "thresholds": "0,1",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Checkouts",
+      "title": "Status",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -492,10 +402,10 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "builds_valid_num",
+      "tableColumn": "valid_num",
       "targets": [
         {
-          "panelId": 20,
+          "panelId": 2,
           "refId": "A"
         }
       ],
@@ -522,7 +432,7 @@
           "value": "1"
         }
       ],
-      "valueName": "min"
+      "valueName": "max"
     },
     {
       "cacheTimeout": null,
@@ -588,7 +498,7 @@
       "tableColumn": "tests_status_num",
       "targets": [
         {
-          "panelId": 20,
+          "panelId": 2,
           "refId": "A"
         }
       ],
@@ -694,6 +604,32 @@
     },
     {
       "cacheTimeout": null,
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 2,
+        "y": 4
+      },
+      "id": 44,
+      "links": [],
+      "options": {},
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_8}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Branch",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_url=${__cell_7}&var-git_repository_branch=${__cell_8}",
+      "valueFontSize": "50%"
+    },
+    {
+      "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
       "colors": [
@@ -712,11 +648,272 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 22,
-        "x": 2,
+        "w": 9,
+        "x": 7,
         "y": 4
       },
-      "id": 43,
+      "id": 45,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "git_commit_name",
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Commit name",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 8,
+        "x": 16,
+        "y": 4
+      },
+      "id": 12,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "git_commit_hash",
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Commit hash",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 0,
+        "y": 6
+      },
+      "id": 18,
+      "links": [],
+      "options": {},
+      "pageSize": 3,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "",
+          "linkUrl": "${__cell_1:raw}",
+          "pattern": "name",
+          "sanitize": true,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/url|idx/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "2",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT *\nFROM UNNEST((\n    SELECT patchset_files\n    FROM ${dataset}.checkouts\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Patches",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 13,
+        "x": 11,
+        "y": 6
+      },
+      "id": 46,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -777,533 +974,252 @@
     },
     {
       "cacheTimeout": null,
-      "columns": [],
-      "datasource": null,
-      "fontSize": "100%",
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 13,
+        "x": 11,
+        "y": 8
+      },
+      "id": 14,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "start_time_str",
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Start time",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 13,
+        "x": 11,
+        "y": 10
+      },
+      "id": 16,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "comment",
+      "targets": [
+        {
+          "panelId": 20,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Comment",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
       "gridPos": {
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 6
-      },
-      "id": 18,
-      "links": [],
-      "options": {},
-      "pageSize": 3,
-      "showHeader": true,
-      "sort": {
-        "col": null,
-        "desc": false
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "left",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "",
-          "linkUrl": "${__cell_1:raw}",
-          "pattern": "name",
-          "sanitize": true,
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "/url|idx/",
-          "thresholds": [],
-          "type": "hidden",
-          "unit": "short"
-        }
-      ],
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "orderByCol": "2",
-          "orderBySort": "1",
-          "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n    SELECT ANY_VALUE(patchset_files)\n    FROM ${dataset}.checkouts\n    WHERE\n        git_commit_hash = ${git_commit_hash:json} AND\n        patchset_hash = ${patchset_hash:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "-- value --"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Patches",
-      "transform": "table",
-      "type": "table"
-    },
-    {
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
         "y": 12
       },
-      "id": 66,
-      "title": "Checkouts",
-      "type": "row"
-    },
-    {
-      "columns": [],
-      "datasource": null,
-      "fontSize": "100%",
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 13
-      },
-      "id": 45,
-      "maxDataPoints": "250",
-      "options": {},
-      "pageSize": 4,
-      "showHeader": true,
-      "sort": {
-        "col": null,
-        "desc": false
-      },
-      "styles": [
+      "id": 26,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
         {
-          "alias": "Status​ ​ ​ ​",
-          "align": "left",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(242, 73, 92, 0)",
-            "#37872D",
-            "#C4162A"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "valid_num",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "✗",
-              "value": "1"
-            },
-            {
-              "text": "✔️",
-              "value": "0"
-            },
-            {
-              "text": "",
-              "value": "-1"
-            }
-          ]
+          "name": "value to text",
+          "value": 1
         },
         {
-          "alias": "",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "id",
-          "thresholds": [],
-          "type": "hidden",
-          "unit": "short"
-        },
-        {
-          "alias": "Repository",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "git_repository_url_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Branch",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "git_repository_branch_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Commit name",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "git_commit_name_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Commit hash",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "git_commit_hash_short_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Start time",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "start_time_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Builds​ ​ ​ ​",
-          "align": "left",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(245, 54, 54, 0)",
-            "#37872D",
-            "#C4162A"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "builds_valid_num",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "",
-              "value": "-1"
-            },
-            {
-              "text": "✔️",
-              "value": "0"
-            },
-            {
-              "text": "✗",
-              "value": "1"
-            }
-          ]
-        },
-        {
-          "alias": "Tests​ ​ ​ ​",
-          "align": "auto",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(55, 135, 45, 0)",
-            "#37872D",
-            "#C4162A"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "tests_status_num",
-          "thresholds": [
-            "3",
-            "4"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "ERROR",
-              "value": "5"
-            },
-            {
-              "text": "FAIL",
-              "value": "4"
-            },
-            {
-              "text": "PASS",
-              "value": "3"
-            },
-            {
-              "text": "DONE",
-              "value": "2"
-            },
-            {
-              "text": "SKIP",
-              "value": "1"
-            },
-            {
-              "text": "",
-              "value": "0"
-            },
-            {
-              "text": "🚧 ERROR",
-              "value": "-1"
-            },
-            {
-              "text": "🚧 FAIL",
-              "value": "-2"
-            },
-            {
-              "text": "🚧 PASS",
-              "value": "-3"
-            },
-            {
-              "text": "🚧 DONE",
-              "value": "-4"
-            },
-            {
-              "text": "🚧 SKIP",
-              "value": "-5"
-            },
-            {
-              "text": "",
-              "value": "-6"
-            },
-            {
-              "text": "❓ ERROR",
-              "value": "-7"
-            },
-            {
-              "text": "❓ FAIL",
-              "value": "-8"
-            },
-            {
-              "text": "❓ PASS",
-              "value": "-9"
-            },
-            {
-              "text": "❓ DONE",
-              "value": "-10"
-            },
-            {
-              "text": "❓ SKIP",
-              "value": "-11"
-            },
-            {
-              "text": "",
-              "value": "-12"
-            }
-          ]
-        },
-        {
-          "alias": "Origin",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "origin",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "Patchset hash",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "patchset_hash_short_str",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
-        },
-        {
-          "alias": "",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "/.*_param/",
-          "thresholds": [],
-          "type": "hidden",
-          "unit": "short"
-        },
-        {
-          "alias": "",
-          "align": "left",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "link": true,
-          "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
-          "mappingType": 1,
-          "pattern": "/.*/",
-          "thresholds": [],
-          "type": "string",
-          "unit": "short"
+          "name": "range to text",
+          "value": 2
         }
       ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "misc",
       "targets": [
         {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.id,\n    checkouts.origin AS origin,\n    IFNULL(checkouts.git_repository_url, \"\") AS git_repository_url_str,\n    IFNULL(checkouts.git_repository_branch, \"\") AS git_repository_branch_str,\n    IFNULL(checkouts.git_commit_name, \"\") AS git_commit_name_str,\n    IFNULL(CAST(checkouts.start_time AS STRING), \"\") AS start_time_str,\n    CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    builds.valid_num AS builds_valid_num,\n    builds.tests_status_num AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN (\n    SELECT\n        builds.checkout_id AS checkout_id,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        ${dataset}.builds\n    LEFT OUTER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id AND\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin}\n    WHERE\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\n    GROUP BY\n        checkout_id\n) AS builds\n    ON\n        builds.checkout_id = checkouts.id\nWHERE\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.origin LIKE ${origin}\nORDER BY\n    valid_num DESC,\n    builds_valid_num DESC,\n    tests_status_num DESC,\n    checkouts.start_time DESC",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "-- value --"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
+          "panelId": 20,
+          "refId": "A"
         }
       ],
+      "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Checkouts",
-      "transform": "table",
-      "type": "table"
+      "title": "Misc",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
     },
     {
       "datasource": null,
@@ -1311,9 +1227,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 18
       },
-      "id": 64,
+      "id": 73,
       "title": "Builds",
       "type": "row"
     },
@@ -1325,16 +1241,16 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 19
       },
       "id": 2,
-      "maxDataPoints": "1000",
+      "maxDataPoints": "2048",
       "options": {},
       "pageSize": 8,
       "showHeader": true,
       "sort": {
-        "col": null,
-        "desc": false
+        "col": 12,
+        "desc": true
       },
       "styles": [
         {
@@ -1528,7 +1444,7 @@
           "unit": "short"
         },
         {
-          "alias": "Architecture",
+          "alias": "Arch",
           "align": "auto",
           "colorMode": null,
           "colors": [
@@ -1654,7 +1570,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.id,\n    builds.origin,\n    IFNULL(builds.architecture, \"\") AS architecture,\n    IFNULL(REGEXP_REPLACE(builds.compiler, \"^(.{48}).+$\", \"\\\\1…\"), \"\") AS compiler,\n    IFNULL(builds.config_name, \"\") AS config_name,\n    IFNULL(CAST(builds.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(FORMAT_TIME(\"%H:%M:%E3S\",\n                       TIME_ADD(TIME \"00:00:00\",\n                                INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND)),\n           \"\") as duration_str,\n    IFNULL(builds.comment, \"\") AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    tests.status_num AS tests_status_num\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nLEFT OUTER JOIN (\n    SELECT\n        build_id,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM\n        ${dataset}.tests\n    GROUP BY\n        build_id\n) AS tests\n    ON\n        tests.build_id = builds.id\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nORDER BY\n    valid_num DESC,\n    tests_status_num DESC,\n    builds.start_time DESC",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.id AS id,\n    builds.origin AS origin,\n    builds.architecture AS architecture,\n    REGEXP_REPLACE(builds.compiler, \"^(.{48}).+$\", \"\\\\1…\") AS compiler,\n    REGEXP_REPLACE(builds.config_name, \"^(.{48}).+$\", \"\\\\1…\") AS config_name,\n    IFNULL(CAST(builds.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND)), \"\") AS duration_str,\n    builds.comment AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    tests.status_num AS tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN (\n    SELECT\n        build_id,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM ${dataset}.tests\n    WHERE\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n    GROUP BY build_id\n) AS tests ON tests.build_id = builds.id\nWHERE\n    checkout_id = ${id:json} AND\n    builds.origin LIKE ${origin} AND\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nORDER BY\n    valid_num DESC,\n    tests_status_num DESC,\n    start_time ASC",
           "refId": "A",
           "select": [
             [
@@ -1698,7 +1614,7 @@
         "h": 5,
         "w": 5,
         "x": 0,
-        "y": 32
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 37,
@@ -1735,7 +1651,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(builds.valid, \"PASS\", \"FAIL\") AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.valid IS NOT NULL AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY builds.valid\nORDER BY metric",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(valid, \"PASS\", \"FAIL\") AS metric,\n    COUNT(id) AS value\nFROM ${dataset}.builds AS builds\nWHERE\n    checkout_id = ${id:json} AND\n    origin LIKE ${origin} AND\n    start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(config_name LIKE ${build_config_name}, TRUE)\nGROUP BY valid\nORDER BY metric",
           "refId": "A",
           "select": [
             [
@@ -1816,7 +1732,7 @@
         "h": 5,
         "w": 19,
         "x": 5,
-        "y": 32
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 40,
@@ -1853,7 +1769,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    builds.architecture AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.origin LIKE ${origin} AND\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.architecture LIKE ${build_architecture} AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 10",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    architecture AS metric,\n    COUNT(id) AS value\nFROM ${dataset}.builds AS builds\nWHERE\n    checkout_id = ${id:json} AND\n    origin LIKE ${origin} AND\n    start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    architecture LIKE ${build_architecture} AND\n    IFNULL(config_name LIKE ${build_config_name}, TRUE) AND\n    NOT valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 10",
           "refId": "A",
           "select": [
             [
@@ -1934,7 +1850,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 41,
@@ -1971,7 +1887,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    builds.config_name AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.origin LIKE ${origin} AND\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    builds.config_name LIKE ${build_config_name} AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    config_name AS metric,\n    COUNT(id) AS value\nFROM ${dataset}.builds AS builds\nWHERE\n    checkout_id = ${id:json} AND\n    origin LIKE ${origin} AND\n    start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(architecture LIKE ${build_architecture}, TRUE) AND\n    config_name LIKE ${build_config_name} AND\n    NOT valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
@@ -2052,7 +1968,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 42,
@@ -2089,7 +2005,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(LENGTH(builds.compiler) > 32, CONCAT(SUBSTR(builds.compiler, 1, 31), \"…\"), builds.compiler) AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    NOT builds.valid AND\n    compiler IS NOT NULL AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(LENGTH(compiler) > 32, CONCAT(SUBSTR(compiler, 1, 31), \"…\"), compiler) AS metric,\n    COUNT(id) AS value\nFROM ${dataset}.builds AS builds\nWHERE\n    checkout_id = ${id:json} AND\n    origin LIKE ${origin} AND\n    start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(config_name LIKE ${build_config_name}, TRUE) AND\n    NOT valid AND\n    compiler IS NOT NULL\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
@@ -2161,9 +2077,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 45
       },
-      "id": 62,
+      "id": 71,
       "title": "Tests",
       "type": "row"
     },
@@ -2174,9 +2090,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 46
       },
-      "id": 68,
+      "id": 75,
       "mode": "markdown",
       "options": {},
       "timeFrom": null,
@@ -2190,9 +2106,9 @@
         "h": 2,
         "w": 2,
         "x": 0,
-        "y": 49
+        "y": 47
       },
-      "id": 48,
+      "id": 54,
       "options": {},
       "targets": [
         {
@@ -2202,7 +2118,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
+          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
           "refId": "A",
           "select": [
             [
@@ -2230,7 +2146,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
+      "urlTemplate": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
       "valueFontSize": "50%"
     },
     {
@@ -2239,13 +2155,13 @@
         "h": 2,
         "w": 2,
         "x": 2,
-        "y": 49
+        "y": 47
       },
-      "id": 54,
+      "id": 56,
       "options": {},
       "targets": [
         {
-          "panelId": 48,
+          "panelId": 54,
           "refId": "A"
         }
       ],
@@ -2254,7 +2170,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
+      "urlTemplate": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -2263,13 +2179,13 @@
         "h": 2,
         "w": 18,
         "x": 4,
-        "y": 49
+        "y": 47
       },
-      "id": 49,
+      "id": 58,
       "options": {},
       "targets": [
         {
-          "panelId": 48,
+          "panelId": 54,
           "refId": "A"
         }
       ],
@@ -2303,9 +2219,9 @@
         "h": 2,
         "w": 2,
         "x": 22,
-        "y": 49
+        "y": 47
       },
-      "id": 50,
+      "id": 60,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -2345,7 +2261,7 @@
       "tableColumn": "status_num",
       "targets": [
         {
-          "panelId": 59,
+          "panelId": 68,
           "refId": "A"
         }
       ],
@@ -2458,9 +2374,9 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 49
       },
-      "id": 47,
+      "id": 62,
       "options": {},
       "pageSize": 8,
       "showHeader": true,
@@ -2482,7 +2398,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -2579,7 +2495,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "origins",
           "thresholds": [],
@@ -2599,7 +2515,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "name",
           "thresholds": [],
@@ -2619,7 +2535,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "architectures",
           "thresholds": [],
@@ -2639,7 +2555,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "min_start_time_str",
           "thresholds": [],
@@ -2659,7 +2575,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "total_duration_str",
           "thresholds": [],
@@ -2679,7 +2595,7 @@
           "decimals": 0,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "tests",
           "thresholds": [],
@@ -2730,7 +2646,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    architectures,\n    tests,\n    IFNULL(CAST(min_start_time AS STRING), \"\") AS min_start_time_str,\n    IFNULL(\n        FORMAT_TIME(\n            \"%H:%M:%E3S\",\n            TIME_ADD(\n                TIME \"00:00:00\",\n                INTERVAL DATETIME_DIFF(max_end_time, min_start_time, MILLISECOND) MILLISECOND\n            )\n        ),\n        \"\"\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, \", \") AS architectures,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            builds.architecture,\n            tests.start_time,\n            TIMESTAMP_ADD(tests.start_time, INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND) AS end_time,\n            tests.status,\n            tests.waived\n        FROM ${dataset}.tests\n        INNER JOIN\n            ${dataset}.builds AS builds\n            ON\n                tests.build_id = builds.id AND\n                IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n                IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n        INNER JOIN\n            ${dataset}.checkouts AS checkouts\n            ON\n                builds.checkout_id = checkouts.id AND\n                checkouts.git_commit_hash = ${git_commit_hash:json} AND\n                checkouts.patchset_hash = ${patchset_hash:json}\n        WHERE\n            IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            tests.origin LIKE ${origin} AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    status_num DESC,\n    name ASC",
+          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    architectures,\n    tests,\n    IFNULL(CAST(min_start_time AS STRING), \"\") AS min_start_time_str,\n    IFNULL(\n        FORMAT_TIME(\n            \"%H:%M:%E3S\",\n            TIME_ADD(\n                TIME \"00:00:00\",\n                INTERVAL DATETIME_DIFF(max_end_time, min_start_time, MILLISECOND) MILLISECOND\n            )\n        ),\n        \"\"\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, \", \") AS architectures,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            builds.architecture,\n            tests.start_time,\n            TIMESTAMP_ADD(tests.start_time, INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND) AS end_time,\n            tests.status,\n            tests.waived\n        FROM ${dataset}.tests\n        INNER JOIN\n            ${dataset}.builds AS builds\n            ON\n                tests.build_id = builds.id AND\n                builds.checkout_id = ${id:json} AND\n                IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n                IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n        WHERE\n            IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            tests.origin LIKE ${origin} AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    status_num DESC,\n    name ASC",
           "refId": "A",
           "select": [
             [
@@ -2777,10 +2693,10 @@
         "h": 5,
         "w": 10,
         "x": 0,
-        "y": 62
+        "y": 60
       },
       "hiddenSeries": false,
-      "id": 38,
+      "id": 64,
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -2815,7 +2731,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY metric",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        builds.checkout_id = ${id:json} AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY metric",
           "refId": "A",
           "select": [
             [
@@ -2896,10 +2812,10 @@
         "h": 5,
         "w": 14,
         "x": 10,
-        "y": 62
+        "y": 60
       },
       "hiddenSeries": false,
-      "id": 60,
+      "id": 66,
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -2934,7 +2850,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.status = \"FAIL\" AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        builds.checkout_id = ${id:json} AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.status = \"FAIL\" AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
@@ -3008,9 +2924,9 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 65
       },
-      "id": 59,
+      "id": 68,
       "options": {},
       "pageSize": 8,
       "showHeader": true,
@@ -3277,7 +3193,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    builds.architecture,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    builds.architecture,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        builds.checkout_id = ${id:json} AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
           "refId": "A",
           "select": [
             [
@@ -3315,12 +3231,12 @@
     "list": [
       {
         "current": {
-          "text": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
-          "value": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202"
+          "text": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
+          "value": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202"
         },
-        "hide": 0,
-        "label": "Commit hash",
-        "name": "git_commit_hash",
+        "hide": 2,
+        "label": "ID",
+        "name": "id",
         "options": [
           {
             "selected": false,
@@ -3328,26 +3244,7 @@
             "value": ""
           }
         ],
-        "query": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
-        "skipUrlSync": false,
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 0,
-        "label": "Patchset hash",
-        "name": "patchset_hash",
-        "options": [
-          {
-            "selected": false,
-            "text": "d74653e1546427aa43af60c6454d62ea538d4bec893522045bf2aab3ed89088",
-            "value": "d74653e1546427aa43af60c6454d62ea538d4bec893522045bf2aab3ed89088"
-          }
-        ],
-        "query": "",
+        "query": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -3490,7 +3387,7 @@
     ]
   },
   "timezone": "",
-  "title": "Revision",
-  "uid": "revision",
-  "version": 62
+  "title": "Checkout",
+  "uid": "checkout",
+  "version": 20
 }

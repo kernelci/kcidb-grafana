@@ -16,11 +16,11 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1630571691549,
+  "iteration": 1637066564545,
   "links": [],
   "panels": [
     {
-      "datasource": "-- Grafana --",
+      "datasource": "-- Dashboard --",
       "gridPos": {
         "h": 2,
         "w": 2,
@@ -29,24 +29,30 @@
       },
       "id": 26,
       "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
       "textTemplate": "⮌ Home",
       "timeFrom": null,
       "timeShift": null,
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}",
+      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
       "datasource": "-- Dashboard --",
       "gridPos": {
         "h": 2,
-        "w": 2,
+        "w": 3,
         "x": 2,
         "y": 0
       },
-      "id": 29,
+      "id": 32,
       "options": {},
       "targets": [
         {
@@ -60,15 +66,40 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_17}&var-patchset_hash=${__cell_18}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 3,
+        "x": 5,
+        "y": 0
+      },
+      "id": 29,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "⮌ Checkout",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
       "valueFontSize": "50%"
     },
     {
       "datasource": "-- Grafana --",
       "gridPos": {
         "h": 2,
-        "w": 18,
-        "x": 6,
+        "w": 16,
+        "x": 8,
         "y": 0
       },
       "id": 28,
@@ -152,7 +183,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    revision_id,\n    id,\n    origin,\n    description,\n    architecture,\n    IF(config_name IS NULL, \"unnamed\", config_name) AS config_name,\n    IF(config_url IS NULL, \"\", config_url) AS config_url,\n    IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) AS start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    CASE valid WHEN true THEN 1 WHEN false THEN 0 ELSE -1 END as valid_num,\n    IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n    log_url,\n    compiler,\n    command,\n    misc\nFROM (\n    /* Aggregate */\n    SELECT\n        ANY_VALUE(revision_id) AS revision_id,\n        id,\n        ANY_VALUE(origin) AS origin,\n        ANY_VALUE(description) AS description,\n        ANY_VALUE(architecture) AS architecture,\n        ANY_VALUE(config_name) AS config_name,\n        ANY_VALUE(config_url) AS config_url,\n        MIN(start_time) AS start_time,\n        MIN(duration) AS duration,\n        ANY_VALUE(valid) as valid,\n        ANY_VALUE(log_url) AS log_url,\n        ANY_VALUE(compiler) AS compiler,\n        ANY_VALUE(command) AS command,\n        ANY_VALUE(misc) AS misc\n    FROM ${dataset}.builds\n    WHERE id = \"${id}\"\n    GROUP BY id\n)",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.checkout_id,\n    builds.id,\n    builds.origin,\n    builds.comment,\n    builds.architecture,\n    IF(builds.config_name IS NULL, \"unnamed\", builds.config_name) AS config_name,\n    IFNULL(builds.config_url, \"\") AS config_url,\n    IFNULL(CAST(builds.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n       FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND)),\n       \"\"\n    ) as duration_str,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IF(builds.log_url IS NULL, \"\", \"File\") as log_url_text,\n    builds.log_url,\n    builds.compiler,\n    builds.command,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    builds.misc,\n    tests.status_num AS tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.checkouts AS checkouts\n    ON checkouts.id = builds.checkout_id\nLEFT OUTER JOIN (\n    SELECT\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM ${dataset}.tests\n    WHERE\n        build_id = ${id:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n) AS tests ON TRUE\nWHERE builds.id = ${id:json}",
           "refId": "A",
           "select": [
             [
@@ -210,7 +241,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 7,
+        "w": 8,
         "x": 4,
         "y": 2
       },
@@ -252,7 +283,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "description",
+      "tableColumn": "comment",
       "targets": [
         {
           "panelId": 2,
@@ -262,7 +293,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Description",
+      "title": "Comment",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -280,8 +311,8 @@
       "fontSize": "100%",
       "gridPos": {
         "h": 4,
-        "w": 7,
-        "x": 11,
+        "w": 6,
+        "x": 12,
         "y": 2
       },
       "id": 17,
@@ -339,7 +370,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n  SELECT output_files\n  FROM ${dataset}.builds\n  WHERE id = \"${id}\"\n  ORDER BY start_time DESC\n  LIMIT 1\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT *\nFROM UNNEST((\n    SELECT output_files\n    FROM ${dataset}.builds\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
@@ -387,12 +418,12 @@
           "refId": "A"
         }
       ],
-      "textTemplate": "${__cell_10}",
+      "textTemplate": "${__cell_13}",
       "timeFrom": null,
       "timeShift": null,
       "title": "Log",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_11:raw}",
+      "urlTemplate": "${__cell_14:raw}",
       "valueFontSize": "50%"
     },
     {
@@ -401,8 +432,8 @@
       "colorValue": false,
       "colors": [
         "rgba(242, 73, 92, 0)",
-        "#C4162A",
-        "#37872D"
+        "#37872D",
+        "#C4162A"
       ],
       "datasource": "-- Dashboard --",
       "format": "none",
@@ -477,12 +508,12 @@
         },
         {
           "op": "=",
-          "text": "✗",
+          "text": "✔️",
           "value": "0"
         },
         {
           "op": "=",
-          "text": "✔️",
+          "text": "✗",
           "value": "1"
         }
       ],
@@ -549,10 +580,10 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "status_num",
+      "tableColumn": "tests_status_num",
       "targets": [
         {
-          "panelId": 10,
+          "panelId": 2,
           "refId": "A"
         }
       ],
@@ -676,7 +707,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 5,
+        "w": 6,
         "x": 0,
         "y": 4
       },
@@ -754,7 +785,7 @@
       "gridPos": {
         "h": 2,
         "w": 3,
-        "x": 5,
+        "x": 6,
         "y": 4
       },
       "id": 15,
@@ -837,7 +868,7 @@
       "gridPos": {
         "h": 2,
         "w": 3,
-        "x": 8,
+        "x": 9,
         "y": 4
       },
       "id": 6,
@@ -915,12 +946,12 @@
           "refId": "A"
         }
       ],
-      "textTemplate": "${__cell_5}",
+      "textTemplate": "${__cell_8}",
       "timeFrom": null,
       "timeShift": null,
       "title": "Configuration",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "${__cell_6:raw}",
+      "urlTemplate": "${__cell_9:raw}",
       "valueFontSize": "50%"
     },
     {
@@ -942,7 +973,7 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 2,
+        "h": 3,
         "w": 24,
         "x": 0,
         "y": 6
@@ -1028,7 +1059,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "id": 31,
       "interval": null,
@@ -1090,18 +1121,999 @@
       "valueName": "first"
     },
     {
+      "datasource": null,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 55,
+      "options": {
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Ascending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT log_excerpt FROM ${dataset}.builds WHERE id = ${id:json}))\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Log excerpt",
+      "type": "logs"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 30,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "misc",
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Misc",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "first"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 57,
+      "panels": [],
+      "title": "Tests",
+      "type": "row"
+    },
+    {
+      "content": "",
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 59,
+      "mode": "markdown",
+      "options": {},
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Node",
+      "type": "text"
+    },
+    {
+      "datasource": "Google BigQuery",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 27
+      },
+      "id": 39,
+      "options": {},
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "textTemplate": "${__cell_3}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 27
+      },
+      "id": 41,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 39,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_1}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 18,
+        "x": 4,
+        "y": 27
+      },
+      "id": 43,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 39,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_0}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(41, 156, 70, 0)",
+        "#37872D",
+        "#C4162A"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 22,
+        "y": 27
+      },
+      "id": 45,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "status_num",
+      "targets": [
+        {
+          "panelId": 53,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "3,4",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-6"
+        },
+        {
+          "op": "=",
+          "text": "🚧 SKIP",
+          "value": "-5"
+        },
+        {
+          "op": "=",
+          "text": "🚧 DONE",
+          "value": "-4"
+        },
+        {
+          "op": "=",
+          "text": "🚧 PASS",
+          "value": "-3"
+        },
+        {
+          "op": "=",
+          "text": "🚧 FAIL",
+          "value": "-2"
+        },
+        {
+          "op": "=",
+          "text": "🚧 ERROR",
+          "value": "-1"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "0"
+        },
+        {
+          "op": "=",
+          "text": "SKIP",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "DONE",
+          "value": "2"
+        },
+        {
+          "op": "=",
+          "text": "PASS",
+          "value": "3"
+        },
+        {
+          "op": "=",
+          "text": "FAIL",
+          "value": "4"
+        },
+        {
+          "op": "=",
+          "text": "ERROR",
+          "value": "5"
+        },
+        {
+          "op": "=",
+          "text": "❓ ERROR",
+          "value": "-7"
+        },
+        {
+          "op": "=",
+          "text": "❓ FAIL",
+          "value": "-8"
+        },
+        {
+          "op": "=",
+          "text": "❓ PASS",
+          "value": "-9"
+        },
+        {
+          "op": "=",
+          "text": "❓ DONE",
+          "value": "-10"
+        },
+        {
+          "op": "=",
+          "text": "❓ SKIP",
+          "value": "-11"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-12"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "description": "",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 47,
+      "options": {},
+      "pageSize": 8,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(50, 172, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "​ ​ ​ ​",
+              "value": "0"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "​ ​ ​ ​",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "​ ​ ​ ​",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origins",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "origins",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "name",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Arches",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "architectures",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "First start time",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "min_start_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Total duration",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "total_duration_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "tests",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "path",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    tests,\n    IFNULL(CAST(min_start_time AS STRING), \"\") AS min_start_time_str,\n    IFNULL(\n        FORMAT_TIME(\n            \"%H:%M:%E3S\",\n            TIME_ADD(\n                TIME \"00:00:00\",\n                INTERVAL DATETIME_DIFF(max_end_time, min_start_time, MILLISECOND) MILLISECOND\n            )\n        ),\n        \"\"\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            tests.start_time,\n            TIMESTAMP_ADD(tests.start_time, INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND) AS end_time,\n            tests.status,\n            tests.waived\n        FROM ${dataset}.tests\n        WHERE\n            tests.build_id = ${id:json} AND\n            IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            tests.origin LIKE ${origin} AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    status_num DESC,\n    name ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Subnodes",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {
+        "ERROR": "semi-dark-orange",
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green",
+        "SKIP": "semi-dark-blue",
+        "UNKNOWN": "rgb(128, 128, 128)"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 10,
+        "x": 0,
+        "y": 40
+      },
+      "hiddenSeries": false,
+      "id": 49,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY metric",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test status",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Google BigQuery",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 14,
+        "x": 10,
+        "y": 40
+      },
+      "hiddenSeries": false,
+      "id": 51,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.status = \"FAIL\" AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Top 5 test failures",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": false,
+        "values": [
+          "total"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "columns": [],
       "datasource": null,
       "fontSize": "100%",
       "gridPos": {
-        "h": 17,
+        "h": 11,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 45
       },
-      "id": 10,
+      "id": 53,
       "options": {},
-      "pageSize": 15,
+      "pageSize": 8,
       "showHeader": true,
       "sort": {
         "col": null,
@@ -1127,7 +2139,7 @@
         },
         {
           "alias": "Start time",
-          "align": "left",
+          "align": "",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -1137,7 +2149,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "pattern": "start_time_str",
           "thresholds": [],
           "type": "string",
@@ -1156,7 +2168,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -1253,7 +2265,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -1273,7 +2285,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "path",
           "thresholds": [],
@@ -1281,7 +2293,7 @@
           "unit": "short"
         },
         {
-          "alias": "Description",
+          "alias": "Comment",
           "align": "auto",
           "colorMode": null,
           "colors": [
@@ -1293,9 +2305,9 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
-          "pattern": "description",
+          "pattern": "comment",
           "thresholds": [],
           "type": "string",
           "unit": "short"
@@ -1313,12 +2325,49 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
           "type": "string",
           "unit": "s"
+        },
+        {
+          "alias": "Arch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "architecture",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
         }
       ],
       "targets": [
@@ -1329,7 +2378,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    id,\n    origin,\n    path,\n    description,\n    IF(start_time IS NULL, \"\", CAST(start_time AS STRING)) as start_time_str,\n    IF(duration is NULL, \"\", FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((duration * 1000) AS INT64) MILLISECOND))) as duration_str,\n    (CASE status WHEN \"SKIP\" THEN 1 WHEN \"DONE\" THEN 2 WHEN \"PASS\" THEN 3 WHEN \"FAIL\" THEN 4 WHEN \"ERROR\" THEN 5 ELSE 0 END) - (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 as status_num\nFROM ${dataset}.tests\nWHERE\n  build_id = \"${id}\" AND\n  (\n    tests.start_time >= TIMESTAMP_MILLIS(${__from}) AND tests.start_time <= TIMESTAMP_MILLIS(${__to}) OR\n    tests.start_time IS NULL\n  )\nORDER BY start_time ASC",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
           "refId": "A",
           "select": [
             [
@@ -1357,89 +2406,6 @@
       "title": "Tests",
       "transform": "table",
       "type": "table"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 27
-      },
-      "id": 30,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "misc",
-      "targets": [
-        {
-          "panelId": 2,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Misc",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
     }
   ],
   "schemaVersion": 22,
@@ -1449,8 +2415,8 @@
     "list": [
       {
         "current": {
-          "text": "kernelci:kernelci.org:61308a8ac613ca698ed596a2",
-          "value": "kernelci:kernelci.org:61308a8ac613ca698ed596a2"
+          "text": "kernelci:kernelci.org:6192adc59ba1f203dd33593b",
+          "value": "kernelci:kernelci.org:6192adc59ba1f203dd33593b"
         },
         "hide": 2,
         "label": "ID",
@@ -1462,15 +2428,15 @@
             "value": ""
           }
         ],
-        "query": "kernelci:kernelci.org:61308a8ac613ca698ed596a2",
+        "query": "kernelci:kernelci.org:6192adc59ba1f203dd33593b",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
           "selected": true,
-          "text": "kernelci04",
-          "value": "kernelci04"
+          "text": "kcidb_01",
+          "value": "kcidb_01"
         },
         "hide": 2,
         "label": null,
@@ -1478,13 +2444,111 @@
         "options": [
           {
             "selected": true,
-            "text": "kernelci04",
-            "value": "kernelci04"
+            "text": "kcidb_01",
+            "value": "kcidb_01"
           }
         ],
-        "query": "kernelci04",
+        "query": "kcidb_01",
         "skipUrlSync": false,
         "type": "constant"
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Origin",
+        "multi": false,
+        "name": "origin",
+        "options": [],
+        "query": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Build architecture",
+        "multi": false,
+        "name": "build_architecture",
+        "options": [],
+        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Build configuration",
+        "multi": false,
+        "name": "build_config_name",
+        "options": [],
+        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "label": null,
+        "name": "test_path",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
@@ -1509,5 +2573,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 8
+  "version": 17
 }
