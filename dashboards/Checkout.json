@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 7,
-  "iteration": 1637066559896,
+  "iteration": 1637572826626,
   "links": [],
   "panels": [
     {
@@ -158,7 +158,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    id,\n    IF(log_url IS NULL, \"\", \"File\") as log_url_text,\n    log_url,\n    origin,\n    git_repository_url,\n    git_repository_branch,\n    git_commit_name,\n    git_commit_hash,\n    patchset_hash,\n    CASE valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    comment,\n    IFNULL(CAST(start_time AS STRING), \"\") AS start_time_str,\n    misc\nFROM ${dataset}.checkouts\nWHERE id=${id:json}",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    id,\n    IF(log_url IS NULL, \"\", \"File\") AS log_url_text,\n    log_url,\n    origin,\n    IFNULL(git_repository_url, \"\") AS git_repository_url,\n    IFNULL(git_repository_branch, \"\") AS git_repository_branch,\n    IFNULL(git_commit_name, \"\") AS git_commit_name,\n    IFNULL(git_commit_hash, \"\") AS git_commit_hash,\n    IFNULL(patchset_hash, \"\") AS patchset_hash,\n    CASE valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IFNULL(comment, \"\") AS comment,\n    IFNULL(CAST(start_time AS STRING), \"\") AS start_time_str,\n    misc\nFROM ${dataset}.checkouts\nWHERE id=${id:json}",
           "refId": "A",
           "select": [
             [
@@ -3231,8 +3231,8 @@
     "list": [
       {
         "current": {
-          "text": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
-          "value": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202"
+          "text": "_:redhat:0568b25b261bcdf946bef87343b5657cbd005bb7",
+          "value": "_:redhat:0568b25b261bcdf946bef87343b5657cbd005bb7"
         },
         "hide": 2,
         "label": "ID",
@@ -3244,7 +3244,7 @@
             "value": ""
           }
         ],
-        "query": "_:redhat:2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
+        "query": "_:redhat:0568b25b261bcdf946bef87343b5657cbd005bb7",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -3389,5 +3389,5 @@
   "timezone": "",
   "title": "Checkout",
   "uid": "checkout",
-  "version": 20
+  "version": 21
 }
