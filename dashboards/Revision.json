@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1637066516589,
+  "iteration": 1638368107643,
   "links": [],
   "panels": [
     {
@@ -1276,7 +1276,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.id,\n    checkouts.origin AS origin,\n    IFNULL(checkouts.git_repository_url, \"\") AS git_repository_url_str,\n    IFNULL(checkouts.git_repository_branch, \"\") AS git_repository_branch_str,\n    IFNULL(checkouts.git_commit_name, \"\") AS git_commit_name_str,\n    IFNULL(CAST(checkouts.start_time AS STRING), \"\") AS start_time_str,\n    CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    builds.valid_num AS builds_valid_num,\n    builds.tests_status_num AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN (\n    SELECT\n        builds.checkout_id AS checkout_id,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        ${dataset}.builds\n    LEFT OUTER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id AND\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin}\n    WHERE\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\n    GROUP BY\n        checkout_id\n) AS builds\n    ON\n        builds.checkout_id = checkouts.id\nWHERE\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.origin LIKE ${origin}\nORDER BY\n    valid_num DESC,\n    builds_valid_num DESC,\n    tests_status_num DESC,\n    checkouts.start_time DESC",
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.id,\n    checkouts.origin AS origin,\n    IFNULL(checkouts.git_repository_url, \"\") AS git_repository_url_str,\n    IFNULL(checkouts.git_repository_branch, \"\") AS git_repository_branch_str,\n    IFNULL(checkouts.git_commit_name, \"\") AS git_commit_name_str,\n    IFNULL(CAST(checkouts.start_time AS STRING), \"\") AS start_time_str,\n    CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IFNULL(builds.valid_num, -1) AS builds_valid_num,\n    IFNULL(builds.tests_status_num, -12) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN (\n    SELECT\n        builds.checkout_id AS checkout_id,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        ${dataset}.builds\n    LEFT OUTER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id AND\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin}\n    WHERE\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\n    GROUP BY\n        checkout_id\n) AS builds\n    ON\n        builds.checkout_id = checkouts.id\nWHERE\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.origin LIKE ${origin}\nORDER BY\n    valid_num DESC,\n    builds_valid_num DESC,\n    tests_status_num DESC,\n    checkouts.start_time DESC",
           "refId": "A",
           "select": [
             [
@@ -3315,8 +3315,8 @@
     "list": [
       {
         "current": {
-          "text": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
-          "value": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202"
+          "text": "74023a89114e6eabd26cb097868c50c8a32a9fa6",
+          "value": "74023a89114e6eabd26cb097868c50c8a32a9fa6"
         },
         "hide": 0,
         "label": "Commit hash",
@@ -3328,7 +3328,7 @@
             "value": ""
           }
         ],
-        "query": "2a257c5e57eedc7f9c34b56f5cf46301cbcb5202",
+        "query": "74023a89114e6eabd26cb097868c50c8a32a9fa6",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -3492,5 +3492,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 62
+  "version": 23
 }
