@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1637066571506,
+  "iteration": 1655724282990,
   "links": [],
   "panels": [
     {
@@ -248,86 +248,30 @@
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": "-- Dashboard --",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
       "gridPos": {
         "h": 2,
         "w": 8,
         "x": 3,
         "y": 2
       },
-      "id": 3,
-      "interval": null,
+      "id": 29,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": "1",
-      "nullPointMode": "connected",
-      "nullText": null,
       "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "path",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "panelId": 2,
           "refId": "A"
         }
       ],
-      "thresholds": "",
+      "textTemplate": "${__cell_6}",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Path",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "",
-          "value": "null"
-        }
-      ],
-      "valueName": "first"
+      "title": "Node",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_6}",
+      "valueFontSize": "50%"
     },
     {
       "cacheTimeout": null,
@@ -1190,8 +1134,8 @@
     "list": [
       {
         "current": {
-          "text": "kernelci:kernelci.org:6192b74e338346faaf3358e6",
-          "value": "kernelci:kernelci.org:6192b74e338346faaf3358e6"
+          "text": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7",
+          "value": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7"
         },
         "hide": 2,
         "label": "ID",
@@ -1203,7 +1147,7 @@
             "value": "redhat:738658"
           }
         ],
-        "query": "kernelci:kernelci.org:6192b74e338346faaf3358e6",
+        "query": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1230,7 +1174,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1256,7 +1200,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1282,7 +1226,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1328,5 +1272,5 @@
   "timezone": "",
   "title": "Test",
   "uid": "test",
-  "version": 12
+  "version": 5
 }

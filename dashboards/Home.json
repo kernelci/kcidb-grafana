@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1637056862333,
+  "iteration": 1655724051397,
   "links": [],
   "panels": [
     {
@@ -172,12 +172,282 @@
     {
       "columns": [],
       "datasource": null,
+      "description": "",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 14,
+      "options": {},
+      "pageSize": 8,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Origins",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "origins",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "path",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Arches",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "architectures",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "tests",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "Status",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "path",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    architectures,\n    tests,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, \", \") AS architectures,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /* Cut the test path up to and including the first dot */\n                    LEFT(tests.path, INSTR(tests.path, \".\", 2)),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            builds.architecture,\n            tests.status AS status,\n            tests.waived AS waived\n        FROM ${dataset}.tests\n        INNER JOIN\n            ${dataset}.builds AS builds\n            ON\n                tests.build_id = builds.id AND\n                IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n                IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n        WHERE\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin} AND\n            tests.path IS NOT NULL AND\n            tests.path != \"\"\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    tests DESC,\n    path ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Test nodes",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
       "fontSize": "100%",
       "gridPos": {
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 23
       },
       "id": 2,
       "maxDataPoints": "250",
@@ -630,7 +900,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 11,
@@ -747,7 +1017,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 12,
@@ -858,7 +1128,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 47
       },
       "hiddenSeries": false,
       "id": 4,
@@ -969,7 +1239,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 47
       },
       "hiddenSeries": false,
       "id": 5,
@@ -1112,7 +1382,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1158,7 +1428,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1184,7 +1454,7 @@
       {
         "allValue": "\"%\"",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -1230,5 +1500,5 @@
   "timezone": "",
   "title": "Home",
   "uid": "home",
-  "version": 32
+  "version": 33
 }

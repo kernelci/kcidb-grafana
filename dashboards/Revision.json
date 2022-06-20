@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1638368107643,
+  "iteration": 1655724225166,
   "links": [],
   "panels": [
     {
@@ -3315,8 +3315,8 @@
     "list": [
       {
         "current": {
-          "text": "74023a89114e6eabd26cb097868c50c8a32a9fa6",
-          "value": "74023a89114e6eabd26cb097868c50c8a32a9fa6"
+          "text": "239d588d7e556eeef28f79a75e252e3992fb8b85",
+          "value": "239d588d7e556eeef28f79a75e252e3992fb8b85"
         },
         "hide": 0,
         "label": "Commit hash",
@@ -3328,7 +3328,7 @@
             "value": ""
           }
         ],
-        "query": "74023a89114e6eabd26cb097868c50c8a32a9fa6",
+        "query": "239d588d7e556eeef28f79a75e252e3992fb8b85",
         "skipUrlSync": false,
         "type": "textbox"
       },

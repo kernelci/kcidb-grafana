@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1637066524240,
+  "id": 9,
+  "iteration": 1655724386592,
   "links": [],
   "panels": [
     {
@@ -1266,8 +1266,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git",
-          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git"
+          "text": "https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-9.git",
+          "value": "https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-9.git"
         },
         "datasource": "Google BigQuery",
         "definition": "SELECT DISTINCT git_repository_url FROM ${dataset}.checkouts",
@@ -1291,9 +1291,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "master",
-          "value": "master"
+          "selected": false,
+          "text": "main",
+          "value": "main"
         },
         "datasource": "Google BigQuery",
         "definition": "SELECT DISTINCT git_repository_branch FROM ${dataset}.checkouts WHERE git_repository_url = ${git_repository_url:json}",
@@ -1415,5 +1415,5 @@
   "timezone": "",
   "title": "Branch",
   "uid": "branch",
-  "version": 12
+  "version": 13
 }

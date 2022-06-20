@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 10,
-  "iteration": 1638353010832,
+  "iteration": 1655724271120,
   "links": [],
   "panels": [
     {
@@ -3231,8 +3231,8 @@
     "list": [
       {
         "current": {
-          "text": "_:kernelci:61b66296b2a246b6c638cdd0025d98a42083b904",
-          "value": "_:kernelci:61b66296b2a246b6c638cdd0025d98a42083b904"
+          "text": "_:kernelci:239d588d7e556eeef28f79a75e252e3992fb8b85",
+          "value": "_:kernelci:239d588d7e556eeef28f79a75e252e3992fb8b85"
         },
         "hide": 2,
         "label": "ID",
@@ -3244,7 +3244,7 @@
             "value": ""
           }
         ],
-        "query": "_:kernelci:61b66296b2a246b6c638cdd0025d98a42083b904",
+        "query": "_:kernelci:239d588d7e556eeef28f79a75e252e3992fb8b85",
         "skipUrlSync": false,
         "type": "textbox"
       },

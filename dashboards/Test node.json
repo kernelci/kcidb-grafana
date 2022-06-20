@@ -1,0 +1,3227 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 11,
+  "iteration": 1655724472035,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 0
+      },
+      "id": 10,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "⮌ Home",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "Google BigQuery",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 0
+      },
+      "id": 2,
+      "options": {},
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "textTemplate": "${__cell_3}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 4,
+        "y": 0
+      },
+      "id": 4,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_1}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Grafana --",
+      "gridPos": {
+        "h": 2,
+        "w": 18,
+        "x": 6,
+        "y": 0
+      },
+      "id": 16,
+      "options": {},
+      "textTemplate": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "gridPos": {
+        "h": 2,
+        "w": 20,
+        "x": 0,
+        "y": 2
+      },
+      "id": 6,
+      "options": {},
+      "targets": [
+        {
+          "panelId": 2,
+          "refId": "A"
+        }
+      ],
+      "textTemplate": "${__cell_0}",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Path",
+      "type": "grafana-singlevalue-panel",
+      "urlTemplate": "",
+      "valueFontSize": "50%"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 20,
+        "y": 2
+      },
+      "id": 18,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "tests_count",
+      "targets": [
+        {
+          "panelId": 12,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Tests",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(41, 156, 70, 0)",
+        "#37872D",
+        "#C4162A"
+      ],
+      "datasource": "-- Dashboard --",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 22,
+        "y": 2
+      },
+      "id": 14,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "tests_status_num",
+      "targets": [
+        {
+          "panelId": 12,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "3,4",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Status",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-6"
+        },
+        {
+          "op": "=",
+          "text": "🚧 SKIP",
+          "value": "-5"
+        },
+        {
+          "op": "=",
+          "text": "🚧 DONE",
+          "value": "-4"
+        },
+        {
+          "op": "=",
+          "text": "🚧 PASS",
+          "value": "-3"
+        },
+        {
+          "op": "=",
+          "text": "🚧 FAIL",
+          "value": "-2"
+        },
+        {
+          "op": "=",
+          "text": "🚧 ERROR",
+          "value": "-1"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "0"
+        },
+        {
+          "op": "=",
+          "text": "SKIP",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "DONE",
+          "value": "2"
+        },
+        {
+          "op": "=",
+          "text": "PASS",
+          "value": "3"
+        },
+        {
+          "op": "=",
+          "text": "FAIL",
+          "value": "4"
+        },
+        {
+          "op": "=",
+          "text": "ERROR",
+          "value": "5"
+        },
+        {
+          "op": "=",
+          "text": "❓ ERROR",
+          "value": "-7"
+        },
+        {
+          "op": "=",
+          "text": "❓ FAIL",
+          "value": "-8"
+        },
+        {
+          "op": "=",
+          "text": "❓ PASS",
+          "value": "-9"
+        },
+        {
+          "op": "=",
+          "text": "❓ DONE",
+          "value": "-10"
+        },
+        {
+          "op": "=",
+          "text": "❓ SKIP",
+          "value": "-11"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-12"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 0,
+        "y": 4
+      },
+      "id": 29,
+      "maxDataPoints": "2048",
+      "options": {},
+      "pageSize": 4,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "Select architecture",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_3}&var-build_config_name=${__cell_2}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "Select architecture",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_3}&var-build_config_name=${__cell_2}",
+          "mappingType": 1,
+          "pattern": "architecture",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "Select architecture",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_3}&var-build_config_name=${__cell_2}",
+          "mappingType": 1,
+          "pattern": "tests_num",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.architecture AS architecture,\n    COUNT(DISTINCT tests.id) AS tests_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin} AND\n        tests.path IS NOT NULL AND\n        (${test_path:json} = \"\" OR\n         tests.path = ${test_path:json} OR\n         STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nWHERE\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY\n    builds.architecture\nORDER BY\n    tests_status_num DESC,\n    tests_num DESC,\n    builds.architecture ASC\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Build architectures",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 5,
+        "y": 4
+      },
+      "id": 30,
+      "maxDataPoints": "2048",
+      "options": {},
+      "pageSize": 4,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "Select configuration",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "Select configuration",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "config_name",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "Select configuration",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-test_path=${test_path}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "tests_num",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.config_name AS config_name,\n    COUNT(DISTINCT tests.id) AS tests_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin} AND\n        tests.path IS NOT NULL AND\n        (${test_path:json} = \"\" OR\n         tests.path = ${test_path:json} OR\n         STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nWHERE\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY\n    builds.config_name\nORDER BY\n    tests_status_num DESC,\n    tests_num DESC,\n    builds.config_name ASC\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Build configurations",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {
+        "ERROR": "semi-dark-orange",
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green",
+        "SKIP": "semi-dark-blue",
+        "UNKNOWN": "rgb(128, 128, 128)"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 7,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 4
+      },
+      "hiddenSeries": false,
+      "id": 28,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n    interval_start AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(DISTINCT tests.id) AS tests\nFROM\n    ${dataset}.builds AS builds, ${dataset}.tests AS tests\nINNER JOIN\n    intervals\n    ON tests.start_time >= interval_start AND tests.start_time < interval_end\nWHERE\n    builds.id = tests.build_id AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" AND tests.path IS NOT NULL OR\n     tests.path = ${test_path:json} OR\n     STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY\n    time, metric\nORDER BY\n    time ASC, metric ASC\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "description": "",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 8,
+      "options": {},
+      "pageSize": 8,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Origins",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "origins",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "name",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Arches",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "architectures",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "tests",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "Status",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View node",
+          "linkUrl": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "path",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    architectures,\n    tests,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, \", \") AS architectures,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            builds.architecture,\n            tests.status AS status,\n            tests.waived AS waived\n        FROM ${dataset}.tests\n        INNER JOIN\n            ${dataset}.builds AS builds\n            ON\n                tests.build_id = builds.id AND\n                IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n                IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n        WHERE\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin} AND\n            tests.path IS NOT NULL AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    name ASC\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Subnodes",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 12,
+      "options": {},
+      "pageSize": 6,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Repository URL",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "pattern": "git_repository_url",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "git_repository_branch",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "tests_count",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "Status",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Arches",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View branch",
+          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${__cell_3}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_4}",
+          "mappingType": 1,
+          "pattern": "architectures",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.git_repository_url AS git_repository_url,\n    checkouts.git_repository_branch AS git_repository_branch,\n    STRING_AGG(DISTINCT builds.architecture, \", \") AS architectures,\n    COUNT(DISTINCT tests.id) AS tests_count,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        checkouts.id = builds.checkout_id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.tests AS tests\n    ON\n        builds.id = tests.build_id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin} AND\n        (${test_path:json} = \"\" AND tests.path IS NOT NULL OR\n         tests.path = ${test_path:json} OR\n         STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nWHERE\n    git_repository_url IS NOT NULL AND\n    git_repository_branch IS NOT NULL\nGROUP BY\n    git_repository_url,\n    git_repository_branch\nORDER BY\n    tests_status_num DESC,\n    tests_count DESC,\n    git_repository_url ASC,\n    git_repository_branch ASC\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Branches",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 22,
+      "maxDataPoints": "250",
+      "options": {},
+      "pageSize": 4,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Checkouts ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(242, 73, 92, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "checkouts_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "✗",
+              "value": "1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "git_commit_hash",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Repositories",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_repository_urls_text",
+          "preserveFormat": true,
+          "sanitize": false,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Branches",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_repository_branches_text",
+          "preserveFormat": true,
+          "sanitize": false,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Commit names",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "mappingType": 1,
+          "pattern": "git_commit_names_text",
+          "preserveFormat": true,
+          "sanitize": false,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Commit hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "git_commit_hash_short",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "First checkout",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "checkouts_start_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Builds​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "builds_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "",
+              "value": "-1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "✗",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "patchset_hash",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Patchset hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "patchset_hash_short",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Origins",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "origins_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_num",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View revision",
+          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "/*\n * Truncate a string with an ellipsis at speсified length.\n */\nCREATE TEMP FUNCTION TRUNCATE(str STRING, len INT64)\n    RETURNS STRING\n    AS (IF(len = 0 OR CHAR_LENGTH(str) <= len,\n           str,\n           CONCAT(SUBSTR(str, 1, len - 1), \"…\")\n       ));\n\n/*\n * Replace NULL or empty string with a non-breaking space,\n * truncate anything else with ellipsis, if necessary.\n */\nCREATE TEMP FUNCTION BLANK_OR_TRUNCATE(str STRING, len INT64)\n    RETURNS STRING\n    AS (IF(str IS NULL OR str = \"\", \" \", TRUNCATE(str, len)));\n\n/*\n * Format an array of strings as a three-line text with ellipsis\n */\nCREATE TEMP FUNCTION ARRAY_TO_TEXT(strs ARRAY<STRING>, width INT64)\n    RETURNS STRING\n    AS (ARRAY_TO_STRING(\n        [\n            BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(0)], width),\n            BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(1)], width),\n            IF(ARRAY_LENGTH(strs) > 3, \"…\",\n               BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(2)], width))\n        ],\n        \"\\n\"\n    ));\n\nWITH\n    revision_sources AS (\n        SELECT\n            git_commit_hash,\n            patchset_hash,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_url_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                128\n            ) AS git_repository_urls_text,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_branch_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_repository_branches_text,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_commit_name_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_commit_names_text,\n        FROM (\n            SELECT\n                git_commit_hash,\n                patchset_hash,\n                git_repository_url_str,\n                git_repository_branch_str,\n                git_commit_name_str,\n                IF(git_repository_url_str = \"\", 0, 4) +\n                    IF(git_repository_branch_str = \"\", 0, 2) +\n                    IF(git_commit_name_str = \"\", 0, 1) AS rank\n            FROM (\n                SELECT DISTINCT\n                    git_commit_hash,\n                    patchset_hash,\n                    IFNULL(git_repository_url, \"\") AS git_repository_url_str,\n                    IFNULL(git_repository_branch, \"\") AS git_repository_branch_str,\n                    IFNULL(git_commit_name, \"\") AS git_commit_name_str,\n                FROM\n                    ${dataset}.checkouts AS checkouts\n            )\n        )\n        GROUP BY\n            git_commit_hash,\n            patchset_hash\n    )\n/* Massage and join with sources */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    revisions.git_commit_hash,\n    revisions.patchset_hash,\n    origins_str,\n    SUBSTR(revisions.git_commit_hash, 0, 12) AS git_commit_hash_short,\n    revision_sources.git_repository_urls_text,\n    revision_sources.git_repository_branches_text,\n    revision_sources.git_commit_names_text,\n    SUBSTR(revisions.patchset_hash, 0, 12) AS patchset_hash_short,\n    IFNULL(CAST(checkouts_start_time AS STRING), \"\") AS checkouts_start_time_str,\n    tests_num,\n    tests_status_num\nFROM (\n    SELECT\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash,\n        STRING_AGG(DISTINCT checkouts.origin, \", \") AS origins_str,\n        MIN(checkouts.start_time) AS checkouts_start_time,\n        COUNT(DISTINCT tests.id) AS tests_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        ${dataset}.checkouts AS checkouts\n    INNER JOIN\n        ${dataset}.builds AS builds\n        ON\n            builds.checkout_id = checkouts.id AND\n            IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n            IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n    INNER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id AND\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin} AND\n            tests.path IS NOT NULL AND\n            (${test_path:json} = \"\" OR\n             tests.path = ${test_path:json} OR\n             STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    GROUP BY\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash\n) AS revisions\nINNER JOIN\n    revision_sources\n    ON\n        revision_sources.git_commit_hash = revisions.git_commit_hash AND\n        revision_sources.patchset_hash = revisions.patchset_hash\nORDER BY\n    tests_status_num DESC,\n    checkouts_start_time DESC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Revisions",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 24,
+      "maxDataPoints": "250",
+      "options": {},
+      "pageSize": 4,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(242, 73, 92, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "✗",
+              "value": "1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "id",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Repository",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "git_repository_url_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Branch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "git_repository_branch_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Commit name",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "git_commit_name_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Commit hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "git_commit_hash_short",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Start time",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "start_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Builds​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "builds_valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "",
+              "value": "-1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "✗",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origin",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "origin",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Patchset hash",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "patchset_hash_short",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_num",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        },
+        {
+          "alias": "",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View checkout",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.id,\n    ANY_VALUE(checkouts.origin) AS origin,\n    IFNULL(ANY_VALUE(checkouts.git_repository_url), \"\") AS git_repository_url_str,\n    IFNULL(ANY_VALUE(checkouts.git_repository_branch), \"\") AS git_repository_branch_str,\n    SUBSTR(ANY_VALUE(checkouts.git_commit_hash), 0, 12) AS git_commit_hash_short,\n    IFNULL(ANY_VALUE(checkouts.git_commit_name), \"\") AS git_commit_name_str,\n    SUBSTR(ANY_VALUE(checkouts.patchset_hash), 0, 12) AS patchset_hash_short,\n    IFNULL(CAST(ANY_VALUE(checkouts.start_time) AS STRING), \"\") AS start_time_str,\n    COUNT(DISTINCT tests.id) AS tests_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        builds.checkout_id = checkouts.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin} AND\n        tests.path IS NOT NULL AND\n        (${test_path:json} = \"\" OR\n         tests.path = ${test_path:json} OR\n         STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY\n    checkouts.id\nORDER BY\n    tests_status_num DESC,\n    ANY_VALUE(checkouts.start_time) DESC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Checkouts",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 26,
+      "maxDataPoints": "2048",
+      "options": {},
+      "pageSize": 8,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "left",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "valid_num",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "✗",
+              "value": "1"
+            },
+            {
+              "text": "✔️",
+              "value": "0"
+            },
+            {
+              "text": "",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "id",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(55, 135, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "",
+              "value": "0"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origin",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "origin",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Comment",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "comment",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Arch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "architecture",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Start time",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "start_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Duration",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "duration_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "s"
+        },
+        {
+          "alias": "Configuration",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "config_name",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Compiler",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "compiler",
+          "sanitize": true,
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Tests​ ​ ​ ​",
+          "align": "right",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 0,
+          "link": true,
+          "linkTooltip": "View build",
+          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}&var-test_path=${test_path}",
+          "mappingType": 1,
+          "pattern": "tests_num",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.id AS id,\n    ANY_VALUE(builds.origin) AS origin,\n    ANY_VALUE(builds.architecture) AS architecture,\n    REGEXP_REPLACE(ANY_VALUE(builds.compiler), \"^(.{48}).+$\", \"\\\\1…\") AS compiler,\n    REGEXP_REPLACE(ANY_VALUE(builds.config_name), \"^(.{48}).+$\", \"\\\\1…\") AS config_name,\n    IFNULL(CAST(ANY_VALUE(builds.start_time) AS STRING), \"\") AS start_time_str,\n    IFNULL(FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((ANY_VALUE(builds.duration) * 1000) AS INT64) MILLISECOND)), \"\") AS duration_str,\n    ANY_VALUE(builds.comment) AS comment,\n    COUNT(DISTINCT tests.id) AS tests_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin} AND\n        tests.path IS NOT NULL AND\n        (${test_path:json} = \"\" OR\n         tests.path = ${test_path:json} OR\n         STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nWHERE\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY\n    builds.id\nORDER BY\n    tests_status_num DESC,\n    ANY_VALUE(builds.start_time) ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Builds",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 61
+      },
+      "id": 20,
+      "options": {},
+      "pageSize": 8,
+      "showHeader": true,
+      "sort": {
+        "col": null,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "id",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        },
+        {
+          "alias": "Start time",
+          "align": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "pattern": "start_time_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Status​ ​ ​ ​",
+          "align": "auto",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(50, 172, 45, 0)",
+            "#37872D",
+            "#C4162A"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "status_num",
+          "thresholds": [
+            "3",
+            "4"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "​ ​ ​ ​",
+              "value": "0"
+            },
+            {
+              "text": "SKIP",
+              "value": "1"
+            },
+            {
+              "text": "DONE",
+              "value": "2"
+            },
+            {
+              "text": "PASS",
+              "value": "3"
+            },
+            {
+              "text": "FAIL",
+              "value": "4"
+            },
+            {
+              "text": "ERROR",
+              "value": "5"
+            },
+            {
+              "text": "🚧 ERROR",
+              "value": "-1"
+            },
+            {
+              "text": "🚧 FAIL",
+              "value": "-2"
+            },
+            {
+              "text": "🚧 PASS",
+              "value": "-3"
+            },
+            {
+              "text": "🚧 DONE",
+              "value": "-4"
+            },
+            {
+              "text": "🚧 SKIP",
+              "value": "-5"
+            },
+            {
+              "text": "​ ​ ​ ​",
+              "value": "-6"
+            },
+            {
+              "text": "❓ ERROR",
+              "value": "-7"
+            },
+            {
+              "text": "❓ FAIL",
+              "value": "-8"
+            },
+            {
+              "text": "❓ PASS",
+              "value": "-9"
+            },
+            {
+              "text": "❓ DONE",
+              "value": "-10"
+            },
+            {
+              "text": "❓ SKIP",
+              "value": "-11"
+            },
+            {
+              "text": "​ ​ ​ ​",
+              "value": "-12"
+            }
+          ]
+        },
+        {
+          "alias": "Origin",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "origin",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Path",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "path",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Comment",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "comment",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "Duration",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "duration_str",
+          "thresholds": [],
+          "type": "string",
+          "unit": "s"
+        },
+        {
+          "alias": "Arch",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTooltip": "View test",
+          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "mappingType": 1,
+          "pattern": "architecture",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*_param/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "orderByCol": "1",
+          "orderBySort": "1",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    builds.architecture,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id\nWHERE\n    tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" AND tests.path IS NOT NULL OR\n     tests.path = ${test_path:json} OR\n     STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "-- value --"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "-- time --",
+          "timeColumnType": "TIMESTAMP",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Tests",
+      "transform": "table",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 22,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "kcidb_01",
+          "value": "kcidb_01"
+        },
+        "hide": 2,
+        "label": null,
+        "name": "dataset",
+        "options": [
+          {
+            "selected": true,
+            "text": "kcidb_01",
+            "value": "kcidb_01"
+          }
+        ],
+        "query": "kcidb_01",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT origin FROM ${dataset}.tests",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Origin",
+        "multi": false,
+        "name": "origin",
+        "options": [],
+        "query": "SELECT DISTINCT origin FROM ${dataset}.tests",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "label": "Path",
+        "name": "test_path",
+        "options": [
+          {
+            "selected": false,
+            "text": "igt-gpu-panfrost.panfrost_gem_new.gem-new-0",
+            "value": "igt-gpu-panfrost.panfrost_gem_new.gem-new-0"
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Build architecture",
+        "multi": false,
+        "name": "build_architecture",
+        "options": [],
+        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "\"%\"",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Google BigQuery",
+        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Build configuration",
+        "multi": false,
+        "name": "build_config_name",
+        "options": [],
+        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Test node",
+  "uid": "test-node",
+  "version": 32
+}
