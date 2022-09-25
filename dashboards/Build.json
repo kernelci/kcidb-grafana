@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1655724272880,
+  "iteration": 1664107150023,
   "links": [],
   "panels": [
     {
@@ -1143,7 +1143,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT log_excerpt FROM ${dataset}.builds WHERE id = ${id:json}))\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
+          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT log_excerpt FROM ${dataset}.builds WHERE id = ${id:json}), \"\\n\")\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
           "refId": "A",
           "select": [
             [
@@ -2573,5 +2573,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 9
+  "version": 10
 }
