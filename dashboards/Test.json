@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1664106988122,
+  "iteration": 1664206897901,
   "links": [],
   "panels": [
     {
@@ -918,7 +918,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT log_excerpt FROM ${dataset}.tests WHERE id = ${id:json}), \"\\n\")\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
+          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT REPLACE(REGEXP_REPLACE(log_excerpt, \"([^ ]) \", r'\\1​ '), \" \", \" ​\") FROM ${dataset}.tests WHERE id = ${id:json}), \"\\n\")\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
           "refId": "A",
           "select": [
             [
@@ -1272,5 +1272,5 @@
   "timezone": "",
   "title": "Test",
   "uid": "test",
-  "version": 6
+  "version": 7
 }
