@@ -5,7 +5,7 @@ setup and maintain an instance of [Grafana](https://grafana.com/) displaying
 [Linux Kernel CI reports](https://staging.kernelci.org:3000/) stored in a
 [KCIDB](https://github.com/kernelci/kcidb/) database.
 
-Write to [kernelci@groups.io](mailto:kernelci@groups.io) if you want to start
+Write to [kernelci@lists.linux.dev](mailto:kernelci@lists.linux.dev) if you want to start
 submitting results from your CI system, or if you want to receive automatic
 notifications of arriving results.
 
