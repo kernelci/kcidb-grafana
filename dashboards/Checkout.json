@@ -158,7 +158,7 @@
           "orderByCol": "1",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    id,\n    IF(log_url IS NULL, \"\", \"File\") AS log_url_text,\n    log_url,\n    origin,\n    IFNULL(git_repository_url, \"\") AS git_repository_url,\n    IFNULL(git_repository_branch, \"\") AS git_repository_branch,\n    IFNULL(git_commit_name, \"\") AS git_commit_name,\n    IFNULL(git_commit_hash, \"\") AS git_commit_hash,\n    IFNULL(patchset_hash, \"\") AS patchset_hash,\n    CASE valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IFNULL(comment, \"\") AS comment,\n    IFNULL(CAST(start_time AS STRING), \"\") AS start_time_str,\n    misc\nFROM ${dataset}.checkouts\nWHERE id=${id:json}",
+          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    id,\n    IF(log_url IS NULL, \"\", \"File\") AS log_url_text,\n    cached_url(log_url),\n    origin,\n    IFNULL(git_repository_url, \"\") AS git_repository_url,\n    IFNULL(git_repository_branch, \"\") AS git_repository_branch,\n    IFNULL(git_commit_name, \"\") AS git_commit_name,\n    IFNULL(git_commit_hash, \"\") AS git_commit_hash,\n    IFNULL(patchset_hash, \"\") AS patchset_hash,\n    CASE valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IFNULL(comment, \"\") AS comment,\n    IFNULL(CAST(start_time AS STRING), \"\") AS start_time_str,\n    misc\nFROM ${dataset}.checkouts\nWHERE id=${id:json}",
           "refId": "A",
           "select": [
             [
@@ -860,7 +860,7 @@
           "orderByCol": "2",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n    SELECT patchset_files\n    FROM ${dataset}.checkouts\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\n\nSELECT name, cached_url(url) AS url\nFROM UNNEST((\n    SELECT patchset_files\n    FROM ${dataset}.checkouts\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
