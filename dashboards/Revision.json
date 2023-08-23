@@ -841,7 +841,7 @@
           "orderByCol": "2",
           "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT *\nFROM UNNEST((\n    SELECT ANY_VALUE(patchset_files)\n    FROM ${dataset}.checkouts\n    WHERE\n        git_commit_hash = ${git_commit_hash:json} AND\n        patchset_hash = ${patchset_hash:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\n\nSELECT name, cached_url(url) AS url\nFROM UNNEST((\n    SELECT ANY_VALUE(patchset_files)\n    FROM ${dataset}.checkouts\n    WHERE\n        git_commit_hash = ${git_commit_hash:json} AND\n        patchset_hash = ${patchset_hash:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
           "refId": "A",
           "select": [
             [
