@@ -16,15 +16,15 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1676549074733,
+  "iteration": 1707495087953,
   "links": [],
   "panels": [
     {
-      "content": "Welcome to Linux Kernel CI report database (**KCIDB**) dashboard.\nHere you can find testing reports aggregated from multiple CI systems (\"**origins**\").\nThis is a work in progress, and we welcome contributions and participation.\nSee the source code for [the collection system][kcidb], and for [this dashboard][kcidb-grafana].\nWrite to [kernelci@lists.linux.dev][maillist] if you want to start submitting results from your CI system,\nor if you want to receive customized notifications of arriving results.\n\n[kcidb]: https://github.com/kernelci/kcidb/\n[kcidb-grafana]: https://github.com/kernelci/kcidb-grafana/\n[maillist]: mailto:kernelci@lists.linux.dev",
+      "content": "Welcome to Linux Kernel CI report database (**KCIDB**) dashboard.\nHere you can find testing reports aggregated from multiple CI systems (\"**origins**\"), sent in the past month.\nThis is a work in progress, and we welcome contributions and participation.\nSee the source code for [the collection system][kcidb], and for [this dashboard][kcidb-grafana].\nWrite to [kernelci@lists.linux.dev][maillist] if you want to start submitting results from your CI system,\nor if you want to receive customized notifications of arriving results.\n\n[kcidb]: https://github.com/kernelci/kcidb/\n[kcidb-grafana]: https://github.com/kernelci/kcidb-grafana/\n[maillist]: mailto:kernelci@lists.linux.dev",
       "datasource": null,
       "gridPos": {
         "h": 3,
-        "w": 18,
+        "w": 24,
         "x": 0,
         "y": 0
       },
