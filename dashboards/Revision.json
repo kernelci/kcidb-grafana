@@ -3354,8 +3354,8 @@
       {
         "current": {
           "selected": true,
-          "text": "kcidb_01",
-          "value": "kcidb_01"
+          "text": "kcidb_sample",
+          "value": "kcidb_sample"
         },
         "hide": 2,
         "label": null,
@@ -3363,11 +3363,11 @@
         "options": [
           {
             "selected": true,
-            "text": "kcidb_01",
-            "value": "kcidb_01"
+            "text": "kcidb_sample",
+            "value": "kcidb_sample"
           }
         ],
-        "query": "kcidb_01",
+        "query": "kcidb_sample",
         "skipUrlSync": false,
         "type": "constant"
       },
