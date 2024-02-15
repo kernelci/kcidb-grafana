@@ -180,7 +180,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -281,7 +281,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -416,7 +416,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -532,7 +532,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -640,7 +640,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 16,
@@ -1089,7 +1089,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {

@@ -122,7 +122,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -307,7 +307,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 4,
@@ -1121,7 +1121,7 @@
       "valueName": "first"
     },
     {
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1256,7 +1256,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1270,7 +1270,7 @@
     },
     {
       "content": "",
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1552,7 +1552,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "description": "",
       "fontSize": "100%",
       "gridPos": {
@@ -2103,7 +2103,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,

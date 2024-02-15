@@ -778,7 +778,7 @@
     {
       "cacheTimeout": null,
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 6,
@@ -871,7 +871,7 @@
       "type": "table"
     },
     {
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -884,7 +884,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -1306,7 +1306,7 @@
       "type": "table"
     },
     {
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1319,7 +1319,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,
@@ -2156,7 +2156,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2169,7 +2169,7 @@
     },
     {
       "content": "",
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2451,7 +2451,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "description": "",
       "fontSize": "100%",
       "gridPos": {
@@ -3002,7 +3002,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,

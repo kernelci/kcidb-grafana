@@ -415,7 +415,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -627,7 +627,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -848,7 +848,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -956,7 +956,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "description": "",
       "fontSize": "100%",
       "gridPos": {
@@ -1226,7 +1226,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 9,
@@ -1478,7 +1478,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 12,
@@ -1944,7 +1944,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -2387,7 +2387,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,
@@ -2773,7 +2773,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,

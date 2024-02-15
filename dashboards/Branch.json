@@ -307,7 +307,7 @@
     },
     {
       "columns": [],
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fontSize": "100%",
       "gridPos": {
         "h": 16,
@@ -759,7 +759,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -874,7 +874,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -985,7 +985,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Google BigQuery",
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
