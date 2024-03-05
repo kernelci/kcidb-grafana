@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1655724225166,
+  "id": 3,
+  "iteration": 1711106602934,
   "links": [],
   "panels": [
     {
@@ -41,7 +41,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
+      "urlTemplate": "/d/home/home?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -72,7 +72,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -130,23 +130,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.git_commit_hash AS git_commit_hash,\n    checkouts.patchset_hash AS patchset_hash,\n    STRING_AGG(DISTINCT checkouts.origin, \", \" ORDER BY checkouts.origin ASC) AS origins,\n    IFNULL(CAST(MIN(checkouts.start_time) AS STRING), \"\") AS checkouts_start_time_str,\n    MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n    MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n    MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN\n    ${dataset}.builds AS builds\n    ON\n        builds.checkout_id = checkouts.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\nLEFT OUTER JOIN\n    ${dataset}.tests AS tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        tests.origin LIKE ${origin}\nWHERE\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.origin LIKE ${origin}\nGROUP BY\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    checkouts.git_commit_hash AS git_commit_hash,\n    checkouts.patchset_hash AS patchset_hash,\n    STRING_AGG(DISTINCT checkouts.origin, ', ' ORDER BY checkouts.origin ASC) AS origins,\n    COALESCE(CAST(MIN(checkouts.start_time) AS TEXT), '') AS checkouts_start_time_str,\n    MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n    MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n    MAX((CASE tests.status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    checkouts\nLEFT OUTER JOIN\n    builds\n    ON\n        builds.checkout_id = checkouts.id AND\n        COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n        COALESCE(builds.config_name LIKE $build_config_name, TRUE) AND\n        builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        builds.origin LIKE $origin\nLEFT OUTER JOIN\n    tests\n    ON\n        tests.build_id = builds.id AND\n        tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        tests.origin LIKE $origin\nWHERE\n    checkouts.git_commit_hash = '$git_commit_hash' AND\n    checkouts.patchset_hash = '$patchset_hash' AND\n    checkouts.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    checkouts.origin LIKE $origin\nGROUP BY\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -778,7 +777,7 @@
     {
       "cacheTimeout": null,
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 6,
@@ -838,23 +837,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "2",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\n\nSELECT name, cached_url(url) AS url\nFROM UNNEST((\n    SELECT ANY_VALUE(patchset_files)\n    FROM ${dataset}.checkouts\n    WHERE\n        git_commit_hash = ${git_commit_hash:json} AND\n        patchset_hash = ${patchset_hash:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT\n    patchset_file ->> 'name' AS name,\n    format_cached_url(patchset_file ->> 'url') AS url\nFROM\n    jsonb_array_elements((\n        SELECT FIRST(patchset_files)\n        FROM checkouts\n        WHERE\n            git_commit_hash = '$git_commit_hash' AND\n            patchset_hash = '$patchset_hash' AND\n            start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n            origin LIKE $origin\n    )) AS patchset_file\n",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -871,7 +867,7 @@
       "type": "table"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -884,7 +880,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -915,7 +911,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "valid_num",
           "thresholds": [
@@ -969,7 +965,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "git_repository_url_str",
           "thresholds": [],
@@ -989,7 +985,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "git_repository_branch_str",
           "thresholds": [],
@@ -1009,7 +1005,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "git_commit_name_str",
           "thresholds": [],
@@ -1029,7 +1025,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "git_commit_hash_short_str",
           "thresholds": [],
@@ -1049,7 +1045,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "start_time_str",
           "thresholds": [],
@@ -1069,7 +1065,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "builds_valid_num",
           "thresholds": [
@@ -1106,7 +1102,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "tests_status_num",
           "thresholds": [
@@ -1203,7 +1199,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -1223,7 +1219,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "patchset_hash_short_str",
           "thresholds": [],
@@ -1260,7 +1256,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View checkout",
-          "linkUrl": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "/.*/",
           "thresholds": [],
@@ -1273,23 +1269,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    checkouts.id,\n    checkouts.origin AS origin,\n    IFNULL(checkouts.git_repository_url, \"\") AS git_repository_url_str,\n    IFNULL(checkouts.git_repository_branch, \"\") AS git_repository_branch_str,\n    IFNULL(checkouts.git_commit_name, \"\") AS git_commit_name_str,\n    IFNULL(CAST(checkouts.start_time AS STRING), \"\") AS start_time_str,\n    CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IFNULL(builds.valid_num, -1) AS builds_valid_num,\n    IFNULL(builds.tests_status_num, -12) AS tests_status_num\nFROM\n    ${dataset}.checkouts AS checkouts\nLEFT OUTER JOIN (\n    SELECT\n        builds.checkout_id AS checkout_id,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS valid_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        ${dataset}.builds\n    LEFT OUTER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id AND\n            tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n            tests.origin LIKE ${origin}\n    WHERE\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        builds.origin LIKE ${origin}\n    GROUP BY\n        checkout_id\n) AS builds\n    ON\n        builds.checkout_id = checkouts.id\nWHERE\n    checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    checkouts.git_commit_hash = ${git_commit_hash:json} AND\n    checkouts.patchset_hash = ${patchset_hash:json} AND\n    checkouts.origin LIKE ${origin}\nORDER BY\n    valid_num DESC,\n    builds_valid_num DESC,\n    tests_status_num DESC,\n    checkouts.start_time DESC",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    checkouts.id,\n    checkouts.origin AS origin,\n    COALESCE(checkouts.git_repository_url, '') AS git_repository_url_str,\n    COALESCE(checkouts.git_repository_branch, '') AS git_repository_branch_str,\n    COALESCE(checkouts.git_commit_name, '') AS git_commit_name_str,\n    COALESCE(CAST(checkouts.start_time AS TEXT), '') AS start_time_str,\n    CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n    MAX((CASE tests.status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM\n    checkouts\nLEFT OUTER JOIN builds ON builds.checkout_id = checkouts.id\nLEFT OUTER JOIN tests ON tests.build_id = builds.id\nWHERE\n    checkouts.origin LIKE $origin AND\n    checkouts.git_commit_hash = '$git_commit_hash' AND\n    checkouts.patchset_hash = '$patchset_hash' AND\n    checkouts.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY\n    checkouts.id\nORDER BY\n    valid_num DESC NULLS LAST,\n    builds_valid_num DESC NULLS LAST,\n    tests_status_num DESC NULLS LAST,\n    checkouts.start_time DESC NULLS LAST",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1306,7 +1299,7 @@
       "type": "table"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1319,7 +1312,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,
@@ -1349,7 +1342,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "valid_num",
           "thresholds": [
@@ -1403,7 +1396,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "tests_status_num",
           "thresholds": [
@@ -1500,7 +1493,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -1520,7 +1513,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "comment",
           "thresholds": [],
@@ -1540,7 +1533,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "architecture",
           "thresholds": [],
@@ -1560,7 +1553,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "start_time_str",
           "thresholds": [],
@@ -1580,7 +1573,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
@@ -1600,7 +1593,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "config_name",
           "thresholds": [],
@@ -1620,7 +1613,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View build",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "compiler",
           "sanitize": true,
@@ -1651,23 +1644,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.id,\n    builds.origin,\n    IFNULL(builds.architecture, \"\") AS architecture,\n    IFNULL(REGEXP_REPLACE(builds.compiler, \"^(.{48}).+$\", \"\\\\1…\"), \"\") AS compiler,\n    IFNULL(builds.config_name, \"\") AS config_name,\n    IFNULL(CAST(builds.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(FORMAT_TIME(\"%H:%M:%E3S\",\n                       TIME_ADD(TIME \"00:00:00\",\n                                INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND)),\n           \"\") as duration_str,\n    IFNULL(builds.comment, \"\") AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    tests.status_num AS tests_status_num\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nLEFT OUTER JOIN (\n    SELECT\n        build_id,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM\n        ${dataset}.tests\n    GROUP BY\n        build_id\n) AS tests\n    ON\n        tests.build_id = builds.id\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nORDER BY\n    valid_num DESC,\n    tests_status_num DESC,\n    builds.start_time DESC",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    builds.id,\n    builds.origin,\n    COALESCE(builds.architecture, '') AS architecture,\n    COALESCE(REGEXP_REPLACE(builds.compiler, '^(.{48}).+$', '\\1…'), '') AS compiler,\n    COALESCE(builds.config_name, '') AS config_name,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'), '') AS duration_str,\n    COALESCE(builds.comment, '') AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    MAX((CASE tests.status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\nFROM builds\nINNER JOIN checkouts ON builds.checkout_id = checkouts.id\nLEFT OUTER JOIN tests ON tests.build_id = builds.id\nWHERE\n    builds.origin LIKE $origin AND\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    checkouts.git_commit_hash = '$git_commit_hash' AND\n    checkouts.patchset_hash = '$patchset_hash' AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY\n    builds.id\nORDER BY\n    valid_num DESC NULLS LAST,\n    tests_status_num DESC NULLS LAST,\n    builds.start_time DESC NULLS LAST",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1691,7 +1681,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1732,23 +1722,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(builds.valid, \"PASS\", \"FAIL\") AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.valid IS NOT NULL AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY builds.valid\nORDER BY metric",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    CASE WHEN builds.valid THEN 'PASS' ELSE 'FAIL' END AS metric,\n    COUNT(builds.id) AS value\nFROM\n    builds\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash' AND\n        checkouts.origin LIKE $origin\nWHERE\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    builds.valid IS NOT NULL AND\n    builds.origin LIKE $origin AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY builds.valid\nORDER BY metric",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1809,7 +1798,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1850,23 +1839,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    builds.architecture AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.origin LIKE ${origin} AND\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    builds.architecture LIKE ${build_architecture} AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 10",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    builds.architecture AS metric,\n    COUNT(builds.id) AS value\nFROM\n    builds\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash' AND\n        checkouts.origin LIKE $origin\nWHERE\n    builds.origin LIKE $origin AND\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    builds.architecture LIKE $build_architecture AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE) AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 10",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1927,7 +1915,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1968,23 +1956,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    builds.config_name AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.origin LIKE ${origin} AND\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    builds.config_name LIKE ${build_config_name} AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    builds.config_name AS metric,\n    COUNT(builds.id) AS value\nFROM\n    builds\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash' AND\n        checkouts.origin LIKE $origin\nWHERE\n    builds.origin LIKE $origin AND\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    builds.config_name LIKE $build_config_name AND\n    NOT builds.valid\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2045,7 +2032,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2086,23 +2073,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IF(LENGTH(builds.compiler) > 32, CONCAT(SUBSTR(builds.compiler, 1, 31), \"…\"), builds.compiler) AS metric,\n    COUNT(builds.id) AS value\nFROM\n    ${dataset}.builds AS builds\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json} AND\n        checkouts.origin LIKE ${origin}\nWHERE\n    builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    NOT builds.valid AND\n    compiler IS NOT NULL AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    CASE WHEN LENGTH(builds.compiler) > 32 THEN CONCAT(SUBSTR(builds.compiler, 1, 31), '…') ELSE builds.compiler END AS metric,\n    COUNT(builds.id) AS value\nFROM\n    builds\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash' AND\n        checkouts.origin LIKE $origin\nWHERE\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    NOT builds.valid AND\n    compiler IS NOT NULL AND\n    builds.origin LIKE $origin AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2156,7 +2142,7 @@
       }
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2169,7 +2155,7 @@
     },
     {
       "content": "",
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2185,7 +2171,7 @@
       "type": "text"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 2,
         "w": 2,
@@ -2199,23 +2185,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
+          "rawSql": "SELECT\n    CASE WHEN '$test_path' = '' THEN 'Root' ELSE '$test_path' END AS node_title,\n    CASE WHEN '$test_path' = '' THEN '' ELSE '⮌ Parent' END AS node_parent_title,\n    CASE\n        WHEN POSITION('.' IN '$test_path') = 0 THEN ''\n        ELSE SUBSTRING('$test_path' FROM 1 FOR LENGTH('$test_path') - POSITION('.' IN REVERSE('$test_path')))\n    END AS node_parent_path,\n    CASE WHEN '$test_path' = '' THEN '' ELSE '⮌ Root' END AS node_root_title,\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2230,7 +2215,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
       "valueFontSize": "50%"
     },
     {
@@ -2254,7 +2239,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -2451,7 +2436,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "description": "",
       "fontSize": "100%",
       "gridPos": {
@@ -2482,7 +2467,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -2579,7 +2564,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "origins",
           "thresholds": [],
@@ -2599,7 +2584,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "name",
           "thresholds": [],
@@ -2619,7 +2604,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "architectures",
           "thresholds": [],
@@ -2639,7 +2624,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "min_start_time_str",
           "thresholds": [],
@@ -2659,7 +2644,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "total_duration_str",
           "thresholds": [],
@@ -2679,7 +2664,7 @@
           "decimals": 0,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-git_commit_hash=${git_commit_hash}&var-patchset_hash=${patchset_hash}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "tests",
           "thresholds": [],
@@ -2727,23 +2712,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    architectures,\n    tests,\n    IFNULL(CAST(min_start_time AS STRING), \"\") AS min_start_time_str,\n    IFNULL(\n        FORMAT_TIME(\n            \"%H:%M:%E3S\",\n            TIME_ADD(\n                TIME \"00:00:00\",\n                INTERVAL DATETIME_DIFF(max_end_time, min_start_time, MILLISECOND) MILLISECOND\n            )\n        ),\n        \"\"\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, \", \") AS architectures,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            builds.architecture,\n            tests.start_time,\n            TIMESTAMP_ADD(tests.start_time, INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND) AS end_time,\n            tests.status,\n            tests.waived\n        FROM ${dataset}.tests\n        INNER JOIN\n            ${dataset}.builds AS builds\n            ON\n                tests.build_id = builds.id AND\n                IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n                IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n        INNER JOIN\n            ${dataset}.checkouts AS checkouts\n            ON\n                builds.checkout_id = checkouts.id AND\n                checkouts.git_commit_hash = ${git_commit_hash:json} AND\n                checkouts.patchset_hash = ${patchset_hash:json}\n        WHERE\n            IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            tests.origin LIKE ${origin} AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    status_num DESC,\n    name ASC",
+          "rawSql": "/* Massage */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    origins,\n    path,\n    CASE\n        WHEN '$test_path' = '' THEN path\n        ELSE substring(path FROM length('$test_path') + 2)\n    END AS name,\n    architectures,\n    tests,\n    COALESCE(CAST(min_start_time AS TEXT), '') AS min_start_time_str,\n    COALESCE(\n        FLOOR(EXTRACT(epoch FROM AGE(max_end_time, min_start_time))/3600) ||\n        TO_CHAR(AGE(max_end_time, min_start_time), ':MI:SS.MS'),\n        ''\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, ', ') AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        STRING_AGG(DISTINCT architecture, ', ') AS architectures,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /*\n             * Prefix one level deeper than the displayed test's path,\n             * i.e. the prefix children of this test should have\n             */\n            COALESCE(\n                /*\n                 * Handle the parent node of this test being displayed:\n                 * cut the test path up to and including the first dot\n                 * after the currently-displayed test's path, if possible.\n                 */\n                LEFT(\n                    tests.path,\n                    LENGTH('$test_path') +\n                    NULLIF(POSITION('.' IN SUBSTRING(tests.path FROM LENGTH('$test_path') + 2)), 0) +\n                    1\n                ),\n                /* Handle this test's node being displayed */\n                tests.path || '.'\n            ) AS base_prefix,\n            builds.architecture,\n            tests.start_time,\n            tests.start_time + (tests.duration * INTERVAL '1 second') AS end_time,\n            tests.status,\n            tests.waived\n        FROM tests\n        INNER JOIN\n            builds\n            ON\n                tests.build_id = builds.id AND\n                COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n                COALESCE(builds.config_name LIKE $build_config_name, TRUE)\n        INNER JOIN\n            checkouts AS checkouts\n            ON\n                builds.checkout_id = checkouts.id AND\n                checkouts.git_commit_hash = '$git_commit_hash' AND\n                checkouts.patchset_hash = '$patchset_hash'\n        WHERE\n            tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n            tests.origin LIKE $origin AND\n            ('$test_path' = '' OR STARTS_WITH(tests.path, '$test_path' || '.'))\n    ) AS filtered_tests\n    GROUP BY\n        base_prefix\n) AS aggregated_tests\nORDER BY\n    status_num DESC,\n    name ASC",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2770,7 +2752,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2812,23 +2794,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY metric",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    COALESCE(tests.status::text, 'UNKNOWN') AS metric,\n    COUNT(tests.id) AS value\nFROM tests\nINNER JOIN\n    builds\n    ON\n        tests.build_id = builds.id AND\n        COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n        COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash'\nWHERE\n    COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR STARTS_WITH(tests.path, '$test_path' || '.'))\nGROUP BY metric\nORDER BY metric",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2889,7 +2870,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2931,23 +2912,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.status = \"FAIL\" AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0 / 1000) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM tests\nINNER JOIN\n    builds\n    ON\n        tests.build_id = builds.id AND\n        COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n        COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash'\nWHERE\n    COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    NOT tests.waived AND\n    tests.status = 'FAIL' AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR STARTS_WITH(tests.path, '$test_path' || '.'))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "tests",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -3002,7 +2982,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,
@@ -3048,7 +3028,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "pattern": "start_time_str",
           "thresholds": [],
           "type": "string",
@@ -3067,7 +3047,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -3164,7 +3144,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -3184,7 +3164,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "path",
           "thresholds": [],
@@ -3204,7 +3184,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "comment",
           "thresholds": [],
@@ -3224,7 +3204,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
@@ -3244,7 +3224,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "architecture",
           "thresholds": [],
@@ -3274,23 +3254,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    builds.architecture,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nINNER JOIN\n    ${dataset}.builds AS builds\n    ON\n        tests.build_id = builds.id AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nINNER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = ${git_commit_hash:json} AND\n        checkouts.patchset_hash = ${patchset_hash:json}\nWHERE\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    builds.architecture,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    (CASE status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM tests\nINNER JOIN\n    builds\n    ON\n        tests.build_id = builds.id AND\n        COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n        COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nINNER JOIN\n    checkouts\n    ON\n        builds.checkout_id = checkouts.id AND\n        checkouts.git_commit_hash = '$git_commit_hash' AND\n        checkouts.patchset_hash = '$patchset_hash'\nWHERE\n    tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR STARTS_WITH(tests.path, '$test_path' || '.'))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -3315,8 +3292,26 @@
     "list": [
       {
         "current": {
-          "text": "239d588d7e556eeef28f79a75e252e3992fb8b85",
-          "value": "239d588d7e556eeef28f79a75e252e3992fb8b85"
+          "selected": true,
+          "text": "production",
+          "value": "production"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Database",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "postgres",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "14f57ea778ab8966494728406fcbc9cf88093905",
+          "value": "14f57ea778ab8966494728406fcbc9cf88093905"
         },
         "hide": 0,
         "label": "Commit hash",
@@ -3328,7 +3323,7 @@
             "value": ""
           }
         ],
-        "query": "239d588d7e556eeef28f79a75e252e3992fb8b85",
+        "query": "14f57ea778ab8966494728406fcbc9cf88093905",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -3352,41 +3347,21 @@
         "type": "textbox"
       },
       {
-        "current": {
-          "selected": true,
-          "text": "kcidb_sample",
-          "value": "kcidb_sample"
-        },
-        "hide": 2,
-        "label": null,
-        "name": "dataset",
-        "options": [
-          {
-            "selected": true,
-            "text": "kcidb_sample",
-            "value": "kcidb_sample"
-          }
-        ],
-        "query": "kcidb_sample",
-        "skipUrlSync": false,
-        "type": "constant"
-      },
-      {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT origin FROM checkouts",
         "hide": 0,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "query": "SELECT DISTINCT origin FROM checkouts",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3398,21 +3373,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT architecture FROM builds",
         "hide": 0,
         "includeAll": true,
         "label": "Build architecture",
         "multi": false,
         "name": "build_architecture",
         "options": [],
-        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT architecture FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3424,21 +3399,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT config_name FROM builds",
         "hide": 0,
         "includeAll": true,
         "label": "Build configuration",
         "multi": false,
         "name": "build_config_name",
         "options": [],
-        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT config_name FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3492,5 +3467,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 23
+  "version": 9
 }

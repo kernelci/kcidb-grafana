@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 3,
-  "iteration": 1664206861665,
+  "id": 4,
+  "iteration": 1711106714888,
   "links": [],
   "panels": [
     {
@@ -41,7 +41,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
+      "urlTemplate": "/d/home/home?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -66,7 +66,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_17}&var-patchset_hash=${__cell_18}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_17}&var-patchset_hash=${__cell_18}",
       "valueFontSize": "50%"
     },
     {
@@ -91,7 +91,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+      "urlTemplate": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
       "valueFontSize": "50%"
     },
     {
@@ -122,7 +122,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -180,23 +180,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    builds.checkout_id,\n    builds.id,\n    builds.origin,\n    builds.comment,\n    builds.architecture,\n    IF(builds.config_name IS NULL, \"unnamed\", builds.config_name) AS config_name,\n    IFNULL(cached_url(builds.config_url), \"\") AS config_url,\n    IFNULL(CAST(builds.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n       FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((builds.duration * 1000) AS INT64) MILLISECOND)),\n       \"\"\n    ) as duration_str,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    IF(builds.log_url IS NULL, \"\", \"File\") as log_url_text,\n    cached_url(builds.log_url),\n    builds.compiler,\n    builds.command,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    builds.misc,\n    tests.status_num AS tests_status_num\nFROM ${dataset}.builds AS builds\nLEFT OUTER JOIN ${dataset}.checkouts AS checkouts\n    ON checkouts.id = builds.checkout_id\nLEFT OUTER JOIN (\n    SELECT\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM ${dataset}.tests\n    WHERE\n        build_id = ${id:json} AND\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n        origin LIKE ${origin}\n) AS tests ON TRUE\nWHERE builds.id = ${id:json}",
+          "rawSql": "SELECT\n    CASE\n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE\n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE\n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    builds.checkout_id,\n    builds.id,\n    builds.origin,\n    builds.comment,\n    builds.architecture,\n    COALESCE(builds.config_name, 'unnamed') AS config_name,\n    COALESCE(format_cached_url(builds.config_url), '') AS config_url,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    CASE \n        WHEN builds.valid = false THEN 1 \n        WHEN builds.valid = true THEN 0 \n        ELSE -1 \n    END AS valid_num,\n    CASE \n        WHEN builds.log_url IS NULL THEN '' \n        ELSE 'File' \n    END as log_url_text,\n    format_cached_url(builds.log_url),\n    builds.compiler,\n    builds.command,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    builds.misc,\n    tests.status_num AS tests_status_num\nFROM builds\nLEFT OUTER JOIN checkouts\n    ON checkouts.id = builds.checkout_id\nLEFT OUTER JOIN (\n    SELECT\n        MAX(\n            CASE \n                WHEN status = 'ERROR' THEN 5 \n                WHEN status = 'FAIL' THEN 4 \n                WHEN status = 'PASS' THEN 3 \n                WHEN status = 'DONE' THEN 2 \n                WHEN status = 'SKIP' THEN 1 \n                ELSE 0 \n            END - \n            CASE \n                WHEN waived = false THEN 0 \n                WHEN waived = true THEN 1 \n                ELSE 2 \n            END * 6\n        ) AS status_num\n    FROM tests\n    WHERE\n        build_id = '$id' AND\n        start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        origin LIKE ${origin}\n) AS tests ON TRUE\nWHERE builds.id = '$id'",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -307,7 +306,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 4,
@@ -367,23 +366,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\nSELECT name, cached_url(url) AS url\nFROM UNNEST((\n    SELECT output_files\n    FROM ${dataset}.builds\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT\n    output_file ->> 'name' AS name,\n    format_cached_url(output_file ->> 'url') AS url\nFROM\n    builds,\n    jsonb_array_elements(builds.output_files) AS output_file\nWHERE\n    builds.id = '$id'",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1121,7 +1117,7 @@
       "valueName": "first"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1140,23 +1136,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT REPLACE(REGEXP_REPLACE(log_excerpt, \"([^ ]) \", r'\\1​ '), \" \", \" ​\") FROM ${dataset}.builds WHERE id = ${id:json}), \"\\n\")\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
+          "rawSql": "SELECT\n    (TIMESTAMP $__timeFrom() + (ordinality * interval '1 second')) AS time,\n    line AS message\nFROM\n    unnest(string_to_array((\n        SELECT\n            regexp_replace(regexp_replace(log_excerpt, '([^ ]) ', E'\\\\1​ '), ' ', ' ​') AS solid_log_excerpt\n        FROM\n            builds\n        WHERE\n            id = '$id'\n    ), E'\\n')) WITH ORDINALITY AS lines(line, ordinality)",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1256,7 +1251,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1270,7 +1265,7 @@
     },
     {
       "content": "",
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1286,7 +1281,7 @@
       "type": "text"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 2,
         "w": 2,
@@ -1300,23 +1295,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${test_path:json} = \"\", \"Root\", ${test_path:json}) AS node_title,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Parent\") AS node_parent_title,\n    IF(\n        STRPOS(${test_path:json}, \".\") = 0,\n        \"\",\n        LEFT(${test_path:json}, CHARACTER_LENGTH(${test_path:json}) - STRPOS(REVERSE(${test_path:json}), \".\"))\n    ) AS node_parent_path,\n    IF(${test_path:json} = \"\", \"\", \"⮌ Root\") AS node_root_title,\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param",
+          "rawSql": "SELECT\n    CASE WHEN '$test_path' = '' THEN 'Root' ELSE '$test_path' END AS node_title,\n    CASE WHEN '$test_path' = '' THEN '' ELSE '⮌ Parent' END AS node_parent_title,\n    CASE\n        WHEN POSITION('.' IN '$test_path') = 0 THEN ''\n        ELSE SUBSTRING('$test_path' FROM 1 FOR LENGTH('$test_path') - POSITION('.' IN REVERSE('$test_path')))\n    END AS node_parent_path,\n    CASE WHEN '$test_path' = '' THEN '' ELSE '⮌ Root' END AS node_root_title,\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1331,7 +1325,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
+      "urlTemplate": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=",
       "valueFontSize": "50%"
     },
     {
@@ -1355,7 +1349,7 @@
       "timeShift": null,
       "title": "",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
+      "urlTemplate": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_4}&var-build_architecture=${__cell_5}&var-build_config_name=${__cell_6}&var-test_path=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -1446,7 +1440,7 @@
       "tableColumn": "status_num",
       "targets": [
         {
-          "panelId": 53,
+          "panelId": 47,
           "refId": "A"
         }
       ],
@@ -1552,7 +1546,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "description": "",
       "fontSize": "100%",
       "gridPos": {
@@ -1583,7 +1577,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -1680,7 +1674,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "origins",
           "thresholds": [],
@@ -1700,7 +1694,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "name",
           "thresholds": [],
@@ -1720,7 +1714,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "architectures",
           "thresholds": [],
@@ -1740,7 +1734,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "min_start_time_str",
           "thresholds": [],
@@ -1760,7 +1754,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "total_duration_str",
           "thresholds": [],
@@ -1780,7 +1774,7 @@
           "decimals": 0,
           "link": true,
           "linkTooltip": "View node",
-          "linkUrl": "/d/build/build?orgId=1&var-dataset=${dataset}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
+          "linkUrl": "/d/build/build?orgId=1&var-datasource=${datasource}&var-id=${id}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_4}",
           "mappingType": 1,
           "pattern": "tests",
           "thresholds": [],
@@ -1828,23 +1822,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    origins,\n    path,\n    IF(${test_path:json} = \"\", path, SUBSTR(path, CHARACTER_LENGTH(${test_path:json}) + 2)) AS name,\n    tests,\n    IFNULL(CAST(min_start_time AS STRING), \"\") AS min_start_time_str,\n    IFNULL(\n        FORMAT_TIME(\n            \"%H:%M:%E3S\",\n            TIME_ADD(\n                TIME \"00:00:00\",\n                INTERVAL DATETIME_DIFF(max_end_time, min_start_time, MILLISECOND) MILLISECOND\n            )\n        ),\n        \"\"\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, \", \") AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /* Prefix one level deeper than the displayed test's path */\n            IFNULL(\n                NULLIF(\n                    /*\n                     * Cut the test path up to and including the first dot\n                     * after the currently-displayed test's path\n                     */\n                    LEFT(\n                        tests.path,\n                        INSTR(tests.path, \".\", CHARACTER_LENGTH(${test_path:json}) + 2)\n                    ),\n                    \"\"\n                ),\n                tests.path || \".\"\n            ) AS base_prefix,\n            tests.start_time,\n            TIMESTAMP_ADD(tests.start_time, INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND) AS end_time,\n            tests.status,\n            tests.waived\n        FROM ${dataset}.tests\n        WHERE\n            tests.build_id = ${id:json} AND\n            IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            tests.origin LIKE ${origin} AND\n            (${test_path:json} = \"\" OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\n    )\n    GROUP BY\n        base_prefix\n)\nORDER BY\n    status_num DESC,\n    name ASC",
+          "rawSql": "/* Massage */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    origins,\n    path,\n    CASE\n        WHEN '$test_path' = '' THEN path\n        ELSE substring(path FROM length('$test_path') + 2)\n    END AS name,\n    tests,\n    COALESCE(CAST(min_start_time AS TEXT), '') AS min_start_time_str,\n    COALESCE(\n        FLOOR(EXTRACT(epoch FROM AGE(max_end_time, min_start_time))/3600) ||\n        TO_CHAR(AGE(max_end_time, min_start_time), ':MI:SS.MS'),\n        ''\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, ', ') AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /*\n             * Prefix one level deeper than the displayed test's path,\n             * i.e. the prefix children of this test should have\n             */\n            COALESCE(\n                /*\n                 * Handle the parent node of this test being displayed:\n                 * cut the test path up to and including the first dot\n                 * after the currently-displayed test's path, if possible.\n                 */\n                LEFT(\n                    tests.path,\n                    LENGTH('$test_path') +\n                    NULLIF(POSITION('.' IN SUBSTRING(tests.path FROM LENGTH('$test_path') + 2)), 0) +\n                    1\n                ),\n                /* Handle this test's node being displayed */\n                tests.path || '.'\n            ) AS base_prefix,\n            tests.start_time,\n            tests.start_time + (tests.duration * INTERVAL '1 second') AS end_time,\n            tests.status,\n            tests.waived\n        FROM tests\n        WHERE\n            tests.build_id = '$id' AND\n            COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n            tests.origin LIKE $origin AND\n            ('$test_path' = '' OR STARTS_WITH(tests.path, '$test_path' || '.'))\n    ) AS filtered_tests\n    GROUP BY\n        base_prefix\n) AS aggregated_tests\nORDER BY\n    status_num DESC,\n    name ASC\n",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1871,7 +1862,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "production",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1913,23 +1904,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY metric",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    COALESCE(tests.status::text, 'UNKNOWN') AS metric,\n    COUNT(tests.id) AS value\nFROM tests\nWHERE\n    tests.build_id = '$id' AND\n    COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    NOT tests.waived AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR STARTS_WITH(tests.path, '$test_path' || '.'))\nGROUP BY metric\nORDER BY metric",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1990,7 +1980,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2032,23 +2022,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    TIMESTAMP_MILLIS(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    NOT tests.waived AND\n    tests.status = \"FAIL\" AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
+          "rawSql": "SELECT\n    TO_TIMESTAMP(0) AS time,\n    tests.path AS metric,\n    COUNT(tests.id) AS value\nFROM tests\nWHERE\n    tests.build_id = '$id' AND\n    COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    NOT tests.waived AND\n    tests.status = 'FAIL' AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR STARTS_WITH(tests.path, '$test_path' || '.'))\nGROUP BY metric\nORDER BY value DESC\nLIMIT 5",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2103,7 +2092,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 11,
@@ -2149,7 +2138,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "pattern": "start_time_str",
           "thresholds": [],
           "type": "string",
@@ -2168,7 +2157,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "status_num",
           "thresholds": [
@@ -2265,7 +2254,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "origin",
           "thresholds": [],
@@ -2285,7 +2274,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "path",
           "thresholds": [],
@@ -2305,7 +2294,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "comment",
           "thresholds": [],
@@ -2325,7 +2314,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "duration_str",
           "thresholds": [],
@@ -2345,7 +2334,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View test",
-          "linkUrl": "/d/test/test?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+          "linkUrl": "/d/test/test?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
           "mappingType": 1,
           "pattern": "architecture",
           "thresholds": [],
@@ -2375,23 +2364,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num\nFROM ${dataset}.tests\nWHERE\n    tests.build_id = ${id:json} AND\n    IFNULL(tests.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n    tests.origin LIKE ${origin} AND\n    (${test_path:json} = \"\" OR tests.path = ${test_path:json} OR STARTS_WITH(tests.path, ${test_path:json} || \".\"))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    CASE \n        WHEN status = 'ERROR' THEN 5 \n        WHEN status = 'FAIL' THEN 4 \n        WHEN status = 'PASS' THEN 3 \n        WHEN status = 'DONE' THEN 2 \n        WHEN status = 'SKIP' THEN 1 \n        ELSE 0 \n    END - \n    CASE \n        WHEN waived = false THEN 0 \n        WHEN waived = true THEN 1 \n        ELSE 2 \n    END * 6 AS status_num\nFROM tests\nWHERE\n    tests.build_id = '$id' AND\n    COALESCE(start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR tests.path LIKE ('$test_path' || '.%'))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -2408,6 +2394,7 @@
       "type": "table"
     }
   ],
+  "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -2415,8 +2402,26 @@
     "list": [
       {
         "current": {
-          "text": "kernelci:kernelci.org:62b04fea42337e419ba39c3d",
-          "value": "kernelci:kernelci.org:62b04fea42337e419ba39c3d"
+          "selected": true,
+          "text": "production",
+          "value": "production"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Database",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "postgres",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e",
+          "value": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e"
         },
         "hide": 2,
         "label": "ID",
@@ -2428,46 +2433,26 @@
             "value": ""
           }
         ],
-        "query": "kernelci:kernelci.org:62b04fea42337e419ba39c3d",
+        "query": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
-        "current": {
-          "selected": true,
-          "text": "kcidb_sample",
-          "value": "kcidb_sample"
-        },
-        "hide": 2,
-        "label": null,
-        "name": "dataset",
-        "options": [
-          {
-            "selected": true,
-            "text": "kcidb_sample",
-            "value": "kcidb_sample"
-          }
-        ],
-        "query": "kcidb_sample",
-        "skipUrlSync": false,
-        "type": "constant"
-      },
-      {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT origin FROM checkouts",
         "hide": 0,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "query": "SELECT DISTINCT origin FROM checkouts",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -2479,21 +2464,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT architecture FROM builds",
         "hide": 2,
         "includeAll": true,
         "label": "Build architecture",
         "multi": false,
         "name": "build_architecture",
         "options": [],
-        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT architecture FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -2505,21 +2490,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT config_name FROM builds",
         "hide": 2,
         "includeAll": true,
         "label": "Build configuration",
         "multi": false,
         "name": "build_config_name",
         "options": [],
-        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT config_name FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -2573,5 +2558,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 11
+  "version": 6
 }

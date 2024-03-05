@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1664206897901,
+  "id": 5,
+  "iteration": 1711106720948,
   "links": [],
   "panels": [
     {
@@ -41,7 +41,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
+      "urlTemplate": "/d/home/home?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -66,7 +66,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_14}&var-patchset_hash=${__cell_15}",
+      "urlTemplate": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_14}&var-patchset_hash=${__cell_15}",
       "valueFontSize": "50%"
     },
     {
@@ -91,7 +91,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/checkout/checkout?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_13}",
+      "urlTemplate": "/d/checkout/checkout?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_13}",
       "valueFontSize": "50%"
     },
     {
@@ -116,7 +116,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/build/build?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
+      "urlTemplate": "/d/build/build?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-id=${__cell_3}",
       "valueFontSize": "50%"
     },
     {
@@ -147,7 +147,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -205,23 +205,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    tests.build_id,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    IFNULL(CAST(tests.start_time AS STRING), \"\") AS start_time_str,\n    IFNULL(\n        FORMAT_TIME(\"%H:%M:%E3S\", TIME_ADD(TIME \"00:00:00\", INTERVAL CAST((tests.duration * 1000) AS INT64) MILLISECOND)),\n        \"\"\n    ) AS duration_str,\n    (CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n        (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6 AS status_num,\n    tests.environment.comment AS environment_comment,\n    tests.environment.misc AS environment_misc,\n    builds.checkout_id,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    tests.misc,\n    IF(tests.log_url IS NULL, \"\", \"File\") as log_url_text,\n    cached_url(tests.log_url),\nFROM ${dataset}.tests AS tests\nLEFT OUTER JOIN\n    ${dataset}.builds AS builds\n    ON tests.build_id = builds.id\nLEFT OUTER JOIN\n    ${dataset}.checkouts AS checkouts\n    ON builds.checkout_id = checkouts.id\nWHERE tests.id = ${id:json}",
+          "rawSql": "SELECT\n    CASE \n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE \n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE \n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    tests.build_id,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    (CASE tests.status \n        WHEN 'ERROR' THEN 5 \n        WHEN 'FAIL' THEN 4 \n        WHEN 'PASS' THEN 3 \n        WHEN 'DONE' THEN 2 \n        WHEN 'SKIP' THEN 1 \n        ELSE 0 \n    END) -\n    (CASE tests.waived \n        WHEN false THEN 0 \n        WHEN true THEN 1 \n        ELSE 2 \n    END) * 6 AS status_num,\n    tests.environment_comment AS environment_comment,\n    tests.environment_misc AS environment_misc,\n    builds.checkout_id,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    tests.misc,\n    CASE \n        WHEN tests.log_url IS NULL THEN ''\n        ELSE 'File'\n    END AS log_url_text,\n    format_cached_url(tests.log_url) AS cached_log_url\nFROM tests\nLEFT OUTER JOIN\n    builds\n    ON tests.build_id = builds.id\nLEFT OUTER JOIN\n    checkouts\n    ON builds.checkout_id = checkouts.id\nWHERE tests.id = '$id'",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -270,7 +269,7 @@
       "timeShift": null,
       "title": "Node",
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/test-node/test-node?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_6}",
+      "urlTemplate": "/d/test-node/test-node?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-test_path=${__cell_6}",
       "valueFontSize": "50%"
     },
     {
@@ -719,7 +718,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 6,
@@ -779,23 +778,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "CREATE TEMPORARY FUNCTION cached_url(url STRING)\nRETURNS STRING\nLANGUAGE js AS \"\"\"\n  if (url === null) {\n    return null;\n  }\n  return \"https://us-central1-kernelci-production.cloudfunctions.net/\" +\n         \"kcidb_cache_redirect?\" + encodeURIComponent(url);\n\"\"\";\n\nSELECT name, cached_url(url) AS url\nFROM UNNEST((\n    SELECT output_files\n    FROM ${dataset}.tests\n    WHERE id = ${id:json}\n))\nWITH OFFSET as idx\nORDER BY idx ASC",
+          "rawSql": "SELECT\n    output_file ->> 'name' AS name,\n    format_cached_url(output_file ->> 'url') AS url\nFROM\n    tests,\n    jsonb_array_elements(tests.output_files) AS output_file\nWHERE\n    tests.id = '$id'",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -896,7 +892,7 @@
       "valueName": "first"
     },
     {
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -915,23 +911,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    $__from + offset AS time,\n    lines AS message\nFROM UNNEST(\n    SPLIT((SELECT REPLACE(REGEXP_REPLACE(log_excerpt, \"([^ ]) \", r'\\1​ '), \" \", \" ​\") FROM ${dataset}.tests WHERE id = ${id:json}), \"\\n\")\n) AS lines\nWITH OFFSET AS offset\nORDER BY offset",
+          "rawSql": "SELECT\n    (TIMESTAMP $__timeFrom() + (ordinality * interval '1 second')) AS time,\n    line AS message\nFROM\n    unnest(string_to_array((\n        SELECT\n            regexp_replace(regexp_replace(log_excerpt, '([^ ]) ', E'\\\\1​ '), ' ', ' ​') AS solid_log_excerpt\n        FROM\n            tests\n        WHERE\n            id = '$id'\n    ), E'\\n')) WITH ORDINALITY AS lines(line, ordinality)",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -948,7 +943,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1134,8 +1129,26 @@
     "list": [
       {
         "current": {
-          "text": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7",
-          "value": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7"
+          "selected": true,
+          "text": "production",
+          "value": "production"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Database",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "postgres",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347",
+          "value": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347"
         },
         "hide": 2,
         "label": "ID",
@@ -1147,46 +1160,26 @@
             "value": "redhat:738658"
           }
         ],
-        "query": "kernelci:kernelci.org:62b055347e2060bfc2a39bd7",
+        "query": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
-        "current": {
-          "selected": true,
-          "text": "kcidb_sample",
-          "value": "kcidb_sample"
-        },
-        "hide": 2,
-        "label": null,
-        "name": "dataset",
-        "options": [
-          {
-            "selected": true,
-            "text": "kcidb_sample",
-            "value": "kcidb_sample"
-          }
-        ],
-        "query": "kcidb_sample",
-        "skipUrlSync": false,
-        "type": "constant"
-      },
-      {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT origin FROM checkouts",
         "hide": 2,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "query": "SELECT DISTINCT origin FROM checkouts",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1198,21 +1191,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT architecture FROM builds",
         "hide": 2,
         "includeAll": true,
         "label": "Build architecture",
         "multi": false,
         "name": "build_architecture",
         "options": [],
-        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT architecture FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1224,21 +1217,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT config_name FROM builds",
         "hide": 2,
         "includeAll": true,
         "label": "Build configuration",
         "multi": false,
         "name": "build_config_name",
         "options": [],
-        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT config_name FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1272,5 +1265,5 @@
   "timezone": "",
   "title": "Test",
   "uid": "test",
-  "version": 7
+  "version": 5
 }

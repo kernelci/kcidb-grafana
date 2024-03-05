@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 7,
-  "iteration": 1655724219888,
+  "iteration": 1711106594734,
   "links": [],
   "panels": [
     {
@@ -41,7 +41,7 @@
       "title": "",
       "transparent": true,
       "type": "grafana-singlevalue-panel",
-      "urlTemplate": "/d/home/home?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
+      "urlTemplate": "/d/home/home?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}",
       "valueFontSize": "50%"
     },
     {
@@ -72,7 +72,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -130,23 +130,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    STRING_AGG(DISTINCT origin, \", \" ORDER BY origin ASC) AS origins\nFROM ${dataset}.checkouts\nWHERE\n    start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to) AND\n    git_repository_url=${git_repository_url:json} AND\n    origin LIKE ${origin}",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    STRING_AGG(DISTINCT origin, ', ' ORDER BY origin ASC) AS origins\nFROM checkouts\nWHERE\n    start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    git_repository_url='$git_repository_url' AND\n    origin LIKE $origin",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -180,7 +179,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -238,23 +237,22 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "SELECT ${git_repository_url:json}\n",
+          "rawSql": "SELECT '$git_repository_url'\n",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -281,7 +279,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
@@ -311,7 +309,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View branch",
-          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${git_repository_url}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_3}",
+          "linkUrl": "/d/branch/branch?orgId=1&var-datasource=${datasource}&var-git_repository_url=${git_repository_url}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_3}",
           "mappingType": 1,
           "pattern": "name",
           "thresholds": [],
@@ -331,7 +329,7 @@
           "decimals": 0,
           "link": true,
           "linkTooltip": "View branch",
-          "linkUrl": "/d/branch/branch?orgId=1&var-dataset=${dataset}&var-git_repository_url=${git_repository_url}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_3}",
+          "linkUrl": "/d/branch/branch?orgId=1&var-datasource=${datasource}&var-git_repository_url=${git_repository_url}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_repository_branch=${__cell_3}",
           "mappingType": 1,
           "pattern": "revisions",
           "thresholds": [],
@@ -376,23 +374,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "2",
-          "orderBySort": "2",
           "rawQuery": true,
-          "rawSql": "WITH filtered_checkouts AS (\n    SELECT\n        git_repository_branch,\n        git_commit_hash,\n        patchset_hash,\n        start_time\n    FROM ${dataset}.checkouts\n    WHERE\n        git_repository_url = ${git_repository_url:json} AND\n        git_repository_branch IS NOT NULL AND\n        origin LIKE ${origin}\n)\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    git_repository_branch AS name,\n    IF(revisions IS NULL, 0, revisions) AS revisions\nFROM (\n    SELECT DISTINCT git_repository_branch FROM filtered_checkouts\n)\nLEFT OUTER JOIN (\n    SELECT \n        git_repository_branch, \n        COUNT(DISTINCT CONCAT(git_commit_hash, patchset_hash)) AS revisions\n    FROM filtered_checkouts\n    WHERE\n        start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to)\n    GROUP BY\n        git_repository_branch\n) USING(git_repository_branch)\nORDER BY revisions DESC, name ASC",
+          "rawSql": "WITH filtered_checkouts AS (\n    SELECT\n        git_repository_branch,\n        git_commit_hash,\n        patchset_hash\n    FROM checkouts\n    WHERE\n        start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        git_repository_url = '$git_repository_url' AND\n        git_repository_branch IS NOT NULL AND\n        git_commit_hash IS NOT NULL AND\n        patchset_hash IS NOT NULL AND\n        origin LIKE $origin\n)\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    git_repository_branch AS name,\n    COALESCE(revisions, 0) AS revisions\nFROM (\n    SELECT DISTINCT git_repository_branch FROM filtered_checkouts\n) AS distinct_branches\nLEFT OUTER JOIN (\n    SELECT \n        git_repository_branch, \n        COUNT(DISTINCT CONCAT(git_commit_hash, patchset_hash)) AS revisions\n    FROM filtered_checkouts\n    GROUP BY\n        git_repository_branch\n) AS branch_revisions USING(git_repository_branch)\nORDER BY revisions DESC, name ASC",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -416,7 +411,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -455,23 +450,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n    interval_start AS time,\n    IF(builds.valid IS NULL, \"UNKNOWN\", IF(builds.valid, \"PASS\", \"FAIL\")) AS metric,\n    COUNT(DISTINCT builds.id) AS Builds\nFROM\n    ${dataset}.checkouts AS checkouts,\n    ${dataset}.builds AS builds\nINNER JOIN intervals ON builds.start_time >= interval_start AND builds.start_time < interval_end\nWHERE\n    builds.checkout_id = checkouts.id AND\n    checkouts.git_repository_url = ${git_repository_url:json} AND\n    builds.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY time, metric\nORDER BY time ASC, metric ASC",
+          "rawSql": "SELECT\n    date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n             builds.start_time,\n             TO_TIMESTAMP($__from / 1000)) AS time,\n    CASE\n        WHEN builds.valid IS TRUE THEN 'PASS'\n        WHEN builds.valid IS FALSE THEN 'FAIL'\n        ELSE 'UNKNOWN'\n    END AS metric,\n    COUNT(builds.id) AS Builds\nFROM builds\nINNER JOIN checkouts\nON\n    checkouts.id = builds.checkout_id AND\n    checkouts.git_repository_url = '$git_repository_url'\nWHERE\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    ($origin = '%' or builds.origin LIKE $origin) AND\n    ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n    ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\nGROUP BY\n    time, builds.valid\nORDER BY\n    time",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -532,7 +526,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 7,
       "fillGradient": 0,
       "gridPos": {
@@ -571,23 +565,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n    interval_start AS time,\n    IFNULL(tests.status, \"UNKNOWN\") AS metric,\n    COUNT(DISTINCT tests.id) AS tests\nFROM\n    ${dataset}.checkouts AS checkouts, \n    ${dataset}.builds AS builds, \n    ${dataset}.tests AS tests\nINNER JOIN intervals \n    ON \n        tests.start_time >= interval_start AND\n        tests.start_time < interval_end\nWHERE\n    checkouts.id = builds.checkout_id AND\n    checkouts.git_repository_url = ${git_repository_url:json} AND\n    builds.id = tests.build_id AND\n    NOT tests.waived AND\n    tests.origin LIKE ${origin} AND\n    IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n    IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\nGROUP BY\n    time, metric\nORDER BY\n    time ASC,\n    metric ASC",
+          "rawSql": "SELECT\n    date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n             tests.start_time,\n             TO_TIMESTAMP($__from / 1000)) AS time,\n    COALESCE(tests.status::text, 'UNKNOWN') AS metric,\n    COALESCE(COUNT(tests.id), 0) AS tests\nFROM tests\nINNER JOIN builds ON\n    builds.id = tests.build_id AND\n    ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n    ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\nINNER JOIN checkouts ON\n    builds.checkout_id = checkouts.id AND\n    checkouts.git_repository_url = '$git_repository_url'\nWHERE\n    tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    ($origin = '%' or tests.origin LIKE $origin) AND\n    NOT tests.waived\nGROUP BY\n    time, tests.status\nORDER BY\n    time",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -640,7 +633,7 @@
     },
     {
       "columns": [],
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 16,
@@ -671,7 +664,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "checkouts_valid_num",
           "thresholds": [
@@ -706,6 +699,7 @@
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
+          "link": false,
           "mappingType": 1,
           "pattern": "git_commit_hash",
           "thresholds": [],
@@ -725,7 +719,7 @@
           "decimals": 2,
           "link": false,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "git_repository_urls_text",
           "preserveFormat": true,
@@ -747,7 +741,7 @@
           "decimals": 2,
           "link": false,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "git_repository_branches_text",
           "preserveFormat": true,
@@ -769,7 +763,7 @@
           "decimals": 2,
           "link": false,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-id=${__cell_0}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "git_commit_names_text",
           "preserveFormat": true,
@@ -791,7 +785,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "git_commit_hash_short",
           "thresholds": [],
@@ -811,7 +805,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "checkouts_start_time_str",
           "thresholds": [],
@@ -831,7 +825,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "builds_valid_num",
           "thresholds": [
@@ -868,7 +862,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "tests_status_num",
           "thresholds": [
@@ -982,7 +976,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "patchset_hash_short",
           "thresholds": [],
@@ -1002,7 +996,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "origins_str",
           "thresholds": [],
@@ -1039,7 +1033,7 @@
           "decimals": 2,
           "link": true,
           "linkTooltip": "View revision",
-          "linkUrl": "/d/revision/revision?orgId=1&var-dataset=${dataset}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
+          "linkUrl": "/d/revision/revision?orgId=1&var-datasource=${datasource}&var-origin=${__cell_0}&var-build_architecture=${__cell_1}&var-build_config_name=${__cell_2}&var-git_commit_hash=${__cell_3}&var-patchset_hash=${__cell_4}",
           "mappingType": 1,
           "pattern": "/.*/",
           "thresholds": [],
@@ -1052,23 +1046,20 @@
           "format": "table",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "/*\n * Truncate a string with an ellipsis at speсified length.\n */\nCREATE TEMP FUNCTION TRUNCATE(str STRING, len INT64)\n    RETURNS STRING\n    AS (IF(len = 0 OR CHAR_LENGTH(str) <= len,\n           str,\n           CONCAT(SUBSTR(str, 1, len - 1), \"…\")\n       ));\n\n/*\n * Replace NULL or empty string with a non-breaking space,\n * truncate anything else with ellipsis, if necessary.\n */\nCREATE TEMP FUNCTION BLANK_OR_TRUNCATE(str STRING, len INT64)\n    RETURNS STRING\n    AS (IF(str IS NULL OR str = \"\", \" \", TRUNCATE(str, len)));\n\n/*\n * Format an array of strings as a three-line text with ellipsis\n */\nCREATE TEMP FUNCTION ARRAY_TO_TEXT(strs ARRAY<STRING>, width INT64)\n    RETURNS STRING\n    AS (ARRAY_TO_STRING(\n        [\n            BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(0)], width),\n            BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(1)], width),\n            IF(ARRAY_LENGTH(strs) > 3, \"…\",\n               BLANK_OR_TRUNCATE(strs[SAFE_OFFSET(2)], width))\n        ],\n        \"\\n\"\n    ));\n\nWITH\n    prefiltered_checkouts AS (\n        SELECT\n            *\n        FROM\n            ${dataset}.checkouts\n        WHERE\n            IFNULL(checkouts.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to), TRUE) AND\n            origin LIKE ${origin}\n    ),\n    filtered_checkouts AS (\n        SELECT\n            checkouts.*\n        FROM\n            prefiltered_checkouts AS checkouts,\n            prefiltered_checkouts AS other_checkouts\n        WHERE\n            other_checkouts.git_repository_url = ${git_repository_url:json} AND\n            checkouts.git_commit_hash = other_checkouts.git_commit_hash AND\n            checkouts.patchset_hash = other_checkouts.patchset_hash\n    ),\n    revision_sources AS (\n        SELECT\n            git_commit_hash,\n            patchset_hash,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_url_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                128\n            ) AS git_repository_urls_text,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_branch_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_repository_branches_text,\n            ARRAY_TO_TEXT(\n                ARRAY_AGG(git_commit_name_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_commit_names_text,\n        FROM (\n            SELECT\n                git_commit_hash,\n                patchset_hash,\n                git_repository_url_str,\n                git_repository_branch_str,\n                git_commit_name_str,\n                IF(git_repository_url_str = \"\", 0, 4) +\n                    IF(git_repository_branch_str = \"\", 0, 2) +\n                    IF(git_commit_name_str = \"\", 0, 1) AS rank\n            FROM (\n                SELECT DISTINCT\n                    git_commit_hash,\n                    patchset_hash,\n                    IFNULL(git_repository_url, \"\") AS git_repository_url_str,\n                    IFNULL(git_repository_branch, \"\") AS git_repository_branch_str,\n                    IFNULL(git_commit_name, \"\") AS git_commit_name_str,\n                FROM\n                    filtered_checkouts\n            )\n        )\n        GROUP BY\n            git_commit_hash,\n            patchset_hash\n    )\n/* Massage and join with sources */\nSELECT\n    IF(${origin} = \"%\", \"All\", ${origin}) AS origin_param,\n    IF(${build_architecture} = \"%\", \"All\", ${build_architecture}) AS build_architecture_param,\n    IF(${build_config_name} = \"%\", \"All\", ${build_config_name}) AS build_config_name_param,\n    revisions.git_commit_hash,\n    revisions.patchset_hash,\n    origins_str,\n    SUBSTR(revisions.git_commit_hash, 0, 12) AS git_commit_hash_short,\n    revision_sources.git_repository_urls_text,\n    revision_sources.git_repository_branches_text,\n    revision_sources.git_commit_names_text,\n    SUBSTR(revisions.patchset_hash, 0, 12) AS patchset_hash_short,\n    IFNULL(CAST(checkouts_start_time AS STRING), \"\") AS checkouts_start_time_str,\n    checkouts_valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    /* Calculate revision statuses */\n    SELECT\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash,\n        STRING_AGG(DISTINCT checkouts.origin, \", \") AS origins_str,\n        MIN(checkouts.start_time) AS checkouts_start_time,\n        MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n        MAX((CASE tests.status WHEN \"ERROR\" THEN 5 WHEN \"FAIL\" THEN 4 WHEN \"PASS\" THEN 3 WHEN \"DONE\" THEN 2 WHEN \"SKIP\" THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        filtered_checkouts AS checkouts\n    LEFT OUTER JOIN\n        ${dataset}.builds AS builds\n        ON\n            builds.checkout_id = checkouts.id AND\n            IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n            IFNULL(builds.config_name LIKE ${build_config_name}, TRUE)\n    LEFT OUTER JOIN\n        ${dataset}.tests AS tests\n        ON\n            tests.build_id = builds.id\n    GROUP BY\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash\n) AS revisions\nINNER JOIN\n    revision_sources\n    ON\n        revision_sources.git_commit_hash = revisions.git_commit_hash AND\n        revision_sources.patchset_hash = revisions.patchset_hash\nORDER BY\n    checkouts_start_time DESC\n",
+          "rawSql": "/*\n * Truncate a string with an ellipsis at speсified length.\n */\nCREATE OR REPLACE FUNCTION pg_temp.TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF len = 0 OR CHAR_LENGTH(str) <= len THEN\n        RETURN str;\n    ELSE\n        RETURN SUBSTRING(str FROM 1 FOR len - 1) || '…';\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Replace NULL or empty string with a non-breaking space,\n * truncate anything else with ellipsis, if necessary.\n */\nCREATE OR REPLACE FUNCTION pg_temp.BLANK_OR_TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF str IS NULL OR str = '' THEN\n        RETURN ' ';\n    ELSE\n        RETURN pg_temp.TRUNCATE(str, len);\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Format an array of strings as a three-line text with ellipsis\n */\nCREATE OR REPLACE FUNCTION pg_temp.ARRAY_TO_TEXT(strs TEXT[], width INT)\nRETURNS TEXT AS $$\nBEGIN\n    RETURN CONCAT_WS(\n        E'\\n',\n        pg_temp.BLANK_OR_TRUNCATE(strs[1], width),\n        pg_temp.BLANK_OR_TRUNCATE(strs[2], width),\n        CASE WHEN array_length(strs, 1) > 3 THEN '…' ELSE pg_temp.BLANK_OR_TRUNCATE(strs[3], width) END\n    );\nEND;\n$$ LANGUAGE plpgsql;\n\nWITH\n    prefiltered_checkouts AS (\n        SELECT\n            *\n        FROM\n            checkouts\n        WHERE\n            origin LIKE $origin AND\n            checkouts.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000)\n    ),\n    filtered_checkouts AS (\n        SELECT\n            checkouts.*\n        FROM\n            prefiltered_checkouts AS checkouts,\n            prefiltered_checkouts AS other_checkouts\n        WHERE\n            other_checkouts.git_repository_url = '$git_repository_url' AND\n            checkouts.git_commit_hash = other_checkouts.git_commit_hash AND\n            checkouts.patchset_hash = other_checkouts.patchset_hash\n    ),\n    revision_sources AS (\n        SELECT\n            git_commit_hash,\n            patchset_hash,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_url_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                128\n            ) AS git_repository_urls_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_branch_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_repository_branches_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_commit_name_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_commit_names_text\n        FROM (\n            SELECT\n                git_commit_hash,\n                patchset_hash,\n                git_repository_url_str,\n                git_repository_branch_str,\n                git_commit_name_str,\n                CASE WHEN git_repository_url_str = '' THEN 0 ELSE 4 END +\n                    CASE WHEN git_repository_branch_str = '' THEN 0 ELSE 2 END +\n                    CASE WHEN git_commit_name_str = '' THEN 0 ELSE 1 END AS rank\n            FROM (\n                SELECT DISTINCT\n                    git_commit_hash,\n                    patchset_hash,\n                    COALESCE(git_repository_url, '') AS git_repository_url_str,\n                    COALESCE(git_repository_branch, '') AS git_repository_branch_str,\n                    COALESCE(git_commit_name, '') AS git_commit_name_str\n                FROM\n                    filtered_checkouts\n            ) AS distinct_revisions_with_info\n        ) AS ranked_distinct_revisions_with_info\n        GROUP BY\n            git_commit_hash,\n            patchset_hash\n    )\n/* Massage and join with sources */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    revisions.git_commit_hash,\n    revisions.patchset_hash,\n    origins_str,\n    LEFT(revisions.git_commit_hash, 12) AS git_commit_hash_short,\n    revision_sources.git_repository_urls_text,\n    revision_sources.git_repository_branches_text,\n    revision_sources.git_commit_names_text,\n    LEFT(revisions.patchset_hash, 12) AS patchset_hash_short,\n    COALESCE(CAST(checkouts_start_time AS TEXT), '') AS checkouts_start_time_str,\n    checkouts_valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    /* Calculate revision statuses */\n    SELECT\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash,\n        STRING_AGG(DISTINCT checkouts.origin, ', ') AS origins_str,\n        MIN(checkouts.start_time) AS checkouts_start_time,\n        MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n        MAX(\n            CASE tests.status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END -\n            COALESCE(tests.waived::int, 2) * 6\n        ) AS tests_status_num\n    FROM\n        filtered_checkouts AS checkouts\n    LEFT OUTER JOIN\n        builds\n        ON\n            builds.checkout_id = checkouts.id AND\n            ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n            ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\n    LEFT OUTER JOIN\n        tests\n        ON\n            tests.build_id = builds.id\n    GROUP BY\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash\n) AS revisions\nINNER JOIN\n    revision_sources\n    ON\n        revision_sources.git_commit_hash = revisions.git_commit_hash AND\n        revision_sources.patchset_hash = revisions.patchset_hash\nORDER BY\n    checkouts_start_time DESC",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "value"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1089,7 +1080,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -1128,23 +1119,22 @@
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
-          "orderByCol": "1",
-          "orderBySort": "1",
           "rawQuery": true,
-          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n), filtered_checkouts AS (\n    SELECT\n        checkouts.id AS id,\n        checkouts.origin AS origin,\n        checkouts.start_time AS time\n    FROM\n        ${dataset}.checkouts AS checkouts\n    WHERE\n      \tcheckouts.start_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        checkouts.git_repository_url = ${git_repository_url:json}\n), filtered_builds AS (\n    SELECT\n        builds.id AS id,\n        builds.origin AS origin,\n        builds.start_time AS time\n    FROM\n        ${dataset}.builds AS builds,\n        filtered_checkouts\n    WHERE\n    \tbuilds.start_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        IFNULL(builds.architecture LIKE ${build_architecture}, TRUE) AND\n        IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n        filtered_checkouts.id = builds.checkout_id\n), filtered_tests AS (\n    SELECT\n        tests.id AS id,\n        tests.origin AS origin,\n        tests.start_time AS time\n    FROM\n        ${dataset}.tests AS tests,\n        filtered_builds\n    WHERE\n    \ttests.start_time BETWEEN TIMESTAMP_MILLIS ($__from) AND TIMESTAMP_MILLIS ($__to) AND\n        filtered_builds.id = tests.build_id\n)\nSELECT\n    interval_start AS time,\n    counted_checkouts.count AS Checkouts,\n    counted_builds.count AS Builds,\n    counted_tests.count AS Tests\nFROM intervals\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_checkouts\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_checkouts USING(interval_start)\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_builds\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_builds USING(interval_start)\nLEFT OUTER JOIN (\n    SELECT interval_start, COUNT(id) AS count,\n    FROM filtered_tests\n    INNER JOIN intervals ON time >= interval_start AND time < interval_end\n    WHERE origin LIKE ${origin}\n    GROUP BY interval_start\n) AS counted_tests USING(interval_start)",
+          "rawSql": "WITH filtered_checkouts AS NOT MATERIALIZED (\n    SELECT\n        checkouts.id,\n        checkouts.origin,\n        checkouts.start_time\n    FROM\n        checkouts\n    WHERE\n        checkouts.git_repository_url = '$git_repository_url'\n),\nfiltered_builds AS NOT MATERIALIZED (\n    SELECT\n        builds.id,\n        builds.origin,\n        builds.start_time,\n        builds.architecture,\n        builds.config_name\n    FROM builds\n    INNER JOIN filtered_checkouts ON filtered_checkouts.id = builds.checkout_id\n),\nfiltered_tests AS NOT MATERIALIZED (\n    SELECT\n        tests.id,\n        tests.origin,\n        tests.start_time\n    FROM tests\n    INNER JOIN filtered_builds ON filtered_builds.id = tests.build_id\n)\nSELECT\n    COALESCE(checkouts.time, builds.time, tests.time) AS time,\n    COALESCE(checkouts.count, 0) AS Checkouts,\n    COALESCE(builds.count, 0) AS Builds,\n    COALESCE(tests.count, 0) AS Tests\nFROM (\n    SELECT\n        date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n                 start_time, TO_TIMESTAMP($__from / 1000)) AS time,\n        COUNT(id) AS count\n    FROM\n        filtered_checkouts\n    WHERE\n        ($origin = '%' or origin LIKE $origin) AND\n        start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000)\n    GROUP BY\n        time\n) AS checkouts\nFULL OUTER JOIN (\n    SELECT\n        date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n                 start_time, TO_TIMESTAMP($__from / 1000)) AS time,\n        COUNT(id) AS count\n    FROM filtered_builds\n    WHERE\n        ($origin = '%' or origin LIKE $origin) AND\n    \tstart_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        ($build_architecture = '%' OR architecture LIKE $build_architecture) AND\n        ($build_config_name = '%' OR config_name LIKE $build_config_name)\n    GROUP BY\n        time\n) AS builds ON builds.time = checkouts.time\nFULL OUTER JOIN (\n    SELECT\n        date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n                 start_time, TO_TIMESTAMP($__from / 1000)) AS time,\n        COUNT(id) AS count\n    FROM filtered_tests\n    WHERE\n        ($origin = '%' or origin LIKE $origin) AND\n    \tstart_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000)\n    GROUP BY\n        time\n) AS tests ON tests.time = COALESCE(checkouts.time, builds.time)\nORDER BY\n    time",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "-- value --"
+                  "duration"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "-- time --",
-          "timeColumnType": "TIMESTAMP",
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1200,7 +1190,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Google BigQuery",
+      "datasource": "$datasource",
       "fill": 8,
       "fillGradient": 0,
       "gridPos": {
@@ -1236,60 +1226,25 @@
       "steppedLine": false,
       "targets": [
         {
-          "convertToUTC": false,
-          "dataset": "kcidb_sample",
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "architecture"
-              ],
-              "type": "column"
-            }
-          ],
-          "hide": false,
-          "metricColumn": "architecture",
-          "orderByCol": "1",
-          "orderBySort": "1",
-          "partitioned": false,
-          "partitionedField": "",
-          "project": "kernelci",
+          "group": [],
+          "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH intervals AS (\n    SELECT\n        interval_start,\n        TIMESTAMP_ADD(interval_start, INTERVAL $__interval_ms*50 MILLISECOND) AS interval_end\n    FROM UNNEST(\n        GENERATE_TIMESTAMP_ARRAY(TIMESTAMP_MILLIS($__from),\n                                 TIMESTAMP_MILLIS($__to),\n                                 INTERVAL $__interval_ms*50 MILLISECOND)\n    ) AS interval_start\n)\nSELECT\n  interval_start AS time,\n  builds.architecture AS metric,\n  COUNT(DISTINCT builds.id) AS Builds\nFROM\n  ${dataset}.builds AS builds,\n  ${dataset}.checkouts AS checkouts\nJOIN intervals ON builds.start_time >= interval_start AND builds.start_time < interval_end\nWHERE\n  checkouts.id = builds.checkout_id AND\n  checkouts.git_repository_url = ${git_repository_url:json} AND\n  builds.origin LIKE ${origin} AND\n  builds.architecture LIKE ${build_architecture} AND\n  IFNULL(builds.config_name LIKE ${build_config_name}, TRUE) AND\n  builds.start_time IS NOT NULL AND\n  builds.start_time BETWEEN TIMESTAMP_MILLIS($__from) AND TIMESTAMP_MILLIS($__to)\nGROUP BY\n  time, metric\nORDER BY\n  time ASC, metric ASC",
-          "refId": "B",
+          "rawSql": "SELECT\n    date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n             builds.start_time,\n             TO_TIMESTAMP($__from / 1000)) AS time,\n    builds.architecture AS metric,\n    COUNT(builds.id) AS Builds\nFROM\n    builds\nINNER JOIN checkouts\nON builds.checkout_id = checkouts.id AND checkouts.git_repository_url = '$git_repository_url'\nWHERE\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    ($origin = '%' or builds.origin LIKE $origin) AND\n    ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n    ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\nGROUP BY\n    time, metric\nORDER BY\n    time",
+          "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "id"
+                  "duration"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "id"
-                ],
-                "type": "alias"
               }
             ]
           ],
-          "sharded": false,
           "table": "builds",
-          "timeColumn": "start_time",
-          "timeColumnType": "TIMESTAMP",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -1350,39 +1305,37 @@
       {
         "current": {
           "selected": true,
-          "text": "kcidb_sample",
-          "value": "kcidb_sample"
+          "text": "production",
+          "value": "production"
         },
-        "hide": 2,
-        "label": null,
-        "name": "dataset",
-        "options": [
-          {
-            "selected": true,
-            "text": "kcidb_sample",
-            "value": "kcidb_sample"
-          }
-        ],
-        "query": "kcidb_sample",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Database",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "postgres",
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "constant"
+        "type": "datasource"
       },
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git",
-          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git"
+          "selected": false,
+          "text": "https://gitlab.com/cki-project/kernel-ark.git",
+          "value": "https://gitlab.com/cki-project/kernel-ark.git"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT git_repository_url FROM ${dataset}.checkouts",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT git_repository_url FROM checkouts",
         "hide": 0,
         "includeAll": false,
         "label": "URL",
         "multi": false,
         "name": "git_repository_url",
         "options": [],
-        "query": "SELECT DISTINCT git_repository_url FROM ${dataset}.checkouts",
+        "query": "SELECT DISTINCT git_repository_url FROM checkouts",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1394,21 +1347,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT origin FROM checkouts",
         "hide": 0,
         "includeAll": true,
         "label": "Origin",
         "multi": false,
         "name": "origin",
         "options": [],
-        "query": "SELECT DISTINCT origin FROM ${dataset}.checkouts",
+        "query": "SELECT DISTINCT origin FROM checkouts",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1420,21 +1373,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT architecture FROM builds",
         "hide": 0,
         "includeAll": true,
         "label": "Build architecture",
         "multi": false,
         "name": "build_architecture",
         "options": [],
-        "query": "SELECT DISTINCT architecture FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT architecture FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1446,21 +1399,21 @@
         "useTags": false
       },
       {
-        "allValue": "\"%\"",
+        "allValue": "'%'",
         "current": {
           "selected": true,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Google BigQuery",
-        "definition": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "datasource": "$datasource",
+        "definition": "SELECT DISTINCT config_name FROM builds",
         "hide": 0,
         "includeAll": true,
         "label": "Build configuration",
         "multi": false,
         "name": "build_config_name",
         "options": [],
-        "query": "SELECT DISTINCT config_name FROM ${dataset}.builds",
+        "query": "SELECT DISTINCT config_name FROM builds",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1494,5 +1447,5 @@
   "timezone": "",
   "title": "Repository",
   "uid": "repository",
-  "version": 26
+  "version": 19
 }
