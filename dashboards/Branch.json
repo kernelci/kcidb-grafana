@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 8,
-  "iteration": 1711106618961,
+  "id": 3,
+  "iteration": 1712942680319,
   "links": [],
   "panels": [
     {
@@ -330,8 +330,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(242, 73, 92, 0)",
-            "#37872D",
-            "#C4162A"
+            "#316d2b",
+            "#9b1928"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -348,16 +348,16 @@
           "unit": "short",
           "valueMaps": [
             {
-              "text": "✗",
-              "value": "1"
+              "text": "​ ​ ​ ​",
+              "value": "-1"
             },
             {
-              "text": "✔️",
+              "text": "✅ PASS",
               "value": "0"
             },
             {
-              "text": "",
-              "value": "-1"
+              "text": "❌ FAIL",
+              "value": "1"
             }
           ]
         },
@@ -491,8 +491,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(245, 54, 54, 0)",
-            "#37872D",
-            "#C4162A"
+            "#316d2b",
+            "#9b1928"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -509,15 +509,15 @@
           "unit": "short",
           "valueMaps": [
             {
-              "text": "",
+              "text": "​ ​ ​ ​",
               "value": "-1"
             },
             {
-              "text": "✔️",
+              "text": "✅ PASS",
               "value": "0"
             },
             {
-              "text": "✗",
+              "text": "❌ FAIL",
               "value": "1"
             }
           ]
@@ -528,8 +528,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(55, 135, 45, 0)",
-            "#37872D",
-            "#C4162A"
+            "#316d2b",
+            "#9b1928"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -540,82 +540,115 @@
           "pattern": "tests_status_num",
           "thresholds": [
             "3",
-            "4"
+            "5"
           ],
           "type": "string",
           "unit": "short",
           "valueMaps": [
             {
-              "text": "ERROR",
-              "value": "5"
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-14"
             },
             {
-              "text": "FAIL",
-              "value": "4"
+              "op": "=",
+              "text": "❓⏩ SKIP",
+              "value": "-13"
             },
             {
-              "text": "PASS",
-              "value": "3"
+              "op": "=",
+              "text": "❓🆗 DONE",
+              "value": "-12"
             },
             {
-              "text": "DONE",
-              "value": "2"
-            },
-            {
-              "text": "SKIP",
-              "value": "1"
-            },
-            {
-              "text": "",
-              "value": "0"
-            },
-            {
-              "text": "🚧 ERROR",
-              "value": "-1"
-            },
-            {
-              "text": "🚧 FAIL",
-              "value": "-2"
-            },
-            {
-              "text": "🚧 PASS",
-              "value": "-3"
-            },
-            {
-              "text": "🚧 DONE",
-              "value": "-4"
-            },
-            {
-              "text": "🚧 SKIP",
-              "value": "-5"
-            },
-            {
-              "text": "",
-              "value": "-6"
-            },
-            {
-              "text": "❓ ERROR",
-              "value": "-7"
-            },
-            {
-              "text": "❓ FAIL",
-              "value": "-8"
-            },
-            {
-              "text": "❓ PASS",
-              "value": "-9"
-            },
-            {
-              "text": "❓ DONE",
-              "value": "-10"
-            },
-            {
-              "text": "❓ SKIP",
+              "op": "=",
+              "text": "❓✅ PASS",
               "value": "-11"
             },
             {
-              "text": "",
-              "value": "-12"
+              "op": "=",
+              "text": "❓🟩 MISS",
+              "value": "-10"
+            },
+            {
+              "op": "=",
+              "text": "❓💥 ERROR",
+              "value": "-9"
+            },
+            {
+              "op": "=",
+              "text": "❓❌ FAIL",
+              "value": "-8"
+            },
+            {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-7"
+            },
+            {
+              "op": "=",
+              "text": "🚧⏩ SKIP",
+              "value": "-6"
+            },
+            {
+              "op": "=",
+              "text": "🚧🆗 DONE",
+              "value": "-5"
+            },
+            {
+              "op": "=",
+              "text": "🚧✅ PASS",
+              "value": "-4"
+            },
+            {
+              "op": "=",
+              "text": "🚧🟩 MISS",
+              "value": "-3"
+            },
+            {
+              "op": "=",
+              "text": "🚧💥 ERROR",
+              "value": "-2"
+            },
+            {
+              "op": "=",
+              "text": "🚧❌ FAIL",
+              "value": "-1"
+            },
+            {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "0"
+            },
+            {
+              "op": "=",
+              "text": "⏩ SKIP",
+              "value": "1"
+            },
+            {
+              "op": "=",
+              "text": "🆗 DONE",
+              "value": "2"
+            },
+            {
+              "op": "=",
+              "text": "✅ PASS",
+              "value": "3"
+            },
+            {
+              "op": "=",
+              "text": "🟩 MISS",
+              "value": "4"
+            },
+            {
+              "op": "=",
+              "text": "💥 ERROR",
+              "value": "5"
+            },
+            {
+              "op": "=",
+              "text": "❌ FAIL",
+              "value": "6"
             }
           ]
         },
@@ -720,7 +753,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "/*\n * Truncate a string with an ellipsis at speсified length.\n */\nCREATE OR REPLACE FUNCTION pg_temp.TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF len = 0 OR CHAR_LENGTH(str) <= len THEN\n        RETURN str;\n    ELSE\n        RETURN SUBSTRING(str FROM 1 FOR len - 1) || '…';\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Replace NULL or empty string with a non-breaking space,\n * truncate anything else with ellipsis, if necessary.\n */\nCREATE OR REPLACE FUNCTION pg_temp.BLANK_OR_TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF str IS NULL OR str = '' THEN\n        RETURN ' ';\n    ELSE\n        RETURN pg_temp.TRUNCATE(str, len);\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Format an array of strings as a three-line text with ellipsis\n */\nCREATE OR REPLACE FUNCTION pg_temp.ARRAY_TO_TEXT(strs TEXT[], width INT)\nRETURNS TEXT AS $$\nBEGIN\n    RETURN CONCAT_WS(\n        E'\\n',\n        pg_temp.BLANK_OR_TRUNCATE(strs[1], width),\n        pg_temp.BLANK_OR_TRUNCATE(strs[2], width),\n        CASE WHEN array_length(strs, 1) > 3 THEN '…' ELSE pg_temp.BLANK_OR_TRUNCATE(strs[3], width) END\n    );\nEND;\n$$ LANGUAGE plpgsql;\n\nWITH\n    prefiltered_checkouts AS (\n        SELECT\n            *\n        FROM\n            checkouts\n        WHERE\n            origin LIKE $origin AND\n            checkouts.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000)\n    ),\n    filtered_checkouts AS (\n        SELECT\n            checkouts.*\n        FROM\n            prefiltered_checkouts AS checkouts,\n            prefiltered_checkouts AS other_checkouts\n        WHERE\n            other_checkouts.git_repository_url = '$git_repository_url' AND\n            other_checkouts.git_repository_branch = '$git_repository_branch' AND\n            checkouts.git_commit_hash = other_checkouts.git_commit_hash AND\n            checkouts.patchset_hash = other_checkouts.patchset_hash\n    ),\n    revision_sources AS (\n        SELECT\n            git_commit_hash,\n            patchset_hash,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_url_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                128\n            ) AS git_repository_urls_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_branch_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_repository_branches_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_commit_name_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_commit_names_text\n        FROM (\n            SELECT\n                git_commit_hash,\n                patchset_hash,\n                git_repository_url_str,\n                git_repository_branch_str,\n                git_commit_name_str,\n                CASE WHEN git_repository_url_str = '' THEN 0 ELSE 4 END +\n                    CASE WHEN git_repository_branch_str = '' THEN 0 ELSE 2 END +\n                    CASE WHEN git_commit_name_str = '' THEN 0 ELSE 1 END AS rank\n            FROM (\n                SELECT DISTINCT\n                    git_commit_hash,\n                    patchset_hash,\n                    COALESCE(git_repository_url, '') AS git_repository_url_str,\n                    COALESCE(git_repository_branch, '') AS git_repository_branch_str,\n                    COALESCE(git_commit_name, '') AS git_commit_name_str\n                FROM\n                    filtered_checkouts\n            ) AS distinct_revisions_with_info\n        ) AS ranked_distinct_revisions_with_info\n        GROUP BY\n            git_commit_hash,\n            patchset_hash\n    )\n/* Massage and join with sources */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    revisions.git_commit_hash,\n    revisions.patchset_hash,\n    origins_str,\n    LEFT(revisions.git_commit_hash, 12) AS git_commit_hash_short,\n    revision_sources.git_repository_urls_text,\n    revision_sources.git_repository_branches_text,\n    revision_sources.git_commit_names_text,\n    LEFT(revisions.patchset_hash, 12) AS patchset_hash_short,\n    COALESCE(CAST(checkouts_start_time AS TEXT), '') AS checkouts_start_time_str,\n    checkouts_valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    /* Calculate revision statuses */\n    SELECT\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash,\n        STRING_AGG(DISTINCT checkouts.origin, ', ') AS origins_str,\n        MIN(checkouts.start_time) AS checkouts_start_time,\n        MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n        MAX((CASE tests.status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n            (CASE tests.waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS tests_status_num\n    FROM\n        filtered_checkouts AS checkouts\n    LEFT OUTER JOIN\n        builds\n        ON\n            builds.checkout_id = checkouts.id AND\n            ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n            ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\n    LEFT OUTER JOIN\n        tests\n        ON\n            tests.build_id = builds.id\n    GROUP BY\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash\n) AS revisions\nINNER JOIN\n    revision_sources\n    ON\n        revision_sources.git_commit_hash = revisions.git_commit_hash AND\n        revision_sources.patchset_hash = revisions.patchset_hash\nORDER BY\n    checkouts_start_time DESC\nLIMIT 1024",
+          "rawSql": "/*\n * Truncate a string with an ellipsis at speсified length.\n */\nCREATE OR REPLACE FUNCTION pg_temp.TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF len = 0 OR CHAR_LENGTH(str) <= len THEN\n        RETURN str;\n    ELSE\n        RETURN SUBSTRING(str FROM 1 FOR len - 1) || '…';\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Replace NULL or empty string with a non-breaking space,\n * truncate anything else with ellipsis, if necessary.\n */\nCREATE OR REPLACE FUNCTION pg_temp.BLANK_OR_TRUNCATE(str TEXT, len INT)\nRETURNS TEXT AS $$\nBEGIN\n    IF str IS NULL OR str = '' THEN\n        RETURN ' ';\n    ELSE\n        RETURN pg_temp.TRUNCATE(str, len);\n    END IF;\nEND;\n$$ LANGUAGE plpgsql;\n\n/*\n * Format an array of strings as a three-line text with ellipsis\n */\nCREATE OR REPLACE FUNCTION pg_temp.ARRAY_TO_TEXT(strs TEXT[], width INT)\nRETURNS TEXT AS $$\nBEGIN\n    RETURN CONCAT_WS(\n        E'\\n',\n        pg_temp.BLANK_OR_TRUNCATE(strs[1], width),\n        pg_temp.BLANK_OR_TRUNCATE(strs[2], width),\n        CASE WHEN array_length(strs, 1) > 3 THEN '…' ELSE pg_temp.BLANK_OR_TRUNCATE(strs[3], width) END\n    );\nEND;\n$$ LANGUAGE plpgsql;\n\nWITH\n    prefiltered_checkouts AS (\n        SELECT\n            *\n        FROM\n            checkouts\n        WHERE\n            origin LIKE $origin AND\n            checkouts.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000)\n    ),\n    filtered_checkouts AS (\n        SELECT\n            checkouts.*\n        FROM\n            prefiltered_checkouts AS checkouts,\n            prefiltered_checkouts AS other_checkouts\n        WHERE\n            other_checkouts.git_repository_url = '$git_repository_url' AND\n            other_checkouts.git_repository_branch = '$git_repository_branch' AND\n            checkouts.git_commit_hash = other_checkouts.git_commit_hash AND\n            checkouts.patchset_hash = other_checkouts.patchset_hash\n    ),\n    revision_sources AS (\n        SELECT\n            git_commit_hash,\n            patchset_hash,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_url_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                128\n            ) AS git_repository_urls_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_repository_branch_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_repository_branches_text,\n            pg_temp.ARRAY_TO_TEXT(\n                ARRAY_AGG(git_commit_name_str\n                          ORDER BY rank DESC, git_repository_url_str,\n                                   git_repository_branch_str, git_commit_name_str),\n                32\n            ) AS git_commit_names_text\n        FROM (\n            SELECT\n                git_commit_hash,\n                patchset_hash,\n                git_repository_url_str,\n                git_repository_branch_str,\n                git_commit_name_str,\n                CASE WHEN git_repository_url_str = '' THEN 0 ELSE 4 END +\n                    CASE WHEN git_repository_branch_str = '' THEN 0 ELSE 2 END +\n                    CASE WHEN git_commit_name_str = '' THEN 0 ELSE 1 END AS rank\n            FROM (\n                SELECT DISTINCT\n                    git_commit_hash,\n                    patchset_hash,\n                    COALESCE(git_repository_url, '') AS git_repository_url_str,\n                    COALESCE(git_repository_branch, '') AS git_repository_branch_str,\n                    COALESCE(git_commit_name, '') AS git_commit_name_str\n                FROM\n                    filtered_checkouts\n            ) AS distinct_revisions_with_info\n        ) AS ranked_distinct_revisions_with_info\n        GROUP BY\n            git_commit_hash,\n            patchset_hash\n    )\n/* Massage and join with sources */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    revisions.git_commit_hash,\n    revisions.patchset_hash,\n    origins_str,\n    LEFT(revisions.git_commit_hash, 12) AS git_commit_hash_short,\n    revision_sources.git_repository_urls_text,\n    revision_sources.git_repository_branches_text,\n    revision_sources.git_commit_names_text,\n    LEFT(revisions.patchset_hash, 12) AS patchset_hash_short,\n    COALESCE(CAST(checkouts_start_time AS TEXT), '') AS checkouts_start_time_str,\n    checkouts_valid_num,\n    builds_valid_num,\n    tests_status_num\nFROM (\n    /* Calculate revision statuses */\n    SELECT\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash,\n        STRING_AGG(DISTINCT checkouts.origin, ', ') AS origins_str,\n        MIN(checkouts.start_time) AS checkouts_start_time,\n        MAX(CASE checkouts.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS checkouts_valid_num,\n        MAX(CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END) AS builds_valid_num,\n        MAX(COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7) AS tests_status_num\n    FROM\n        filtered_checkouts AS checkouts\n    LEFT OUTER JOIN\n        builds\n        ON\n            builds.checkout_id = checkouts.id AND\n            ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n            ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\n    LEFT OUTER JOIN\n        tests\n        ON\n            tests.build_id = builds.id\n    GROUP BY\n        checkouts.git_commit_hash,\n        checkouts.patchset_hash\n) AS revisions\nINNER JOIN\n    revision_sources\n    ON\n        revision_sources.git_commit_hash = revisions.git_commit_hash AND\n        revision_sources.patchset_hash = revisions.patchset_hash\nORDER BY\n    checkouts_start_time DESC\nLIMIT 1024",
           "refId": "A",
           "select": [
             [
@@ -1222,9 +1255,8 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "https://gitlab.com/cki-project/kernel-ark.git",
-          "value": "https://gitlab.com/cki-project/kernel-ark.git"
+          "text": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
+          "value": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
         },
         "datasource": "$datasource",
         "definition": "SELECT DISTINCT git_repository_url FROM checkouts",
@@ -1248,9 +1280,8 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "os-build",
-          "value": "os-build"
+          "text": "master",
+          "value": "master"
         },
         "datasource": "$datasource",
         "definition": "SELECT DISTINCT git_repository_branch FROM checkouts WHERE git_repository_url = '$git_repository_url'",
@@ -1274,7 +1305,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1300,7 +1331,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1326,7 +1357,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1372,5 +1403,5 @@
   "timezone": "",
   "title": "Branch",
   "uid": "branch",
-  "version": 15
+  "version": 4
 }

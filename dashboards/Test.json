@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 5,
-  "iteration": 1711106720948,
+  "id": 8,
+  "iteration": 1712942821925,
   "links": [],
   "panels": [
     {
@@ -206,7 +206,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    CASE \n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE \n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE \n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    tests.build_id,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    (CASE tests.status \n        WHEN 'ERROR' THEN 5 \n        WHEN 'FAIL' THEN 4 \n        WHEN 'PASS' THEN 3 \n        WHEN 'DONE' THEN 2 \n        WHEN 'SKIP' THEN 1 \n        ELSE 0 \n    END) -\n    (CASE tests.waived \n        WHEN false THEN 0 \n        WHEN true THEN 1 \n        ELSE 2 \n    END) * 6 AS status_num,\n    tests.environment_comment AS environment_comment,\n    tests.environment_misc AS environment_misc,\n    builds.checkout_id,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    tests.misc,\n    CASE \n        WHEN tests.log_url IS NULL THEN ''\n        ELSE 'File'\n    END AS log_url_text,\n    format_cached_url(tests.log_url) AS cached_log_url\nFROM tests\nLEFT OUTER JOIN\n    builds\n    ON tests.build_id = builds.id\nLEFT OUTER JOIN\n    checkouts\n    ON builds.checkout_id = checkouts.id\nWHERE tests.id = '$id'",
+          "rawSql": "SELECT\n    CASE \n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE \n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE \n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    tests.build_id,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7 AS status_num,\n    tests.environment_comment AS environment_comment,\n    tests.environment_misc AS environment_misc,\n    builds.checkout_id,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    tests.misc,\n    CASE \n        WHEN tests.log_url IS NULL THEN ''\n        ELSE 'File'\n    END AS log_url_text,\n    format_cached_url(tests.log_url) AS cached_log_url\nFROM tests\nLEFT OUTER JOIN\n    builds\n    ON tests.build_id = builds.id\nLEFT OUTER JOIN\n    checkouts\n    ON builds.checkout_id = checkouts.id\nWHERE tests.id = '$id'",
           "refId": "A",
           "select": [
             [
@@ -388,8 +388,8 @@
       "colorValue": false,
       "colors": [
         "rgba(41, 156, 70, 0)",
-        "#37872D",
-        "#C4162A"
+        "#316d2b",
+        "#9b1928"
       ],
       "datasource": "-- Dashboard --",
       "format": "none",
@@ -450,7 +450,7 @@
           "refId": "A"
         }
       ],
-      "thresholds": "3,4",
+      "thresholds": "3,5",
       "timeFrom": null,
       "timeShift": null,
       "title": "Status",
@@ -459,93 +459,108 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "🚧",
-          "value": "-6"
+          "text": "​ ​ ​ ​",
+          "value": "-14"
         },
         {
           "op": "=",
-          "text": "🚧 SKIP",
-          "value": "-5"
+          "text": "❓⏩ SKIP",
+          "value": "-13"
         },
         {
           "op": "=",
-          "text": "🚧 DONE",
-          "value": "-4"
+          "text": "❓🆗 DONE",
+          "value": "-12"
         },
         {
           "op": "=",
-          "text": "🚧 PASS",
-          "value": "-3"
-        },
-        {
-          "op": "=",
-          "text": "🚧 FAIL",
-          "value": "-2"
-        },
-        {
-          "op": "=",
-          "text": "🚧 ERROR",
-          "value": "-1"
-        },
-        {
-          "op": "=",
-          "text": "",
-          "value": "0"
-        },
-        {
-          "op": "=",
-          "text": "SKIP",
-          "value": "1"
-        },
-        {
-          "op": "=",
-          "text": "DONE",
-          "value": "2"
-        },
-        {
-          "op": "=",
-          "text": "PASS",
-          "value": "3"
-        },
-        {
-          "op": "=",
-          "text": "FAIL",
-          "value": "4"
-        },
-        {
-          "op": "=",
-          "text": "ERROR",
-          "value": "5"
-        },
-        {
-          "op": "=",
-          "text": "❓ ERROR",
-          "value": "-7"
-        },
-        {
-          "op": "=",
-          "text": "❓ FAIL",
-          "value": "-8"
-        },
-        {
-          "op": "=",
-          "text": "❓ PASS",
-          "value": "-9"
-        },
-        {
-          "op": "=",
-          "text": "❓ DONE",
-          "value": "-10"
-        },
-        {
-          "op": "=",
-          "text": "❓ SKIP",
+          "text": "❓✅ PASS",
           "value": "-11"
         },
         {
           "op": "=",
-          "text": "❓",
-          "value": "-12"
+          "text": "❓🟩 MISS",
+          "value": "-10"
+        },
+        {
+          "op": "=",
+          "text": "❓💥 ERROR",
+          "value": "-9"
+        },
+        {
+          "op": "=",
+          "text": "❓❌ FAIL",
+          "value": "-8"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-7"
+        },
+        {
+          "op": "=",
+          "text": "🚧⏩ SKIP",
+          "value": "-6"
+        },
+        {
+          "op": "=",
+          "text": "🚧🆗 DONE",
+          "value": "-5"
+        },
+        {
+          "op": "=",
+          "text": "🚧✅ PASS",
+          "value": "-4"
+        },
+        {
+          "op": "=",
+          "text": "🚧🟩 MISS",
+          "value": "-3"
+        },
+        {
+          "op": "=",
+          "text": "🚧💥 ERROR",
+          "value": "-2"
+        },
+        {
+          "op": "=",
+          "text": "🚧❌ FAIL",
+          "value": "-1"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "0"
+        },
+        {
+          "op": "=",
+          "text": "⏩ SKIP",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "🆗 DONE",
+          "value": "2"
+        },
+        {
+          "op": "=",
+          "text": "✅ PASS",
+          "value": "3"
+        },
+        {
+          "op": "=",
+          "text": "🟩 MISS",
+          "value": "4"
+        },
+        {
+          "op": "=",
+          "text": "💥 ERROR",
+          "value": "5"
+        },
+        {
+          "op": "=",
+          "text": "❌ FAIL",
+          "value": "6"
         }
       ],
       "valueName": "max"
@@ -1147,8 +1162,8 @@
       },
       {
         "current": {
-          "text": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347",
-          "value": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347"
+          "text": "0dayci:test:66188aef41c24b432f1453fb",
+          "value": "0dayci:test:66188aef41c24b432f1453fb"
         },
         "hide": 2,
         "label": "ID",
@@ -1160,14 +1175,14 @@
             "value": "redhat:738658"
           }
         ],
-        "query": "kernelci:kernelci.org:65fd031897ee7a0b3a4c4347",
+        "query": "0dayci:test:66188aef41c24b432f1453fb",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1193,7 +1208,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1219,7 +1234,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1265,5 +1280,5 @@
   "timezone": "",
   "title": "Test",
   "uid": "test",
-  "version": 5
+  "version": 11
 }

@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1711106714888,
+  "id": 7,
+  "iteration": 1712942797463,
   "links": [],
   "panels": [
     {
@@ -181,7 +181,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    CASE\n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE\n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE\n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    builds.checkout_id,\n    builds.id,\n    builds.origin,\n    builds.comment,\n    builds.architecture,\n    COALESCE(builds.config_name, 'unnamed') AS config_name,\n    COALESCE(format_cached_url(builds.config_url), '') AS config_url,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    CASE \n        WHEN builds.valid = false THEN 1 \n        WHEN builds.valid = true THEN 0 \n        ELSE -1 \n    END AS valid_num,\n    CASE \n        WHEN builds.log_url IS NULL THEN '' \n        ELSE 'File' \n    END as log_url_text,\n    format_cached_url(builds.log_url),\n    builds.compiler,\n    builds.command,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    builds.misc,\n    tests.status_num AS tests_status_num\nFROM builds\nLEFT OUTER JOIN checkouts\n    ON checkouts.id = builds.checkout_id\nLEFT OUTER JOIN (\n    SELECT\n        MAX(\n            CASE \n                WHEN status = 'ERROR' THEN 5 \n                WHEN status = 'FAIL' THEN 4 \n                WHEN status = 'PASS' THEN 3 \n                WHEN status = 'DONE' THEN 2 \n                WHEN status = 'SKIP' THEN 1 \n                ELSE 0 \n            END - \n            CASE \n                WHEN waived = false THEN 0 \n                WHEN waived = true THEN 1 \n                ELSE 2 \n            END * 6\n        ) AS status_num\n    FROM tests\n    WHERE\n        build_id = '$id' AND\n        start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n        origin LIKE ${origin}\n) AS tests ON TRUE\nWHERE builds.id = '$id'",
+          "rawSql": "SELECT\n    CASE\n        WHEN $origin = '%' THEN 'All'\n        ELSE $origin\n    END AS origin_param,\n    CASE\n        WHEN $build_architecture = '%' THEN 'All'\n        ELSE $build_architecture\n    END AS build_architecture_param,\n    CASE\n        WHEN $build_config_name = '%' THEN 'All'\n        ELSE $build_config_name\n    END AS build_config_name_param,\n    builds.checkout_id,\n    builds.id,\n    builds.origin,\n    builds.comment,\n    builds.architecture,\n    COALESCE(builds.config_name, 'unnamed') AS config_name,\n    COALESCE(format_cached_url(builds.config_url), '') AS config_url,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    CASE \n        WHEN builds.valid = false THEN 1 \n        WHEN builds.valid = true THEN 0 \n        ELSE -1 \n    END AS valid_num,\n    CASE \n        WHEN builds.log_url IS NULL THEN '' \n        ELSE 'File' \n    END as log_url_text,\n    format_cached_url(builds.log_url),\n    builds.compiler,\n    builds.command,\n    checkouts.git_commit_hash,\n    checkouts.patchset_hash,\n    builds.misc,\n    tests.status_num AS tests_status_num\nFROM builds\nLEFT OUTER JOIN checkouts\n    ON checkouts.id = builds.checkout_id\nLEFT OUTER JOIN (\n    SELECT\n        MAX(COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7) AS status_num\n    FROM tests\n    WHERE\n        build_id = '$id' AND\n        COALESCE(start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n        origin LIKE ${origin}\n) AS tests ON TRUE\nWHERE builds.id = '$id'",
           "refId": "A",
           "select": [
             [
@@ -428,8 +428,8 @@
       "colorValue": false,
       "colors": [
         "rgba(242, 73, 92, 0)",
-        "#37872D",
-        "#C4162A"
+        "#316d2b",
+        "#9b1928"
       ],
       "datasource": "-- Dashboard --",
       "format": "none",
@@ -504,12 +504,12 @@
         },
         {
           "op": "=",
-          "text": "✔️",
+          "text": "✅ PASS",
           "value": "0"
         },
         {
           "op": "=",
-          "text": "✗",
+          "text": "❌ FAIL",
           "value": "1"
         }
       ],
@@ -521,8 +521,8 @@
       "colorValue": false,
       "colors": [
         "rgba(41, 156, 70, 0)",
-        "#37872D",
-        "#C4162A"
+        "#316d2b",
+        "#9b1928"
       ],
       "datasource": "-- Dashboard --",
       "format": "none",
@@ -583,7 +583,7 @@
           "refId": "A"
         }
       ],
-      "thresholds": "3,4",
+      "thresholds": "3,5",
       "timeFrom": null,
       "timeShift": null,
       "title": "Tests",
@@ -592,93 +592,108 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "🚧",
-          "value": "-6"
+          "text": "​ ​ ​ ​",
+          "value": "-14"
         },
         {
           "op": "=",
-          "text": "🚧 SKIP",
-          "value": "-5"
+          "text": "❓⏩ SKIP",
+          "value": "-13"
         },
         {
           "op": "=",
-          "text": "🚧 DONE",
-          "value": "-4"
+          "text": "❓🆗 DONE",
+          "value": "-12"
         },
         {
           "op": "=",
-          "text": "🚧 PASS",
-          "value": "-3"
-        },
-        {
-          "op": "=",
-          "text": "🚧 FAIL",
-          "value": "-2"
-        },
-        {
-          "op": "=",
-          "text": "🚧 ERROR",
-          "value": "-1"
-        },
-        {
-          "op": "=",
-          "text": "",
-          "value": "0"
-        },
-        {
-          "op": "=",
-          "text": "SKIP",
-          "value": "1"
-        },
-        {
-          "op": "=",
-          "text": "DONE",
-          "value": "2"
-        },
-        {
-          "op": "=",
-          "text": "PASS",
-          "value": "3"
-        },
-        {
-          "op": "=",
-          "text": "FAIL",
-          "value": "4"
-        },
-        {
-          "op": "=",
-          "text": "ERROR",
-          "value": "5"
-        },
-        {
-          "op": "=",
-          "text": "❓ ERROR",
-          "value": "-7"
-        },
-        {
-          "op": "=",
-          "text": "❓ FAIL",
-          "value": "-8"
-        },
-        {
-          "op": "=",
-          "text": "❓ PASS",
-          "value": "-9"
-        },
-        {
-          "op": "=",
-          "text": "❓ DONE",
-          "value": "-10"
-        },
-        {
-          "op": "=",
-          "text": "❓ SKIP",
+          "text": "❓✅ PASS",
           "value": "-11"
         },
         {
           "op": "=",
-          "text": "❓",
-          "value": "-12"
+          "text": "❓🟩 MISS",
+          "value": "-10"
+        },
+        {
+          "op": "=",
+          "text": "❓💥 ERROR",
+          "value": "-9"
+        },
+        {
+          "op": "=",
+          "text": "❓❌ FAIL",
+          "value": "-8"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-7"
+        },
+        {
+          "op": "=",
+          "text": "🚧⏩ SKIP",
+          "value": "-6"
+        },
+        {
+          "op": "=",
+          "text": "🚧🆗 DONE",
+          "value": "-5"
+        },
+        {
+          "op": "=",
+          "text": "🚧✅ PASS",
+          "value": "-4"
+        },
+        {
+          "op": "=",
+          "text": "🚧🟩 MISS",
+          "value": "-3"
+        },
+        {
+          "op": "=",
+          "text": "🚧💥 ERROR",
+          "value": "-2"
+        },
+        {
+          "op": "=",
+          "text": "🚧❌ FAIL",
+          "value": "-1"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "0"
+        },
+        {
+          "op": "=",
+          "text": "⏩ SKIP",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "🆗 DONE",
+          "value": "2"
+        },
+        {
+          "op": "=",
+          "text": "✅ PASS",
+          "value": "3"
+        },
+        {
+          "op": "=",
+          "text": "🟩 MISS",
+          "value": "4"
+        },
+        {
+          "op": "=",
+          "text": "💥 ERROR",
+          "value": "5"
+        },
+        {
+          "op": "=",
+          "text": "❌ FAIL",
+          "value": "6"
         }
       ],
       "valueName": "max"
@@ -1382,8 +1397,8 @@
       "colorValue": false,
       "colors": [
         "rgba(41, 156, 70, 0)",
-        "#37872D",
-        "#C4162A"
+        "#316d2b",
+        "#9b1928"
       ],
       "datasource": "-- Dashboard --",
       "format": "none",
@@ -1444,7 +1459,7 @@
           "refId": "A"
         }
       ],
-      "thresholds": "3,4",
+      "thresholds": "3,5",
       "timeFrom": null,
       "timeShift": null,
       "title": "",
@@ -1454,31 +1469,71 @@
         {
           "op": "=",
           "text": "​ ​ ​ ​",
+          "value": "-14"
+        },
+        {
+          "op": "=",
+          "text": "❓⏩ SKIP",
+          "value": "-13"
+        },
+        {
+          "op": "=",
+          "text": "❓🆗 DONE",
+          "value": "-12"
+        },
+        {
+          "op": "=",
+          "text": "❓✅ PASS",
+          "value": "-11"
+        },
+        {
+          "op": "=",
+          "text": "❓🟩 MISS",
+          "value": "-10"
+        },
+        {
+          "op": "=",
+          "text": "❓💥 ERROR",
+          "value": "-9"
+        },
+        {
+          "op": "=",
+          "text": "❓❌ FAIL",
+          "value": "-8"
+        },
+        {
+          "op": "=",
+          "text": "​ ​ ​ ​",
+          "value": "-7"
+        },
+        {
+          "op": "=",
+          "text": "🚧⏩ SKIP",
           "value": "-6"
         },
         {
           "op": "=",
-          "text": "🚧 SKIP",
+          "text": "🚧🆗 DONE",
           "value": "-5"
         },
         {
           "op": "=",
-          "text": "🚧 DONE",
+          "text": "🚧✅ PASS",
           "value": "-4"
         },
         {
           "op": "=",
-          "text": "🚧 PASS",
+          "text": "🚧🟩 MISS",
           "value": "-3"
         },
         {
           "op": "=",
-          "text": "🚧 FAIL",
+          "text": "🚧💥 ERROR",
           "value": "-2"
         },
         {
           "op": "=",
-          "text": "🚧 ERROR",
+          "text": "🚧❌ FAIL",
           "value": "-1"
         },
         {
@@ -1488,58 +1543,33 @@
         },
         {
           "op": "=",
-          "text": "SKIP",
+          "text": "⏩ SKIP",
           "value": "1"
         },
         {
           "op": "=",
-          "text": "DONE",
+          "text": "🆗 DONE",
           "value": "2"
         },
         {
           "op": "=",
-          "text": "PASS",
+          "text": "✅ PASS",
           "value": "3"
         },
         {
           "op": "=",
-          "text": "FAIL",
+          "text": "🟩 MISS",
           "value": "4"
         },
         {
           "op": "=",
-          "text": "ERROR",
+          "text": "💥 ERROR",
           "value": "5"
         },
         {
           "op": "=",
-          "text": "❓ ERROR",
-          "value": "-7"
-        },
-        {
-          "op": "=",
-          "text": "❓ FAIL",
-          "value": "-8"
-        },
-        {
-          "op": "=",
-          "text": "❓ PASS",
-          "value": "-9"
-        },
-        {
-          "op": "=",
-          "text": "❓ DONE",
-          "value": "-10"
-        },
-        {
-          "op": "=",
-          "text": "❓ SKIP",
-          "value": "-11"
-        },
-        {
-          "op": "=",
-          "text": "​ ​ ​ ​",
-          "value": "-12"
+          "text": "❌ FAIL",
+          "value": "6"
         }
       ],
       "valueName": "max"
@@ -1570,8 +1600,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(50, 172, 45, 0)",
-            "#37872D",
-            "#C4162A"
+            "#316d2b",
+            "#9b1928"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -1582,82 +1612,115 @@
           "pattern": "status_num",
           "thresholds": [
             "3",
-            "4"
+            "5"
           ],
           "type": "string",
           "unit": "short",
           "valueMaps": [
             {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-14"
+            },
+            {
+              "op": "=",
+              "text": "❓⏩ SKIP",
+              "value": "-13"
+            },
+            {
+              "op": "=",
+              "text": "❓🆗 DONE",
+              "value": "-12"
+            },
+            {
+              "op": "=",
+              "text": "❓✅ PASS",
+              "value": "-11"
+            },
+            {
+              "op": "=",
+              "text": "❓🟩 MISS",
+              "value": "-10"
+            },
+            {
+              "op": "=",
+              "text": "❓💥 ERROR",
+              "value": "-9"
+            },
+            {
+              "op": "=",
+              "text": "❓❌ FAIL",
+              "value": "-8"
+            },
+            {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-7"
+            },
+            {
+              "op": "=",
+              "text": "🚧⏩ SKIP",
+              "value": "-6"
+            },
+            {
+              "op": "=",
+              "text": "🚧🆗 DONE",
+              "value": "-5"
+            },
+            {
+              "op": "=",
+              "text": "🚧✅ PASS",
+              "value": "-4"
+            },
+            {
+              "op": "=",
+              "text": "🚧🟩 MISS",
+              "value": "-3"
+            },
+            {
+              "op": "=",
+              "text": "🚧💥 ERROR",
+              "value": "-2"
+            },
+            {
+              "op": "=",
+              "text": "🚧❌ FAIL",
+              "value": "-1"
+            },
+            {
+              "op": "=",
               "text": "​ ​ ​ ​",
               "value": "0"
             },
             {
-              "text": "SKIP",
+              "op": "=",
+              "text": "⏩ SKIP",
               "value": "1"
             },
             {
-              "text": "DONE",
+              "op": "=",
+              "text": "🆗 DONE",
               "value": "2"
             },
             {
-              "text": "PASS",
+              "op": "=",
+              "text": "✅ PASS",
               "value": "3"
             },
             {
-              "text": "FAIL",
+              "op": "=",
+              "text": "🟩 MISS",
               "value": "4"
             },
             {
-              "text": "ERROR",
+              "op": "=",
+              "text": "💥 ERROR",
               "value": "5"
             },
             {
-              "text": "🚧 ERROR",
-              "value": "-1"
-            },
-            {
-              "text": "🚧 FAIL",
-              "value": "-2"
-            },
-            {
-              "text": "🚧 PASS",
-              "value": "-3"
-            },
-            {
-              "text": "🚧 DONE",
-              "value": "-4"
-            },
-            {
-              "text": "🚧 SKIP",
-              "value": "-5"
-            },
-            {
-              "text": "​ ​ ​ ​",
-              "value": "-6"
-            },
-            {
-              "text": "❓ ERROR",
-              "value": "-7"
-            },
-            {
-              "text": "❓ FAIL",
-              "value": "-8"
-            },
-            {
-              "text": "❓ PASS",
-              "value": "-9"
-            },
-            {
-              "text": "❓ DONE",
-              "value": "-10"
-            },
-            {
-              "text": "❓ SKIP",
-              "value": "-11"
-            },
-            {
-              "text": "​ ​ ​ ​",
-              "value": "-12"
+              "op": "=",
+              "text": "❌ FAIL",
+              "value": "6"
             }
           ]
         },
@@ -1823,7 +1886,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "/* Massage */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    origins,\n    path,\n    CASE\n        WHEN '$test_path' = '' THEN path\n        ELSE substring(path FROM length('$test_path') + 2)\n    END AS name,\n    tests,\n    COALESCE(CAST(min_start_time AS TEXT), '') AS min_start_time_str,\n    COALESCE(\n        FLOOR(EXTRACT(epoch FROM AGE(max_end_time, min_start_time))/3600) ||\n        TO_CHAR(AGE(max_end_time, min_start_time), ':MI:SS.MS'),\n        ''\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, ', ') AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX((CASE status WHEN 'ERROR' THEN 5 WHEN 'FAIL' THEN 4 WHEN 'PASS' THEN 3 WHEN 'DONE' THEN 2 WHEN 'SKIP' THEN 1 ELSE 0 END) -\n            (CASE waived WHEN false THEN 0 WHEN true THEN 1 ELSE 2 END) * 6) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /*\n             * Prefix one level deeper than the displayed test's path,\n             * i.e. the prefix children of this test should have\n             */\n            COALESCE(\n                /*\n                 * Handle the parent node of this test being displayed:\n                 * cut the test path up to and including the first dot\n                 * after the currently-displayed test's path, if possible.\n                 */\n                LEFT(\n                    tests.path,\n                    LENGTH('$test_path') +\n                    NULLIF(POSITION('.' IN SUBSTRING(tests.path FROM LENGTH('$test_path') + 2)), 0) +\n                    1\n                ),\n                /* Handle this test's node being displayed */\n                tests.path || '.'\n            ) AS base_prefix,\n            tests.start_time,\n            tests.start_time + (tests.duration * INTERVAL '1 second') AS end_time,\n            tests.status,\n            tests.waived\n        FROM tests\n        WHERE\n            tests.build_id = '$id' AND\n            COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n            tests.origin LIKE $origin AND\n            ('$test_path' = '' OR STARTS_WITH(tests.path, '$test_path' || '.'))\n    ) AS filtered_tests\n    GROUP BY\n        base_prefix\n) AS aggregated_tests\nORDER BY\n    status_num DESC,\n    name ASC\n",
+          "rawSql": "/* Massage */\nSELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    origins,\n    path,\n    CASE\n        WHEN '$test_path' = '' THEN path\n        ELSE substring(path FROM length('$test_path') + 2)\n    END AS name,\n    tests,\n    COALESCE(CAST(min_start_time AS TEXT), '') AS min_start_time_str,\n    COALESCE(\n        FLOOR(EXTRACT(epoch FROM AGE(max_end_time, min_start_time))/3600) ||\n        TO_CHAR(AGE(max_end_time, min_start_time), ':MI:SS.MS'),\n        ''\n    ) AS total_duration_str,\n    status_num\nFROM (\n    /* Aggregate */\n    SELECT\n        STRING_AGG(DISTINCT origin, ', ') AS origins,\n        LEFT(base_prefix, CHAR_LENGTH(base_prefix) - 1) AS path,\n        MIN(start_time) AS min_start_time,\n        MAX(end_time) AS max_end_time,\n        COUNT(DISTINCT id) AS tests,\n        MAX(COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], status::text), 0) - COALESCE(waived::int, 2) * 7) AS status_num\n    FROM (\n        /* Filter tests and extract path prefixes */\n        SELECT\n            tests.origin,\n            tests.id,\n            /*\n             * Prefix one level deeper than the displayed test's path,\n             * i.e. the prefix children of this test should have\n             */\n            COALESCE(\n                /*\n                 * Handle the parent node of this test being displayed:\n                 * cut the test path up to and including the first dot\n                 * after the currently-displayed test's path, if possible.\n                 */\n                LEFT(\n                    tests.path,\n                    LENGTH('$test_path') +\n                    NULLIF(POSITION('.' IN SUBSTRING(tests.path FROM LENGTH('$test_path') + 2)), 0) +\n                    1\n                ),\n                /* Handle this test's node being displayed */\n                tests.path || '.'\n            ) AS base_prefix,\n            tests.start_time,\n            tests.start_time + (tests.duration * INTERVAL '1 second') AS end_time,\n            tests.status,\n            tests.waived\n        FROM tests\n        WHERE\n            tests.build_id = '$id' AND\n            COALESCE(tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n            tests.origin LIKE $origin AND\n            ('$test_path' = '' OR STARTS_WITH(tests.path, '$test_path' || '.'))\n    ) AS filtered_tests\n    GROUP BY\n        base_prefix\n) AS aggregated_tests\nORDER BY\n    status_num DESC,\n    name ASC\n",
           "refId": "A",
           "select": [
             [
@@ -2150,8 +2213,8 @@
           "colorMode": "cell",
           "colors": [
             "rgba(50, 172, 45, 0)",
-            "#37872D",
-            "#C4162A"
+            "#316d2b",
+            "#9b1928"
           ],
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "decimals": 2,
@@ -2162,82 +2225,115 @@
           "pattern": "status_num",
           "thresholds": [
             "3",
-            "4"
+            "5"
           ],
           "type": "string",
           "unit": "short",
           "valueMaps": [
             {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-14"
+            },
+            {
+              "op": "=",
+              "text": "❓⏩ SKIP",
+              "value": "-13"
+            },
+            {
+              "op": "=",
+              "text": "❓🆗 DONE",
+              "value": "-12"
+            },
+            {
+              "op": "=",
+              "text": "❓✅ PASS",
+              "value": "-11"
+            },
+            {
+              "op": "=",
+              "text": "❓🟩 MISS",
+              "value": "-10"
+            },
+            {
+              "op": "=",
+              "text": "❓💥 ERROR",
+              "value": "-9"
+            },
+            {
+              "op": "=",
+              "text": "❓❌ FAIL",
+              "value": "-8"
+            },
+            {
+              "op": "=",
+              "text": "​ ​ ​ ​",
+              "value": "-7"
+            },
+            {
+              "op": "=",
+              "text": "🚧⏩ SKIP",
+              "value": "-6"
+            },
+            {
+              "op": "=",
+              "text": "🚧🆗 DONE",
+              "value": "-5"
+            },
+            {
+              "op": "=",
+              "text": "🚧✅ PASS",
+              "value": "-4"
+            },
+            {
+              "op": "=",
+              "text": "🚧🟩 MISS",
+              "value": "-3"
+            },
+            {
+              "op": "=",
+              "text": "🚧💥 ERROR",
+              "value": "-2"
+            },
+            {
+              "op": "=",
+              "text": "🚧❌ FAIL",
+              "value": "-1"
+            },
+            {
+              "op": "=",
               "text": "​ ​ ​ ​",
               "value": "0"
             },
             {
-              "text": "SKIP",
+              "op": "=",
+              "text": "⏩ SKIP",
               "value": "1"
             },
             {
-              "text": "DONE",
+              "op": "=",
+              "text": "🆗 DONE",
               "value": "2"
             },
             {
-              "text": "PASS",
+              "op": "=",
+              "text": "✅ PASS",
               "value": "3"
             },
             {
-              "text": "FAIL",
+              "op": "=",
+              "text": "🟩 MISS",
               "value": "4"
             },
             {
-              "text": "ERROR",
+              "op": "=",
+              "text": "💥 ERROR",
               "value": "5"
             },
             {
-              "text": "🚧 ERROR",
-              "value": "-1"
-            },
-            {
-              "text": "🚧 FAIL",
-              "value": "-2"
-            },
-            {
-              "text": "🚧 PASS",
-              "value": "-3"
-            },
-            {
-              "text": "🚧 DONE",
-              "value": "-4"
-            },
-            {
-              "text": "🚧 SKIP",
-              "value": "-5"
-            },
-            {
-              "text": "​ ​ ​ ​",
-              "value": "-6"
-            },
-            {
-              "text": "❓ ERROR",
-              "value": "-7"
-            },
-            {
-              "text": "❓ FAIL",
-              "value": "-8"
-            },
-            {
-              "text": "❓ PASS",
-              "value": "-9"
-            },
-            {
-              "text": "❓ DONE",
-              "value": "-10"
-            },
-            {
-              "text": "❓ SKIP",
-              "value": "-11"
-            },
-            {
-              "text": "​ ​ ​ ​",
-              "value": "-12"
+              "op": "=",
+              "text": "❌ FAIL",
+              "value": "6"
             }
           ]
         },
@@ -2365,7 +2461,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    CASE \n        WHEN status = 'ERROR' THEN 5 \n        WHEN status = 'FAIL' THEN 4 \n        WHEN status = 'PASS' THEN 3 \n        WHEN status = 'DONE' THEN 2 \n        WHEN status = 'SKIP' THEN 1 \n        ELSE 0 \n    END - \n    CASE \n        WHEN waived = false THEN 0 \n        WHEN waived = true THEN 1 \n        ELSE 2 \n    END * 6 AS status_num\nFROM tests\nWHERE\n    tests.build_id = '$id' AND\n    COALESCE(start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR tests.path LIKE ('$test_path' || '.%'))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    tests.id,\n    tests.origin,\n    tests.path,\n    tests.comment,\n    COALESCE(CAST(tests.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(\n        TO_CHAR(tests.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'),\n        ''\n    ) AS duration_str,\n    COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7 AS status_num\nFROM tests\nWHERE\n    tests.build_id = '$id' AND\n    COALESCE(start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000), TRUE) AND\n    tests.origin LIKE $origin AND\n    ('$test_path' = '' OR tests.path = '$test_path' OR tests.path LIKE ('$test_path' || '.%'))\nORDER BY\n    status_num DESC,\n    tests.path ASC",
           "refId": "A",
           "select": [
             [
@@ -2420,8 +2516,8 @@
       },
       {
         "current": {
-          "text": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e",
-          "value": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e"
+          "text": "0dayci:build:66188ae441c24b432f1453f4",
+          "value": "0dayci:build:66188ae441c24b432f1453f4"
         },
         "hide": 2,
         "label": "ID",
@@ -2433,14 +2529,14 @@
             "value": ""
           }
         ],
-        "query": "kernelci:kernelci.org:65fd030f1c04b5bfae4c437e",
+        "query": "0dayci:build:66188ae441c24b432f1453f4",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -2466,7 +2562,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -2492,7 +2588,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
