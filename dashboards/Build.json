@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 7,
-  "iteration": 1712942797463,
+  "iteration": 1714642405714,
   "links": [],
   "panels": [
     {
@@ -795,7 +795,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 3,
+        "w": 6,
         "x": 6,
         "y": 4
       },
@@ -878,8 +878,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 3,
-        "x": 9,
+        "w": 6,
+        "x": 18,
         "y": 4
       },
       "id": 6,
@@ -945,9 +945,9 @@
       "datasource": "-- Dashboard --",
       "gridPos": {
         "h": 2,
-        "w": 6,
-        "x": 18,
-        "y": 4
+        "w": 24,
+        "x": 0,
+        "y": 6
       },
       "id": 24,
       "options": {},
@@ -987,7 +987,7 @@
         "h": 3,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 8
       },
       "id": 19,
       "interval": null,
@@ -1070,7 +1070,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 11
       },
       "id": 31,
       "interval": null,
@@ -1137,7 +1137,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 13
       },
       "id": 55,
       "options": {
@@ -1203,7 +1203,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 21
       },
       "id": 30,
       "interval": null,
@@ -1271,7 +1271,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 27
       },
       "id": 57,
       "panels": [],
@@ -1285,7 +1285,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 28
       },
       "id": 59,
       "mode": "markdown",
@@ -1301,7 +1301,7 @@
         "h": 2,
         "w": 2,
         "x": 0,
-        "y": 27
+        "y": 29
       },
       "id": 39,
       "options": {},
@@ -1349,7 +1349,7 @@
         "h": 2,
         "w": 2,
         "x": 2,
-        "y": 27
+        "y": 29
       },
       "id": 41,
       "options": {},
@@ -1373,7 +1373,7 @@
         "h": 2,
         "w": 18,
         "x": 4,
-        "y": 27
+        "y": 29
       },
       "id": 43,
       "options": {},
@@ -1413,7 +1413,7 @@
         "h": 2,
         "w": 2,
         "x": 22,
-        "y": 27
+        "y": 29
       },
       "id": 45,
       "interval": null,
@@ -1583,7 +1583,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 31
       },
       "id": 47,
       "options": {},
@@ -1932,7 +1932,7 @@
         "h": 5,
         "w": 10,
         "x": 0,
-        "y": 40
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 49,
@@ -2050,7 +2050,7 @@
         "h": 5,
         "w": 14,
         "x": 10,
-        "y": 40
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 51,
@@ -2161,7 +2161,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 47
       },
       "id": 53,
       "options": {},
@@ -2516,8 +2516,8 @@
       },
       {
         "current": {
-          "text": "0dayci:build:66188ae441c24b432f1453f4",
-          "value": "0dayci:build:66188ae441c24b432f1453f4"
+          "text": "kernelci:kernelci.org:66335673be639ec87f4c42ea",
+          "value": "kernelci:kernelci.org:66335673be639ec87f4c42ea"
         },
         "hide": 2,
         "label": "ID",
@@ -2529,14 +2529,14 @@
             "value": ""
           }
         ],
-        "query": "0dayci:build:66188ae441c24b432f1453f4",
+        "query": "kernelci:kernelci.org:66335673be639ec87f4c42ea",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -2562,7 +2562,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -2588,7 +2588,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -2654,5 +2654,5 @@
   "timezone": "",
   "title": "Build",
   "uid": "build",
-  "version": 6
+  "version": 10
 }

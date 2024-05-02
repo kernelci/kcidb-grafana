@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1712942863424,
+  "iteration": 1714642355916,
   "links": [],
   "panels": [
     {
@@ -433,7 +433,7 @@
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
-        "w": 5,
+        "w": 8,
         "x": 0,
         "y": 4
       },
@@ -670,14 +670,130 @@
       "type": "table"
     },
     {
+      "aliasColors": {
+        "ERROR": "semi-dark-orange",
+        "FAIL": "semi-dark-red",
+        "PASS": "semi-dark-green",
+        "SKIP": "semi-dark-blue",
+        "UNKNOWN": "rgb(128, 128, 128)"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 7,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 4
+      },
+      "hiddenSeries": false,
+      "id": 28,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n             tests.start_time,\n             TO_TIMESTAMP($__from / 1000)) AS time,\n    COALESCE(tests.status::text, 'UNKNOWN') AS metric,\n    COUNT(tests.id) AS tests\nFROM tests\nINNER JOIN builds ON\n    builds.id = tests.build_id AND\n    ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n    ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\nWHERE\n    tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    ($origin = '%' or tests.origin LIKE $origin) AND\n    NOT tests.waived AND\n    ('$test_path' = '' AND tests.path IS NOT NULL OR\n     tests.path = '$test_path' OR\n     STARTS_WITH(tests.path, '$test_path' || '.')) AND\n    tests.origin LIKE $origin\nGROUP BY\n    time, tests.status\nORDER BY\n    time",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "duration"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "builds",
+          "timeColumn": "_timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "columns": [],
       "datasource": "$datasource",
       "fontSize": "100%",
       "gridPos": {
         "h": 7,
-        "w": 9,
-        "x": 5,
-        "y": 4
+        "w": 24,
+        "x": 0,
+        "y": 11
       },
       "id": 30,
       "maxDataPoints": "2048",
@@ -912,122 +1028,6 @@
       "type": "table"
     },
     {
-      "aliasColors": {
-        "ERROR": "semi-dark-orange",
-        "FAIL": "semi-dark-red",
-        "PASS": "semi-dark-green",
-        "SKIP": "semi-dark-blue",
-        "UNKNOWN": "rgb(128, 128, 128)"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$datasource",
-      "fill": 7,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 10,
-        "x": 14,
-        "y": 4
-      },
-      "hiddenSeries": false,
-      "id": 28,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 0,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    date_bin(($__interval_ms * 50 || ' milliseconds')::interval,\n             tests.start_time,\n             TO_TIMESTAMP($__from / 1000)) AS time,\n    COALESCE(tests.status::text, 'UNKNOWN') AS metric,\n    COUNT(tests.id) AS tests\nFROM tests\nINNER JOIN builds ON\n    builds.id = tests.build_id AND\n    ($build_architecture = '%' OR builds.architecture LIKE $build_architecture) AND\n    ($build_config_name = '%' OR builds.config_name LIKE $build_config_name)\nWHERE\n    tests.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    ($origin = '%' or tests.origin LIKE $origin) AND\n    NOT tests.waived AND\n    ('$test_path' = '' AND tests.path IS NOT NULL OR\n     tests.path = '$test_path' OR\n     STARTS_WITH(tests.path, '$test_path' || '.')) AND\n    tests.origin LIKE $origin\nGROUP BY\n    time, tests.status\nORDER BY\n    time",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "duration"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "builds",
-          "timeColumn": "_timestamp",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Test status",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "columns": [],
       "datasource": "$datasource",
       "description": "",
@@ -1036,7 +1036,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 18
       },
       "id": 8,
       "options": {},
@@ -1335,7 +1335,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 29
       },
       "id": 12,
       "options": {},
@@ -1617,7 +1617,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 38
       },
       "id": 22,
       "maxDataPoints": "250",
@@ -2115,7 +2115,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 50
       },
       "id": 24,
       "maxDataPoints": "250",
@@ -2589,7 +2589,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 57
       },
       "id": 26,
       "maxDataPoints": "2048",
@@ -3005,7 +3005,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 68
       },
       "id": 20,
       "options": {},
@@ -3360,7 +3360,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -3385,8 +3385,8 @@
       },
       {
         "current": {
-          "text": "ltp",
-          "value": "ltp"
+          "text": "kselftest-alsa",
+          "value": "kselftest-alsa"
         },
         "hide": 2,
         "label": "Path",
@@ -3398,14 +3398,14 @@
             "value": "igt-gpu-panfrost.panfrost_gem_new.gem-new-0"
           }
         ],
-        "query": "ltp",
+        "query": "kselftest-alsa",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -3431,7 +3431,7 @@
       {
         "allValue": "'%'",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
@@ -3477,5 +3477,5 @@
   "timezone": "",
   "title": "Test node",
   "uid": "test-node",
-  "version": 4
+  "version": 6
 }

@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 5,
-  "iteration": 1712942722936,
+  "iteration": 1714642362884,
   "links": [],
   "panels": [
     {
@@ -1726,7 +1726,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    builds.id,\n    builds.origin,\n    COALESCE(builds.architecture, '') AS architecture,\n    COALESCE(REGEXP_REPLACE(builds.compiler, '^(.{48}).+$', '\\1…'), '') AS compiler,\n    COALESCE(builds.config_name, '') AS config_name,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'), '') AS duration_str,\n    COALESCE(builds.comment, '') AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    MAX(COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7) AS tests_status_num\nFROM builds\nINNER JOIN checkouts ON builds.checkout_id = checkouts.id\nLEFT OUTER JOIN tests ON tests.build_id = builds.id\nWHERE\n    builds.origin LIKE $origin AND\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    checkouts.git_commit_hash = '$git_commit_hash' AND\n    checkouts.patchset_hash = '$patchset_hash' AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY\n    builds.id\nORDER BY\n    valid_num DESC NULLS LAST,\n    tests_status_num DESC NULLS LAST,\n    builds.start_time DESC NULLS LAST",
+          "rawSql": "SELECT\n    CASE WHEN $origin = '%' THEN 'All' ELSE $origin END AS origin_param,\n    CASE WHEN $build_architecture = '%' THEN 'All' ELSE $build_architecture END AS build_architecture_param,\n    CASE WHEN $build_config_name = '%' THEN 'All' ELSE $build_config_name END AS build_config_name_param,\n    builds.id,\n    builds.origin,\n    COALESCE(builds.architecture, '') AS architecture,\n    COALESCE(REGEXP_REPLACE(builds.compiler, '^(.{48}).+$', '\\1…'), '') AS compiler,\n    COALESCE(REGEXP_REPLACE(builds.config_name, '^(.{48}).+$', '\\1…'), '') AS config_name,\n    COALESCE(CAST(builds.start_time AS TEXT), '') AS start_time_str,\n    COALESCE(TO_CHAR(builds.duration * INTERVAL '1 second', 'HH24:MI:SS.MS'), '') AS duration_str,\n    COALESCE(builds.comment, '') AS comment,\n    CASE builds.valid WHEN false THEN 1 WHEN true THEN 0 ELSE -1 END AS valid_num,\n    MAX(COALESCE(array_position(ARRAY['SKIP', 'DONE', 'PASS', 'MISS', 'ERROR', 'FAIL'], tests.status::text), 0) - COALESCE(tests.waived::int, 2) * 7) AS tests_status_num\nFROM builds\nINNER JOIN checkouts ON builds.checkout_id = checkouts.id\nLEFT OUTER JOIN tests ON tests.build_id = builds.id\nWHERE\n    builds.origin LIKE $origin AND\n    builds.start_time BETWEEN TO_TIMESTAMP($__from / 1000) AND TO_TIMESTAMP($__to / 1000) AND\n    checkouts.git_commit_hash = '$git_commit_hash' AND\n    checkouts.patchset_hash = '$patchset_hash' AND\n    COALESCE(builds.architecture LIKE $build_architecture, TRUE) AND\n    COALESCE(builds.config_name LIKE $build_config_name, TRUE)\nGROUP BY\n    builds.id\nORDER BY\n    valid_num DESC NULLS LAST,\n    tests_status_num DESC NULLS LAST,\n    builds.start_time DESC NULLS LAST",
           "refId": "A",
           "select": [
             [
@@ -3472,8 +3472,8 @@
       },
       {
         "current": {
-          "text": "00dcf5d862e86e57f5ce46344039f11bb1ad61f6",
-          "value": "00dcf5d862e86e57f5ce46344039f11bb1ad61f6"
+          "text": "0a532ff518e1d119712a4475d69c09d80d39cf54",
+          "value": "0a532ff518e1d119712a4475d69c09d80d39cf54"
         },
         "hide": 0,
         "label": "Commit hash",
@@ -3485,7 +3485,7 @@
             "value": ""
           }
         ],
-        "query": "00dcf5d862e86e57f5ce46344039f11bb1ad61f6",
+        "query": "0a532ff518e1d119712a4475d69c09d80d39cf54",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -3629,5 +3629,5 @@
   "timezone": "",
   "title": "Revision",
   "uid": "revision",
-  "version": 12
+  "version": 14
 }
